@@ -1,0 +1,29 @@
+{
+  "name": "chywalry-client",
+  "version": "0.1.0",
+  "description": "A client to handle realt-time connection to Chywalry server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soixantecircuits/chywalry-client.git"
+  },
+  "keywords": [
+    "socket.io",
+    "mdns",
+    "chywalry"
+  ],
+  "author": "Soixante circuits",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soixantecircuits/chywalry-client/issues"
+  },
+  "homepage": "https://github.com/soixantecircuits/chywalry-client#readme",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "mdns": "^2.2.11",
+    "socket.io-client": "^1.3.7"
+  }
+}
