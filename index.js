@@ -3,7 +3,7 @@
 var mdns = require('./lib/mdns.js')
 var io = require('socket.io-client')
 var _ = require('lodash')
-let socket
+var socket
 
 function registerToMaster (actionList, clientName, zeroconfName) {
   mdns.connectToService(zeroconfName || 'spacebro', function socketioInit (err, address, port) {
