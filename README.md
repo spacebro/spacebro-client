@@ -1,16 +1,16 @@
-# Chywalry client
+# Spacebro client
 
-Allow to automagically connect to a chywalry server by simply specifying a zeroconf service name
+Allow to automagically 🌟 connect to a Spacebro server
 
 # Install
 
-npm install chywalry-client
+npm install --save spacebro-client
 
 # API
 
 ```
-chywalryClient = require('chywalry-client')
-chywalryClient.registerToMaster(actionList, clientName, zeroconfName)
+spacebroClient = require('spacebro-client')
+spacebroClient.registerToMaster(actionList, clientName, zeroconfName)
 ```
 
 The actionList parameter is a list of events associated with action (functions) :
@@ -32,8 +32,8 @@ var actionList = [
 ]
 ```
 
-The clientName parameter is the name of you client. You will see it in the Chywalry log.
+The clientName parameter is the name of you client. You will see it in the Spacebro log.
 
-The zeroconfName is the name of the Chywalry service you want to connect.
+The zeroconfName is the name of the Spacebro service you want to connect.
 
 Enjoy !

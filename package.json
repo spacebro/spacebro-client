@@ -1,26 +1,33 @@
 {
-  "name": "chywalry-client",
-  "version": "0.1.0",
-  "description": "A client to handle realt-time connection to Chywalry server",
+  "name": "spacebro-client",
+  "version": "0.0.1",
+  "description": "Allow to automagically 🌟 connect to a Spacebro server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/soixantecircuits/chywalry-client.git"
+    "url": "git+https://github.com/soixantecircuits/spacebro-client.git"
   },
   "keywords": [
     "socket.io",
     "mdns",
-    "chywalry"
+    "spacebro",
+    "realtime",
+    "zeroconf"
   ],
   "author": "Soixante circuits",
+  "contributors": [
+    "emmanuelgeoffray <manuel@soixantecircuits.fr> (https://github.com/emmanuelgeoffray)",
+    "gabrielstuff <gabriel@soixantecircuits.fr> (http://twitter.com/gabrielstuff)",
+    "hugohil <hugo@soixantecircuits.fr> (https://github.com/hugohil)"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/soixantecircuits/chywalry-client/issues"
+    "url": "https://github.com/soixantecircuits/spacebro-client/issues"
   },
-  "homepage": "https://github.com/soixantecircuits/chywalry-client#readme",
+  "homepage": "https://github.com/soixantecircuits/spacebro-client#readme",
   "dependencies": {
     "lodash": "^3.10.1",
     "mdns": "^2.2.11",

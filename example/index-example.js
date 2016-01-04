@@ -1,6 +1,6 @@
 'use strict'
 
-const chywalryClient = require('../index.js')
+const spacebroClient = require('../')
 
 var actionList = [
   {
@@ -17,4 +17,4 @@ var actionList = [
   }
 ]
 
-chywalryClient.registerToMaster(actionList, 'example-chy')
+spacebroClient.registerToMaster(actionList, 'example-bro')
