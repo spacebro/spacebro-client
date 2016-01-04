@@ -1,6 +1,6 @@
 {
   "name": "spacebro-client",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Allow to automagically 🌟 connect to a Spacebro server",
   "main": "index.js",
   "scripts": {
