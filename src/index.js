@@ -1,6 +1,6 @@
 'use strict'
 
-const mdns = require('./lib/mdns.js')
+const mdns = require('../lib/mdns.js')
 const io = require('socket.io-client')
 const _ = require('lodash')
 let socket

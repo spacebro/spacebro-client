@@ -1,6 +1,6 @@
 'use strict';
 
-var mdns = require('./lib/mdns.js');
+var mdns = require('../lib/mdns.js');
 var io = require('socket.io-client');
 var _ = require('lodash');
 var socket = undefined;
