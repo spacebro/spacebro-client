@@ -16,5 +16,9 @@ var actionList = [
     }
   }
 ]
-
+actionList.push({name: 'new-media'})
 spacebroClient.registerToMaster(actionList, 'example-bro')
+
+setInterval(function () {
+  spacebroClient.emit('new-media', {data: 'foo'})
+}, 2000)
