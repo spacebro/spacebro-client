@@ -1,8 +1,8 @@
 'use strict'
 
-const mdns = require('./lib/mdns.js')
-const io = require('socket.io-client')
-const _ = require('lodash')
+var mdns = require('./lib/mdns.js')
+var io = require('socket.io-client')
+var _ = require('lodash')
 let socket
 
 function registerToMaster (actionList, clientName, zeroconfName) {
