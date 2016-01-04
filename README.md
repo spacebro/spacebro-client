@@ -12,6 +12,7 @@ npm install --save spacebro-client
 ```
 spacebroClient = require('spacebro-client')
 spacebroClient.registerToMaster(actionList, clientName, zeroconfName)
+spacebroClient.emit('event', data)
 ```
 
 The actionList parameter is a list of events associated with action (functions) :
@@ -32,6 +33,8 @@ var actionList = [
   }
 ]
 ```
+
+Do not forget to add the event you want to broadcast to the actionList. 
 
 The clientName parameter is the name of you client. You will see it in the Spacebro log.
 
