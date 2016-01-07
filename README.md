@@ -41,3 +41,9 @@ The clientName parameter is the name of you client. You will see it in the Space
 The zeroconfName is the name of the Spacebro service you want to connect.
 
 Enjoy !
+
+Please follow [standard style](https://github.com/feross/standard) conventions.
+
+## Contribute
+
+You can modify the source in `src/index.js`. Run `npm run build` to transpile and test.
