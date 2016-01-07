@@ -6,7 +6,7 @@ const _ = require('lodash')
 let socket
 
 function registerToMaster (actionList, clientName, zeroconfName) {
-  mdns.connectToService(zeroconfName || 'spacebro', function socketioInit (err, address, port) {
+  mdns.connectToService(zeroconfName || 'spacebro', function socketioInit(err, address, port) {
     console.log('service found: ', address)
     socket = io('http://' + address + ':' + port)
       .on('connect', function () {
