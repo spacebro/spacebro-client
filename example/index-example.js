@@ -16,6 +16,7 @@ var actionList = [
     }
   }
 ]
+
 actionList.push({name: 'new-media'})
 spacebroClient.registerToMaster(actionList, 'example-bro')
 
