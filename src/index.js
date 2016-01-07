@@ -6,8 +6,13 @@ const _ = require('lodash')
 let socket
 
 function registerToMaster (actionList, clientName, zeroconfName) {
+  console.log('Wating for spacebro...')
   mdns.connectToService(zeroconfName || 'spacebro', function socketioInit (err, address, port) {
-    console.log('service found: ', address)
+    if (err) {
+      console.log(err.stack)
+    }
+    console.log('---------------------------')
+    console.log('service found at address: ', address)
     socket = io('http://' + address + ':' + port)
       .on('connect', function () {
         console.log('socketio connected to ' + 'http://' + address + ':' + port)
@@ -16,6 +21,7 @@ function registerToMaster (actionList, clientName, zeroconfName) {
         })
         socket.emit('register', { eventsList: nameList, clientName: clientName || 'pid-' + process.pid })
       })
+    console.log('List of actions registered:')
     for (let action of actionList) {
       console.log(action.name)
       socket.on(action.name, function (data) {
@@ -24,6 +30,7 @@ function registerToMaster (actionList, clientName, zeroconfName) {
         }
       })
     }
+    console.log('---------------------------')
   })
 }
 
