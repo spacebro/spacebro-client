@@ -41,7 +41,8 @@ var registerToMaster = function (actionList, clientName, zeroconfName) {
     socketioInit(null, staticAddress, staticPort, actionList, clientName)
   } else {
     let mdns = require('../lib/mdns.js')
-    // not useful as it is already in lib/mdns.js
+    // event propagation for andling error at the top level
+    // next is implement EventEmitter in spacebro
     /*
     mdns.on('service-down', function (data) {
       console.log(data + ' is down =(')
