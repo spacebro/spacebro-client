@@ -18,7 +18,8 @@ var actionList = [
 ]
 
 actionList.push({name: 'new-media'})
-spacebroClient.socketioConnect('127.0.0.1', 8888, actionList, 'example-bro')
+spacebroClient.iKnowMyMaster('127.0.0.1', 8888)
+spacebroClient.registerToMaster(actionList, 'example-bro')
 
 setInterval(function () {
   spacebroClient.emit('new-media', {data: 'foo'})

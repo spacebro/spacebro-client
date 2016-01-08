@@ -1,58 +1,70 @@
 'use strict'
 
-
 const io = require('socket.io-client')
 const _ = require('lodash')
-let socket
-
+let staticPort, staticAddress
+let sockets = []
 
 var socketioInit = function (err, address, port, actionList, clientName) {
   if (err) {
     console.log(err.stack)
   }
+  let socket
   console.log('---------------------------')
-  console.log('service found at address: ', address)
   socket = io('http://' + address + ':' + port)
-    .on('connect', function () {
-      console.log('socketio connected to ' + 'http://' + address + ':' + port)
-      var nameList = _.map(actionList, function (el) {
-        return el.name
+  socket.on('connect', function () {
+    sockets.push(socket)
+    console.log('socketio connected to ' + 'http://' + address + ':' + port)
+    var nameList = _.map(actionList, function (el) {
+      return el.name
+    })
+    socket.emit('register', { eventsList: nameList, clientName: clientName || 'pid-' + process.pid })
+    console.log('List of actions registered:')
+    for (let action of actionList) {
+      console.log(action.name)
+      socket.on(action.name, function (data) {
+        if (action.trigger) {
+          action.trigger(data)
+        }
       })
-      socket.emit('register', { eventsList: nameList, clientName: clientName || 'pid-' + process.pid })
-    })
-  console.log('List of actions registered:')
-  for (let action of actionList) {
-    console.log(action.name)
-    socket.on(action.name, function (data) {
-      if (action.trigger) {
-        action.trigger(data)
-      }
-    })
-  }
-  console.log('---------------------------')
+    }
+    console.log('---------------------------')
+  })
+  socket.on('disconnect', function () {
+    console.log('socket down: ', address + ':' + port)
+    sockets.splice(sockets.indexOf(socket), 1)
+  })
 }
 
 var registerToMaster = function (actionList, clientName, zeroconfName) {
-  let mdns = require('../lib/mdns.js')
-  mdns.on('service-down', function (data) {
-    console.log(data + ' is down =(')
-  })
-  console.log('Wating for spacebro...')
-  mdns.connectToService(zeroconfName || 'spacebro', function (err, address, port) {
-    socketioInit(err, address, port, actionList, clientName)
-  })
+  if (staticAddress) {
+    socketioInit(null, staticAddress, staticPort, actionList, clientName)
+  } else {
+    let mdns = require('../lib/mdns.js')
+    // not useful as it is already in lib/mdns.js
+    /*
+    mdns.on('service-down', function (data) {
+      console.log(data + ' is down =(')
+    })
+    */
+    console.log('Waiting for spacebro...')
+    mdns.connectToService(zeroconfName || 'spacebro', function (err, address, port) {
+      socketioInit(err, address, port, actionList, clientName)
+    })
+  }
 }
 
-var socketioConnect = function (address, port, actionList, clientName) {
-  socketioInit(null, address, port, actionList, clientName)
+var iKnowMyMaster = function (address, port) {
+  staticPort = port
+  staticAddress = address
 }
 
 module.exports = {
   registerToMaster: registerToMaster,
-  socketioConnect: socketioConnect,
+  iKnowMyMaster: iKnowMyMaster,
   emit: function (event, data) {
-    if (socket) {
+    sockets.forEach(function (socket) {
       socket.emit(event, data)
-    }
+    })
   }
 }
