@@ -11,7 +11,10 @@ npm install --save spacebro-client
 
 ```
 spacebroClient = require('spacebro-client')
+// This means you will use mdns
 spacebroClient.registerToMaster(actionList, clientName, zeroconfName)
+// This means you know where to connect
+spacebroClient.socketioConnect(server, port, actionList, clientName, zeroconfName)
 spacebroClient.emit('event', data)
 ```
 
