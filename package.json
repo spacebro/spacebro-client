@@ -1,11 +1,12 @@
 {
   "name": "spacebro-client",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Allow to automagically 🌟 connect to a Spacebro server",
   "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "example": "node ./example/index-example.js",
+    "example-fallback": "node ./example/index-fallback-io",
     "build": "babel src -d build",
     "start": "node ./example/index-example.js"
   },
