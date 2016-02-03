@@ -9,7 +9,7 @@ npm install --save spacebro-client
 
 # API
 
-```
+```js
 spacebroClient = require('spacebro-client')
 // This means you will use mdns
 spacebroClient.registerToMaster(actionList, clientName, zeroconfName)
@@ -20,7 +20,7 @@ spacebroClient.emit('event', data)
 
 The actionList parameter is a list of events associated with action (functions) :
 
-```
+```js
 var actionList = [
   {
     name: 'shoot',
