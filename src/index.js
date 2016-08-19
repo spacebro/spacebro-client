@@ -2,13 +2,12 @@
 
 const io = require('socket.io-client')
 const _ = require('lodash')
+
 let staticPort, staticAddress
 let sockets = []
 
-var socketioInit = function (err, address, port, actionList, clientName) {
-  if (err) {
-    console.log(err.stack)
-  }
+function socketioInit (err, address, port, actionList, clientName) {
+  if (err) console.log(err.stack)
   let socket
   console.log('---------------------------')
   socket = io('http://' + address + ':' + port)
@@ -36,7 +35,7 @@ var socketioInit = function (err, address, port, actionList, clientName) {
   })
 }
 
-var registerToMaster = function (actionList, clientName, zeroconfName) {
+function registerToMaster (actionList, clientName, zeroconfName) {
   if (staticAddress) {
     socketioInit(null, staticAddress, staticPort, actionList, clientName)
   } else {
@@ -55,14 +54,13 @@ var registerToMaster = function (actionList, clientName, zeroconfName) {
   }
 }
 
-var iKnowMyMaster = function (address, port) {
+function iKnowMyMaster (address, port) {
   staticPort = port
   staticAddress = address
 }
 
 module.exports = {
-  registerToMaster: registerToMaster,
-  iKnowMyMaster: iKnowMyMaster,
+  registerToMaster, iKnowMyMaster,
   emit: function (event, data) {
     sockets.forEach(function (socket) {
       socket.emit(event, data)
