@@ -27,7 +27,9 @@ const patch = patchMaker(io.Manager)
 
 // Initialization
 function connect (address, port, options) {
-  if (typeof address !== 'string') return connect('', undefined, address)
+  if (typeof address === 'object') {
+    return connect(false, false, address)
+  }
   config = _.merge(config, options)
   log('Connect with the config:', config)
   if (address && port) {

@@ -2,6 +2,8 @@
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _socketioWildcard = require('socketio-wildcard');
 
 var _socketioWildcard2 = _interopRequireDefault(_socketioWildcard);
@@ -45,7 +47,9 @@ var patch = (0, _socketioWildcard2.default)(_socket2.default.Manager);
 
 // Initialization
 function connect(address, port, options) {
-  if (typeof address !== 'string') return connect('', undefined, address);
+  if ((typeof address === 'undefined' ? 'undefined' : _typeof(address)) === 'object') {
+    return connect(false, false, address);
+  }
   config = _lodash2.default.merge(config, options);
   log('Connect with the config:', config);
   if (address && port) {
