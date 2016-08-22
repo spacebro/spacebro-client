@@ -24,14 +24,14 @@ spacebroClient.connect('localhost', 8888, {
   channel: 'bar'
 })
 
-starPort.on('pong', function () { console.log('pong') })
-starPort.emit('ping')
+spacebroClient.on('pong', function () { console.log('pong') })
+spacebroClient.emit('ping')
 ```
 
 ## Basic API
 ### spacebroClient.connect(address, port, options) or spacebroClient.connect(options)
 
-Allows you to connect your starport to a spaceBro server. Options is hash table of settings that will be used to define your starport.
+Allows you to connect to a spaceBro server. Options is hash table of settings that will be used to define your client.
 If you choose not to pass an address (*string*) and a port (*integer*), spaceBro will try to connect to a server using MDNS.
 
 Available options are :
