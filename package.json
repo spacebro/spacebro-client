@@ -2,7 +2,7 @@
   "name": "spacebro-client",
   "version": "0.1.0",
   "description": "Allow to automagically 🌟 connect to a Spacebro server",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "example": "node ./example/index-example.js",
@@ -35,13 +35,19 @@
   "dependencies": {
     "lodash": "3.10.1",
     "mdns": "2.2.11",
-    "socket.io-client": "1.3.7"
+    "signals": "^1.0.0",
+    "socket.io-client": "^1.3.7",
+    "socketio-wildcard": "^0.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.3.17",
-    "babel-preset-es2015": "^6.3.13"
+    "babel-preset-es2015": "^6.3.13",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2"
   },
   "babel": {
-    "presets": ["es2015"]
+    "presets": [
+      "es2015"
+    ]
   }
 }
