@@ -37,7 +37,7 @@ If you choose not to pass an address (*string*) and a port (*integer*), spaceBro
 Available options are :
 - **clientName** (strongly advised) : The name of your app that will be used to receive and send events.
 - **channelName** (strongly advised) : The common channel your apps will share. This will allow your to have multiple apps using the same server without worring about conflicts.
-- **zeroconfName*** (optional) : String that is the name of the service that will be looked for if no address is given.
+- **zeroconfName** (optional) : String that is the name of the service that will be looked for if no address is given.
 - **packers** (optional) : Array of packers (see Hooks below), defined as hash object with the properties *handler* (required), *eventName* (all if null), *priority* (0 if null).
 - **unpackers** (optional) : Array of unpackers (see Hooks below), defined as hash object with the properties *handler* (required), *eventName* (all if null), *priority* (0 if null).
 - **verbose** (optional) : Boolean, if set to false, spaceBro will not show any log.
