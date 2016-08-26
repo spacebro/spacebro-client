@@ -1,6 +1,6 @@
 'use strict'
 
-const spacebroClient = require('../')
+var spacebroClient = require('../')
 
 var actionList = [
   {
