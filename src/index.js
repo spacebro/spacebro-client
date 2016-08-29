@@ -6,7 +6,7 @@ import Signal from 'signals'
 import mdns from './mdns'
 import _ from 'lodash'
 
-import 'babel-polyfill'
+import 'babel-runtime'
 
 // Default config
 let config = {
