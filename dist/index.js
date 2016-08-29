@@ -1,8 +1,16 @@
 'use strict';
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _getIterator2 = require('babel-runtime/core-js/get-iterator');
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _typeof2 = require('babel-runtime/helpers/typeof');
+
+var _typeof3 = _interopRequireDefault(_typeof2);
 
 var _socketioWildcard = require('socketio-wildcard');
 
@@ -23,8 +31,6 @@ var _mdns2 = _interopRequireDefault(_mdns);
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
-
-require('babel-runtime');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -49,7 +55,7 @@ var patch = (0, _socketioWildcard2.default)(_socket2.default.Manager);
 
 // Initialization
 function connect(address, port, options) {
-  if ((typeof address === 'undefined' ? 'undefined' : _typeof(address)) === 'object') {
+  if ((typeof address === 'undefined' ? 'undefined' : (0, _typeof3.default)(address)) === 'object') {
     return connect(false, false, address);
   }
   config = _lodash2.default.merge(config, options);
@@ -66,7 +72,7 @@ function connect(address, port, options) {
   var _iteratorError = undefined;
 
   try {
-    for (var _iterator = config.packers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+    for (var _iterator = (0, _getIterator3.default)(config.packers), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var packer = _step.value;
 
       addPacker(packer.handler, packer.priority, packer.eventName);
@@ -91,7 +97,7 @@ function connect(address, port, options) {
   var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator2 = config.unpackers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for (var _iterator2 = (0, _getIterator3.default)(config.unpackers), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       var unpacker = _step2.value;
 
       addUnpacker(unpacker.handler, unpacker.priority, unpacker.eventName);
@@ -135,7 +141,7 @@ function socketioInit(err, address, port) {
     var data = _ref.data;
     var _data = data;
 
-    var _data2 = _slicedToArray(_data, 2);
+    var _data2 = (0, _slicedToArray3.default)(_data, 2);
 
     var eventName = _data2[0];
     var args = _data2[1];
@@ -147,7 +153,7 @@ function socketioInit(err, address, port) {
     var _iteratorError3 = undefined;
 
     try {
-      for (var _iterator3 = filterHooks(eventName, unpackers)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      for (var _iterator3 = (0, _getIterator3.default)(filterHooks(eventName, unpackers)), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
         var unpack = _step3.value;
 
         var unpacked = unpack({ eventName: eventName, data: args });
@@ -197,7 +203,7 @@ function sendTo(eventName) {
   var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator4 = filterHooks(eventName, packers)[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+    for (var _iterator4 = (0, _getIterator3.default)(filterHooks(eventName, packers)), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
       var pack = _step4.value;
 
       data = pack({ eventName: eventName, data: data }) || data;
@@ -222,7 +228,7 @@ function sendTo(eventName) {
   var _iteratorError5 = undefined;
 
   try {
-    for (var _iterator5 = sockets[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+    for (var _iterator5 = (0, _getIterator3.default)(sockets), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
       var socket = _step5.value;
       socket.emit(eventName, data);
     }
