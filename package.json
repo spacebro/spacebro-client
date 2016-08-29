@@ -47,6 +47,9 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "babel": {
     "presets": [
       "es2015"
