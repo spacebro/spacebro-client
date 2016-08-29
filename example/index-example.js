@@ -1,5 +1,7 @@
 'use strict'
 
+console.warn('this example is deprecated')
+
 var spacebroClient = require('../')
 
 var actionList = [

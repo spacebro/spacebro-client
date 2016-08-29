@@ -5,8 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "example": "node ./example/index-example.js",
+    "example": "node ./example/ponger.js",
     "example-no-mdns": "node ./example/index-example-no-mdns.js",
+    "transform-example": "node ./node_modules/babel-cli/bin/babel ./example/src --out-dir ./example",
     "build": "babel src -d build",
     "start": "node ./example/index-example.js"
   },
