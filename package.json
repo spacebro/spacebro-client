@@ -37,12 +37,12 @@
     "lodash": "3.10.1",
     "mdns": "2.2.11",
     "signals": "^1.0.0",
+    "babel-polyfill": "^6.13.0",
     "socket.io-client": "^1.3.7",
     "socketio-wildcard": "^0.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.3.17",
-    "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.3.13",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2"
