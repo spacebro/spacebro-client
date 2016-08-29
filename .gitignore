@@ -38,7 +38,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -95,3 +96,5 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
+.vscode/
+build/
