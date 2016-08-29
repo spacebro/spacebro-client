@@ -68,6 +68,8 @@ Unpackers are call when you receive a message from the server, before any handle
 
 Please follow [standard style](https://github.com/feross/standard) conventions.
 
+We will name our version by the name of the stars that you can find here: https://en.wikipedia.org/wiki/List_of_brightest_stars 
+
 You can modify the source in `src/index.js`. Run `npm run build` to transpile and test.
 
 Enjoy !
