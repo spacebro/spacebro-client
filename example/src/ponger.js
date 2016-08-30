@@ -12,7 +12,7 @@ spaceBro.on('connect', data => {
   console.log('connected:', data)
 })
 
-spaceBro.on('ping', function (data) {
+spaceBro.on('pingy', function (data) {
   console.log('get pinged:', data.count)
-  spaceBro.emit('pong', data)
+  spaceBro.emit('pongy', data)
 })

@@ -14,11 +14,11 @@ spaceBro.connect('tigre.local', 8888, {
   verbose: true
 });
 
-spaceBro.on('pong', function (data) {
+spaceBro.on('pongy', function (data) {
   console.log('get ponged:', data.count);
 });
 
 var count = 0;
 setInterval(function () {
-  spaceBro.emit('ping', { count: ++count });
+  spaceBro.emit('pingy', { count: ++count });
 }, 1000);

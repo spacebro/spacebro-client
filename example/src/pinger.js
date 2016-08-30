@@ -8,9 +8,9 @@ spaceBro.connect('spacebro.space', 3333, {
   verbose: true
 })
 
-spaceBro.on('pong', function (data) {
+spaceBro.on('pongy', function (data) {
   console.log('get ponged:', data.count)
 })
 
 var count = 0
-setInterval(function () { spaceBro.emit('ping', { count: ++count }) }, 1000)
+setInterval(function () { spaceBro.emit('pingy', { count: ++count }) }, 1000)
