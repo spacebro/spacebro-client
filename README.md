@@ -20,8 +20,8 @@ Then, it's time to write some code:
 const spacebroClient = require('spacebro-client')
 
 spacebroClient.connect('localhost', 8888, {
-  computer: 'foo',
-  channel: 'bar'
+  clientName: 'foo',
+  channelName: 'bar'
 })
 
 spacebroClient.on('pong', function () { console.log('pong') })

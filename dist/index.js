@@ -59,7 +59,7 @@ function connect(address, port, options) {
   if ((typeof address === 'undefined' ? 'undefined' : (0, _typeof3.default)(address)) === 'object') {
     return connect(false, false, address);
   }
-  //config = _.merge(config, options)
+  // config = _.merge(config, options)
 
   (0, _assign2.default)(_config2.default, options);
 
@@ -135,19 +135,49 @@ function socketioInit(err, address, port) {
     });
     sockets.push(socket);
     connected = true;
-    events['connect'] = new _signals2.default();
-    events['connect'].dispatch({
-      server: {
-        address: address,
-        port: port
-      }
-    });
+    if (events['connect']) {
+      events['connect'].dispatch({
+        server: {
+          address: address,
+          port: port
+        }
+      });
+    }
   }).on('error', function (err) {
     (0, _log2.default)('Socket', url, 'error:', err);
+    if (events['error']) {
+      events['error'].dispatch({
+        server: {
+          address: address,
+          port: port
+        },
+        err: err
+      });
+    }
   }).on('disconnect', function () {
     (0, _log2.default)('Socket', url, 'down');
     sockets.splice(sockets.indexOf(socket), 1);
     connected = false;
+    if (events['disconnect']) {
+      events['disconnect'].dispatch({
+        server: {
+          address: address,
+          port: port
+        }
+      });
+    }
+  }).on('reconnect', function () {
+    (0, _log2.default)('Socket', url, 'reconnected');
+    sockets.push(socket);
+    connected = true;
+    if (events['reconnect']) {
+      events['reconnect'].dispatch({
+        server: {
+          address: address,
+          port: port
+        }
+      });
+    }
   }).on('*', function (_ref) {
     var data = _ref.data;
     var _data = data;
@@ -213,7 +243,7 @@ function sendTo(eventName) {
   var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
   if (!connected) {
-    return (0, _log2.default)('You\'re not connected.');
+    return (0, _log2.default)("You're not connected.");
   } else {
     data._to = to;
     data._from = _config2.default.clientName;
@@ -299,8 +329,7 @@ module.exports = {
   on: on, once: once,
   clear: clear, remove: remove, dispose: dispose,
   // Old Stuff
-  registerToMaster: registerToMaster, iKnowMyMaster: iKnowMyMaster
-};
+  registerToMaster: registerToMaster, iKnowMyMaster: iKnowMyMaster };
 
 function filterHooks(eventName, hooks) {
   return hooks.filter(function (hook) {

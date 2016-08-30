@@ -21,8 +21,8 @@ function connect (address, port, options) {
   if (typeof address === 'object') {
     return connect(false, false, address)
   }
-  //config = _.merge(config, options)
-  
+  // config = _.merge(config, options)
+
   Object.assign(config, options)
 
   log('Connect with the config:', config)
@@ -53,26 +53,57 @@ function socketioInit (err, address, port) {
       })
       sockets.push(socket)
       connected = true
-      events['connect'] = new Signal()
-      events['connect'].dispatch({
-        server:{
-          address: address,
-          port: port
-        }
-      })
+      if (events['connect']) {
+        events['connect'].dispatch({
+          server: {
+            address: address,
+            port: port
+          }
+        })
+      }
     })
     .on('error', function (err) {
       log('Socket', url, 'error:', err)
+      if (events['error']) {
+        events['error'].dispatch({
+          server: {
+            address: address,
+            port: port
+          }, 
+          err: err
+        })
+      }
     })
     .on('disconnect', function () {
       log('Socket', url, 'down')
       sockets.splice(sockets.indexOf(socket), 1)
       connected = false
+      if (events['disconnect']) {
+        events['disconnect'].dispatch({
+          server: {
+            address: address,
+            port: port
+          }
+        })
+      }
+    })
+    .on('reconnect', function(){
+      log('Socket', url, 'reconnected')
+      sockets.push(socket)
+      connected = true
+      if (events['reconnect']) {
+        events['reconnect'].dispatch({
+          server: {
+            address: address,
+            port: port
+          }
+        })
+      }
     })
     .on('*', function ({ data }) {
       let [eventName, args] = data
       log('Socket', url, 'received', eventName, 'with data:', args)
-      if (!config.sendBack && args._from === config.clientName){
+      if (!config.sendBack && args._from === config.clientName) {
         log('Received my own event, not dispatching')
         return
       } else {
@@ -81,10 +112,10 @@ function socketioInit (err, address, port) {
           if (unpacked === false) return
           data = unpacked || data
         }
-        if (_.has(events, eventName)){
+        if (_.has(events, eventName)) {
           events[eventName].dispatch(args)
         }
-      } 
+      }
     })
 }
 
@@ -96,14 +127,14 @@ function emit (eventName, data) {
   sendTo(eventName, null, data)
 }
 
-function sendTo (eventName, to = null, data = {}) {
+function sendTo (eventName, to = null , data = {}) {
   if (!connected) {
-    return log('You\'re not connected.')
+    return log("You're not connected.")
   } else {
     data._to = to
     data._from = config.clientName
-    for (let pack of filterHooks(eventName, packers)){
-      data = pack({ eventName, data }) || data
+    for (let pack of filterHooks(eventName, packers)) {
+      data = pack({ eventName, data}) || data
     }
     for (let socket of sockets) {
       socket.emit(eventName, data)
@@ -138,9 +169,8 @@ module.exports = {
   emit, sendTo,
   on, once,
   clear, remove, dispose,
-  // Old Stuff
-  registerToMaster, iKnowMyMaster
-}
+// Old Stuff
+registerToMaster, iKnowMyMaster}
 
 function filterHooks (eventName, hooks) {
   return hooks
@@ -149,8 +179,8 @@ function filterHooks (eventName, hooks) {
     .map(hook => hook.handler)
 }
 
-function addHook (hooks, eventName = '*', handler, priority = 0) {
-  hooks.push({ eventName, handler, priority })
+function addHook (hooks, eventName = '*' , handler, priority = 0) {
+  hooks.push({ eventName, handler, priority})
 }
 
 function touch (eventName) {
@@ -171,5 +201,5 @@ function iKnowMyMaster (address, port) {
 
 function registerToMaster (actionList, clientName, zeroconfName) {
   console.warn('this are deprecated function and will be removed')
-  return connect(staticAddress, staticPort, { clientName, zeroconfName })
+  return connect(staticAddress, staticPort, { clientName, zeroconfName})
 }
