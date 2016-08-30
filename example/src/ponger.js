@@ -1,6 +1,6 @@
 const spaceBro = require('../')
 
-spaceBro.connect({
+spaceBro.connect('panda.local', {
   clientName: 'ponger',
   channelName: 'pegasus',
   packers: [{ handler: args => console.log(args.eventName, '=>', args.data) }],

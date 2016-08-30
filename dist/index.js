@@ -58,14 +58,22 @@ var patch = (0, _socketioWildcard2.default)(_socket2.default.Manager);
 function connect(address, port, options) {
   if ((typeof address === 'undefined' ? 'undefined' : (0, _typeof3.default)(address)) === 'object') {
     return connect(false, false, address);
+  } else if ((typeof port === 'undefined' ? 'undefined' : (0, _typeof3.default)(port)) === 'object') {
+    return connect(address, false, port);
   }
-  // config = _.merge(config, options)
-
   (0, _assign2.default)(_config2.default, options);
 
   (0, _log2.default)('Connect with the config:', _config2.default);
   if (address && port) {
     socketioInit(null, address, port);
+  } else if (address) {
+    _mdns2.default.connectToService(_config2.default.zeroconfName, function (err, addressReceived, port) {
+      if (address === addressReceived) {
+        socketioInit(err, address, port);
+      } else {
+        (0, _log2.default)('Not connecting, the address does not match the one defined ' + address);
+      }
+    });
   } else {
     _mdns2.default.connectToService(_config2.default.zeroconfName, function (err, address, port) {
       socketioInit(err, address, port);

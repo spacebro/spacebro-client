@@ -2,7 +2,7 @@
 
 var spaceBro = require('../');
 
-spaceBro.connect({
+spaceBro.connect('panda.local', {
   clientName: 'ponger',
   channelName: 'pegasus',
   packers: [{ handler: function handler(args) {
@@ -14,9 +14,9 @@ spaceBro.connect({
   verbose: true
 });
 
-/*spaceBro.on('connect', data => {
-  console.log('*** connected:', data)
-})*/
+spaceBro.on('connect', function (data) {
+  console.log('*** connected:', data);
+});
 
 spaceBro.on('ping', function () {
   console.log('get pinged');

@@ -20,23 +20,33 @@ const patch = patchMaker(io.Manager)
 function connect (address, port, options) {
   if (typeof address === 'object') {
     return connect(false, false, address)
+  } else if (typeof port === 'object'){
+    return connect(address, false, port)
   }
-  // config = _.merge(config, options)
-
   Object.assign(config, options)
 
   log('Connect with the config:', config)
   if (address && port) {
     socketioInit(null, address, port)
+  } else if (address) {
+    mdns.connectToService(config.zeroconfName, function (err, addressReceived, port) {
+      if (address === addressReceived){
+        socketioInit(err, address, port)
+      } else {
+        log(`Not connecting, the address does not match the one defined ${address}`)
+      }
+    })
   } else {
     mdns.connectToService(config.zeroconfName, function (err, address, port) {
       socketioInit(err, address, port)
     })
   }
-  for (let packer of config.packers)
+  for (let packer of config.packers){
     addPacker(packer.handler, packer.priority, packer.eventName)
-  for (let unpacker of config.unpackers)
+  }
+  for (let unpacker of config.unpackers){
     addUnpacker(unpacker.handler, unpacker.priority, unpacker.eventName)
+  }
 }
 
 function socketioInit (err, address, port) {
