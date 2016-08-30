@@ -135,6 +135,10 @@ function addUnpacker (handler, priority, eventName) { addHook(unpackers, eventNa
 
 // Emission
 function emit (eventName, data) {
+  if(typeof data !== 'object'){
+    data = {data: data}
+    data.altered = true
+  }
   sendTo(eventName, null, data)
 }
 

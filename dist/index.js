@@ -244,6 +244,10 @@ function addUnpacker(handler, priority, eventName) {
 
 // Emission
 function emit(eventName, data) {
+  if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) !== 'object') {
+    data = { data: data };
+    data.altered = true;
+  }
   sendTo(eventName, null, data);
 }
 
