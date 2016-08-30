@@ -8,6 +8,10 @@ var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _typeof2 = require('babel-runtime/helpers/typeof');
 
 var _typeof3 = _interopRequireDefault(_typeof2);
@@ -32,18 +36,15 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _config = require('./config');
 
-// Default config
-var config = {
-  zeroconfName: 'spacebro',
-  channelName: null,
-  clientName: null,
-  packers: [],
-  unpackers: [],
-  sendBack: true,
-  verbose: true
-};
+var _config2 = _interopRequireDefault(_config);
+
+var _log = require('./log');
+
+var _log2 = _interopRequireDefault(_log);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Variables
 var connected = false;
@@ -58,12 +59,15 @@ function connect(address, port, options) {
   if ((typeof address === 'undefined' ? 'undefined' : (0, _typeof3.default)(address)) === 'object') {
     return connect(false, false, address);
   }
-  config = _lodash2.default.merge(config, options);
-  log('Connect with the config:', config);
+  //config = _.merge(config, options)
+
+  (0, _assign2.default)(_config2.default, options);
+
+  (0, _log2.default)('Connect with the config:', _config2.default);
   if (address && port) {
     socketioInit(null, address, port);
   } else {
-    _mdns2.default.connectToService(config.zeroconfName, function (err, address, port) {
+    _mdns2.default.connectToService(_config2.default.zeroconfName, function (err, address, port) {
       socketioInit(err, address, port);
     });
   }
@@ -72,7 +76,7 @@ function connect(address, port, options) {
   var _iteratorError = undefined;
 
   try {
-    for (var _iterator = (0, _getIterator3.default)(config.packers), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+    for (var _iterator = (0, _getIterator3.default)(_config2.default.packers), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var packer = _step.value;
 
       addPacker(packer.handler, packer.priority, packer.eventName);
@@ -97,7 +101,7 @@ function connect(address, port, options) {
   var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator2 = (0, _getIterator3.default)(config.unpackers), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for (var _iterator2 = (0, _getIterator3.default)(_config2.default.unpackers), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       var unpacker = _step2.value;
 
       addUnpacker(unpacker.handler, unpacker.priority, unpacker.eventName);
@@ -119,22 +123,29 @@ function connect(address, port, options) {
 }
 
 function socketioInit(err, address, port) {
-  if (err) log(err.stack);
+  if (err) (0, _log2.default)(err.stack);
   var url = 'http://' + address + ':' + port;
   var socket = (0, _socket2.default)(url);
   patch(socket);
   socket.on('connect', function () {
-    log('Socket', url, 'connected');
+    (0, _log2.default)('Socket', url, 'connected');
     socket.emit('register', {
-      clientName: config.clientName,
-      channelName: config.channelName
+      clientName: _config2.default.clientName,
+      channelName: _config2.default.channelName
     });
     sockets.push(socket);
     connected = true;
+    events['connect'] = new _signals2.default();
+    events['connect'].dispatch({
+      server: {
+        address: address,
+        port: port
+      }
+    });
   }).on('error', function (err) {
-    log('Socket', url, 'error:', err);
+    (0, _log2.default)('Socket', url, 'error:', err);
   }).on('disconnect', function () {
-    log('Socket', url, 'down');
+    (0, _log2.default)('Socket', url, 'down');
     sockets.splice(sockets.indexOf(socket), 1);
     connected = false;
   }).on('*', function (_ref) {
@@ -146,36 +157,42 @@ function socketioInit(err, address, port) {
     var eventName = _data2[0];
     var args = _data2[1];
 
-    log('Socket', url, 'received', eventName, 'with data:', args);
-    if (config.sendBack && args._from === config.clientName) return;
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    (0, _log2.default)('Socket', url, 'received', eventName, 'with data:', args);
+    if (!_config2.default.sendBack && args._from === _config2.default.clientName) {
+      (0, _log2.default)('Received my own event, not dispatching');
+      return;
+    } else {
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-    try {
-      for (var _iterator3 = (0, _getIterator3.default)(filterHooks(eventName, unpackers)), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var unpack = _step3.value;
-
-        var unpacked = unpack({ eventName: eventName, data: args });
-        if (unpacked === false) return;
-        data = unpacked || data;
-      }
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
       try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-          _iterator3.return();
+        for (var _iterator3 = (0, _getIterator3.default)(filterHooks(eventName, unpackers)), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var unpack = _step3.value;
+
+          var unpacked = unpack({ eventName: eventName, data: args });
+          if (unpacked === false) return;
+          data = unpacked || data;
         }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
       } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
         }
+      }
+
+      if (_lodash2.default.has(events, eventName)) {
+        events[eventName].dispatch(args);
       }
     }
-
-    if (_lodash2.default.has(events, eventName)) events[eventName].dispatch(args);
   });
 }
 
@@ -195,54 +212,58 @@ function sendTo(eventName) {
   var to = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
   var data = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-  if (!connected) return log('You\'re not connected.');
-  data._to = to;
-  data._from = config.clientName;
-  var _iteratorNormalCompletion4 = true;
-  var _didIteratorError4 = false;
-  var _iteratorError4 = undefined;
+  if (!connected) {
+    return (0, _log2.default)('You\'re not connected.');
+  } else {
+    data._to = to;
+    data._from = _config2.default.clientName;
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
 
-  try {
-    for (var _iterator4 = (0, _getIterator3.default)(filterHooks(eventName, packers)), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-      var pack = _step4.value;
-
-      data = pack({ eventName: eventName, data: data }) || data;
-    }
-  } catch (err) {
-    _didIteratorError4 = true;
-    _iteratorError4 = err;
-  } finally {
     try {
-      if (!_iteratorNormalCompletion4 && _iterator4.return) {
-        _iterator4.return();
+      for (var _iterator4 = (0, _getIterator3.default)(filterHooks(eventName, packers)), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        var pack = _step4.value;
+
+        data = pack({ eventName: eventName, data: data }) || data;
       }
+    } catch (err) {
+      _didIteratorError4 = true;
+      _iteratorError4 = err;
     } finally {
-      if (_didIteratorError4) {
-        throw _iteratorError4;
+      try {
+        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+          _iterator4.return();
+        }
+      } finally {
+        if (_didIteratorError4) {
+          throw _iteratorError4;
+        }
       }
     }
-  }
 
-  var _iteratorNormalCompletion5 = true;
-  var _didIteratorError5 = false;
-  var _iteratorError5 = undefined;
+    var _iteratorNormalCompletion5 = true;
+    var _didIteratorError5 = false;
+    var _iteratorError5 = undefined;
 
-  try {
-    for (var _iterator5 = (0, _getIterator3.default)(sockets), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-      var socket = _step5.value;
-      socket.emit(eventName, data);
-    }
-  } catch (err) {
-    _didIteratorError5 = true;
-    _iteratorError5 = err;
-  } finally {
     try {
-      if (!_iteratorNormalCompletion5 && _iterator5.return) {
-        _iterator5.return();
+      for (var _iterator5 = (0, _getIterator3.default)(sockets), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        var socket = _step5.value;
+
+        socket.emit(eventName, data);
       }
+    } catch (err) {
+      _didIteratorError5 = true;
+      _iteratorError5 = err;
     } finally {
-      if (_didIteratorError5) {
-        throw _iteratorError5;
+      try {
+        if (!_iteratorNormalCompletion5 && _iterator5.return) {
+          _iterator5.return();
+        }
+      } finally {
+        if (_didIteratorError5) {
+          throw _iteratorError5;
+        }
       }
     }
   }
@@ -281,19 +302,6 @@ module.exports = {
   registerToMaster: registerToMaster, iKnowMyMaster: iKnowMyMaster
 };
 
-// = Helpers ===
-function log() {
-  var _console;
-
-  if (!config.verbose) return;
-
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
-  }
-
-  (_console = console).log.apply(_console, ['SpaceBro -'].concat(args));
-}
-
 function filterHooks(eventName, hooks) {
   return hooks.filter(function (hook) {
     return [eventName, '*'].indexOf(hook.eventName) !== -1;
@@ -324,10 +332,12 @@ var staticAddress = void 0,
     staticPort = void 0;
 
 function iKnowMyMaster(address, port) {
+  console.warn('this are deprecated function and will be removed');
   staticAddress = address;
   staticPort = port;
 }
 
 function registerToMaster(actionList, clientName, zeroconfName) {
+  console.warn('this are deprecated function and will be removed');
   return connect(staticAddress, staticPort, { clientName: clientName, zeroconfName: zeroconfName });
 }

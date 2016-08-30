@@ -4,7 +4,7 @@ var spaceBro = require('../');
 
 spaceBro.connect({
   clientName: 'ponger',
-  channelName: 'starPort',
+  channelName: 'starport',
   packers: [{ handler: function handler(args) {
       return console.log(args.eventName, '=>', args.data);
     } }],
@@ -12,6 +12,10 @@ spaceBro.connect({
       return console.log(args.eventName, '<=', args.data);
     } }],
   verbose: false
+});
+
+spaceBro.on('connect', function (data) {
+  console.log(data);
 });
 
 spaceBro.on('ping', function () {

@@ -7,7 +7,7 @@
     "test": "echo \"Warning: no test specified\" && exit 0",
     "example": "node ./example/ponger.js",
     "example-no-mdns": "node ./example/pinger.js",
-    "transform-example": "node ./node_modules/babel-cli/bin/babel ./example/src --out-dir ./example",
+    "build-example": "node ./node_modules/babel-cli/bin/babel ./example/src --out-dir ./example",
     "build": "babel src -d build",
     "start": "gulp"
   },

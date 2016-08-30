@@ -19,7 +19,7 @@ mdns_register.connectToService = function (servicename, callback) {
     resolverSequence: sequence
   })
   browser.on('serviceUp', function (service) {
-    console.log('service up: ', service.type.name)
+    console.log('service up: ', service.type.name, service.host.substr(0, service.host.length - 1), service.port)
     if (_.findWhere(services, {
       name: service.type.name,
       host: service.host.substr(0, service.host.length - 1),

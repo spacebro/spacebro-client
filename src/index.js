@@ -5,17 +5,8 @@ import io from 'socket.io-client'
 import Signal from 'signals'
 import mdns from './mdns'
 import _ from 'lodash'
-
-// Default config
-let config = {
-  zeroconfName: 'spacebro',
-  channelName: null,
-  clientName: null,
-  packers: [],
-  unpackers: [],
-  sendBack: true,
-  verbose: true
-}
+import config from './config'
+import log from './log'
 
 // Variables
 let connected = false
@@ -30,7 +21,10 @@ function connect (address, port, options) {
   if (typeof address === 'object') {
     return connect(false, false, address)
   }
-  config = _.merge(config, options)
+  //config = _.merge(config, options)
+  
+  Object.assign(config, options)
+
   log('Connect with the config:', config)
   if (address && port) {
     socketioInit(null, address, port)
@@ -59,6 +53,13 @@ function socketioInit (err, address, port) {
       })
       sockets.push(socket)
       connected = true
+      events['connect'] = new Signal()
+      events['connect'].dispatch({
+        server:{
+          address: address,
+          port: port
+        }
+      })
     })
     .on('error', function (err) {
       log('Socket', url, 'error:', err)
@@ -71,13 +72,19 @@ function socketioInit (err, address, port) {
     .on('*', function ({ data }) {
       let [eventName, args] = data
       log('Socket', url, 'received', eventName, 'with data:', args)
-      if (config.sendBack && args._from === config.clientName) return
-      for (let unpack of filterHooks(eventName, unpackers)) {
-        let unpacked = unpack({ eventName, data: args })
-        if (unpacked === false) return
-        data = unpacked || data
-      }
-      if (_.has(events, eventName)) events[eventName].dispatch(args)
+      if (!config.sendBack && args._from === config.clientName){
+        log('Received my own event, not dispatching')
+        return
+      } else {
+        for (let unpack of filterHooks(eventName, unpackers)) {
+          let unpacked = unpack({ eventName, data: args })
+          if (unpacked === false) return
+          data = unpacked || data
+        }
+        if (_.has(events, eventName)){
+          events[eventName].dispatch(args)
+        }
+      } 
     })
 }
 
@@ -90,12 +97,18 @@ function emit (eventName, data) {
 }
 
 function sendTo (eventName, to = null, data = {}) {
-  if (!connected) return log('You\'re not connected.')
-  data._to = to
-  data._from = config.clientName
-  for (let pack of filterHooks(eventName, packers))
-    data = pack({ eventName, data }) || data
-  for (let socket of sockets) socket.emit(eventName, data)
+  if (!connected) {
+    return log('You\'re not connected.')
+  } else {
+    data._to = to
+    data._from = config.clientName
+    for (let pack of filterHooks(eventName, packers)){
+      data = pack({ eventName, data }) || data
+    }
+    for (let socket of sockets) {
+      socket.emit(eventName, data)
+    }
+  }
 }
 
 // Reception
@@ -129,12 +142,6 @@ module.exports = {
   registerToMaster, iKnowMyMaster
 }
 
-// = Helpers ===
-function log (...args) {
-  if (!config.verbose) return
-  console.log('SpaceBro -', ...args)
-}
-
 function filterHooks (eventName, hooks) {
   return hooks
     .filter(hook => [eventName, '*'].indexOf(hook.eventName) !== -1)
@@ -157,10 +164,12 @@ function touch (eventName) {
 let staticAddress, staticPort
 
 function iKnowMyMaster (address, port) {
+  console.warn('this are deprecated function and will be removed')
   staticAddress = address
   staticPort = port
 }
 
 function registerToMaster (actionList, clientName, zeroconfName) {
+  console.warn('this are deprecated function and will be removed')
   return connect(staticAddress, staticPort, { clientName, zeroconfName })
 }
