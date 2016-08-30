@@ -141,6 +141,7 @@ function socketioInit(err, address, port) {
       clientName: _config2.default.clientName,
       channelName: _config2.default.channelName
     });
+    socket.broName = address;
     sockets.push(socket);
     connected = true;
     if (events['connect']) {

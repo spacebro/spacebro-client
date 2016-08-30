@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Warning: no test specified\" && exit 0",
-    "example": "node ./example/ponger.js",
-    "example-no-mdns": "node ./example/pinger.js",
-    "build-example": "node ./node_modules/babel-cli/bin/babel ./example/src --out-dir ./example",
+    "example-pong": "node ./example/ponger.js",
+    "example-ping": "node ./example/pinger.js",
+    "build-example": "node ./node_modules/babel-cli/bin/babel ./example/src --out-dir ./example; echo \"now, run: \n npm run example-ping \n and \n npm run example-pong\n\"",
     "build": "babel src -d build",
     "start": "gulp"
   },

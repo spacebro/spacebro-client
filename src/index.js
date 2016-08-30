@@ -61,6 +61,7 @@ function socketioInit (err, address, port) {
         clientName: config.clientName,
         channelName: config.channelName
       })
+      socket.broName = address
       sockets.push(socket)
       connected = true
       if (events['connect']) {

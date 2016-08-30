@@ -1,6 +1,6 @@
 const spaceBro = require('../')
 
-spaceBro.connect('panda.local', {
+spaceBro.connect('spacebro.space', 3333, {
   clientName: 'ponger',
   channelName: 'pegasus',
   packers: [{ handler: args => console.log(args.eventName, '=>', args.data) }],
@@ -9,10 +9,10 @@ spaceBro.connect('panda.local', {
 })
 
 spaceBro.on('connect', data => {
-  console.log('*** connected:', data)
+  console.log('connected:', data)
 })
 
-spaceBro.on('ping', function () {
-  console.log('get pinged')
-  spaceBro.emit('pong')
+spaceBro.on('ping', function (data) {
+  console.log('get pinged:', data.count)
+  spaceBro.emit('pong', data)
 })

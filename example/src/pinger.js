@@ -1,15 +1,15 @@
 const spaceBro = require('../')
 
-spaceBro.connect('localhost', 8888, {
+spaceBro.connect('spacebro.space', 3333, {
   clientName: 'pinger',
-  channelName: 'starPort',
+  channelName: 'pegasus',
   packers: [{ handler: args => console.log(args.eventName, '=>', args.data) }],
   unpackers: [{ handler: args => console.log(args.eventName, '<=', args.data) }],
-  verbose: false
+  verbose: true
 })
 
-spaceBro.on('pong', function () {
-  console.log('get ponged')
+spaceBro.on('pong', function (data) {
+  console.log('get ponged:', data.count)
 })
 
 var count = 0
