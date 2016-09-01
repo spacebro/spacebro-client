@@ -2,7 +2,7 @@
 
 var spaceBro = require('../');
 
-spaceBro.connect('tigre.local', 8888, {
+spaceBro.connect('spacebro.space', 3333, {
   clientName: 'pinger',
   channelName: 'pegasus',
   packers: [{ handler: function handler(args) {
