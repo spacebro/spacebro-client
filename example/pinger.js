@@ -2,20 +2,18 @@
 
 var spaceBro = require('../');
 var moment = require('moment');
-var now = null;
+var startTime = null;
 var nowmore = null;
 
 spaceBro.connect('spacebro.space', 3333, {
   clientName: 'pinger',
   channelName: 'pegasus',
-  packers: [{ handler: function handler(args) {
-      return console.log(args.eventName, '=>', args.data);
-    } }],
+  //packers: [{ handler: args => console.log(args.eventName, '=>', args.data) }],
   unpackers: [{ handler: function handler(args) {
-      nowmore = moment();
-      var ms = nowmore.diff(now);
-      console.log('Delay: ' + ms);
-      console.log(args.eventName, '<=', args.data);
+      //nowmore = moment()
+      var latency = Date.now() - startTime;
+      console.log('Delay: ' + latency);
+      //console.log(args.eventName, '<=', args.data) 
     }
   }],
   verbose: true
@@ -27,8 +25,8 @@ spaceBro.on('pongy', function (data) {
 
 var count = 0;
 setInterval(function () {
-  now = moment();
+  startTime = Date.now();
   spaceBro.emit('pingy', {
     count: ++count
   });
-}, 1000);
+}, 2000);

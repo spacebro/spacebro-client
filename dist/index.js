@@ -132,7 +132,15 @@ function connect(address, port, options) {
 
 function socketioInit(err, address, port) {
   if (err) (0, _log2.default)(err.stack);
-  var url = 'http://' + address + ':' + port;
+  var urlParser = require('url');
+  var parsedURI = urlParser.parse(address);
+  var protocol = 'ws://';
+  console.log(parsedURI.protocol);
+  if (parsedURI.protocol !== null) {
+    protocol = '';
+  }
+  var url = '' + protocol + address + ':' + port;
+  console.log(url);
   var socket = (0, _socket2.default)(url);
   patch(socket);
   socket.on('connect', function () {

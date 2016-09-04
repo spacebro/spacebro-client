@@ -51,7 +51,15 @@ function connect (address, port, options) {
 
 function socketioInit (err, address, port) {
   if (err) log(err.stack)
-  let url = 'http://' + address + ':' + port
+  const urlParser = require('url')
+  let parsedURI = urlParser.parse(address)
+  let protocol = 'ws://'
+  console.log(parsedURI.protocol)
+  if(parsedURI.protocol !== null){
+    protocol = ''
+  }
+  let url = `${protocol}${address}:${port}`
+  console.log(url)
   let socket = io(url)
   patch(socket)
   socket
