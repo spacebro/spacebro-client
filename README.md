@@ -74,4 +74,6 @@ Currently latest correspond to Sirrah which belongs to the Andromeda galaxy.
 
 You can modify the source in `src/index.js`. Run `npm run build` to transpile and test.
 
+You can also run `npm run build-example`
+
 Enjoy !
