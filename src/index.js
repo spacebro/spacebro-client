@@ -3,7 +3,9 @@
 import patchMaker from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
-import mdns from './mdns'
+if (window === undefined) {
+  import mdns from './mdns'
+}
 import _ from 'lodash'
 import config from './config'
 import log from './log'
@@ -28,7 +30,7 @@ function connect (address, port, options) {
   log('Connect with the config:', config)
   if (address && port) {
     socketioInit(null, address, port)
-  } else if (address) {
+  } else if (window === undefined && address) {
     mdns.connectToService(config.zeroconfName, function (err, addressReceived, port) {
       if (address === addressReceived){
         socketioInit(err, address, port)
@@ -36,10 +38,12 @@ function connect (address, port, options) {
         log(`Not connecting, the address does not match the one defined ${address}`)
       }
     })
-  } else {
+  } else if (window === undefined) {
     mdns.connectToService(config.zeroconfName, function (err, address, port) {
       socketioInit(err, address, port)
     })
+  } else {
+    log('No host to connect to. Please provide a host address and port', config)
   }
   for (let packer of config.packers){
     addPacker(packer.handler, packer.priority, packer.eventName)
