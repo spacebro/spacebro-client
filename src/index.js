@@ -4,7 +4,7 @@ import patchMaker from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
 if (window === undefined) {
-  import mdns from './mdns'
+  var mdns = require('./mdns')
 }
 import _ from 'lodash'
 import config from './config'
