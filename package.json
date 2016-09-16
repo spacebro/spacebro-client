@@ -36,7 +36,7 @@
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "lodash": "3.10.1",
-    "mdns": "2.2.11",
+    "mdns": "2.3.3",
     "signals": "^1.0.0",
     "socket.io-client": "^1.3.7",
     "socketio-wildcard": "^0.3.0"
