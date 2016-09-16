@@ -3,9 +3,6 @@
 import patchMaker from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
-if (window === undefined) {
-  var mdns = require('./mdns')
-}
 import _ from 'lodash'
 import config from './config'
 import log from './log'
@@ -17,6 +14,10 @@ let packers = []
 let events = {}
 let sockets = []
 const patch = patchMaker(io.Manager)
+
+if (window === undefined) {
+  var mdns = require('./mdns')
+}
 
 // Initialization
 function connect (address, port, options) {

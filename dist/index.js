@@ -28,10 +28,6 @@ var _signals = require('signals');
 
 var _signals2 = _interopRequireDefault(_signals);
 
-var _mdns = require('./mdns');
-
-var _mdns2 = _interopRequireDefault(_mdns);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -54,6 +50,10 @@ var events = {};
 var sockets = [];
 var patch = (0, _socketioWildcard2.default)(_socket2.default.Manager);
 
+if (window === undefined) {
+  var mdns = require('./mdns');
+}
+
 // Initialization
 function connect(address, port, options) {
   if ((typeof address === 'undefined' ? 'undefined' : (0, _typeof3.default)(address)) === 'object') {
@@ -66,18 +66,20 @@ function connect(address, port, options) {
   (0, _log2.default)('Connect with the config:', _config2.default);
   if (address && port) {
     socketioInit(null, address, port);
-  } else if (address) {
-    _mdns2.default.connectToService(_config2.default.zeroconfName, function (err, addressReceived, port) {
+  } else if (window === undefined && address) {
+    mdns.connectToService(_config2.default.zeroconfName, function (err, addressReceived, port) {
       if (address === addressReceived) {
         socketioInit(err, address, port);
       } else {
         (0, _log2.default)('Not connecting, the address does not match the one defined ' + address);
       }
     });
-  } else {
-    _mdns2.default.connectToService(_config2.default.zeroconfName, function (err, address, port) {
+  } else if (window === undefined) {
+    mdns.connectToService(_config2.default.zeroconfName, function (err, address, port) {
       socketioInit(err, address, port);
     });
+  } else {
+    (0, _log2.default)('No host to connect to. Please provide a host address and port', _config2.default);
   }
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
