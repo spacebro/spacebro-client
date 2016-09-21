@@ -63,6 +63,24 @@ Before you send an event to the server, all packers associated with that event a
 ### Unpackers
 Unpackers are call when you receive a message from the server, before any handler is called. You can use to alter data (same as packers) but also to check the message as if an unpacker returns *false*, the message will not be sent to the handlers, it will also break the unpacking chain.
 
+### The browser
+Now you can use spacebro in the browser. You will need few depencies that you will find bellow:
+
+```
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://wzrd.in/standalone/socketio-wildcard@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
+```
+
+After adding this depencies you can include the spacebro lib like any script and use the `window.spacebroClient` object.
+
+### Testing the browser
+Install a standalone server: 
+
+`npm install budo -g`
+
+We recommand to use budo as a standalone server. Just copy the dist folder inside the example folder and run `budo --live --port=9966` 
 
 ## Contribute
 

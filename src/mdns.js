@@ -4,9 +4,9 @@ var mdns = require('mdns')
 var _ = require('lodash')
 
 var EventEmitter = require('events').EventEmitter
-var mdns_register = new EventEmitter()
+var mdnsRegister = new EventEmitter()
 
-mdns_register.connectToService = function (servicename, callback) {
+mdnsRegister.connectToService = function (servicename, callback) {
   var services = []
   var sequence = [
     mdns.rst.DNSServiceResolve(),
@@ -36,7 +36,7 @@ mdns_register.connectToService = function (servicename, callback) {
   })
   browser.on('serviceDown', function (service) {
     console.log('service down: ', service.type.name)
-    mdns_register.emit('service-down', service.type.name)
+    mdnsRegister.emit('service-down', service.type.name)
   })
   browser.on('error', function (Exp) {
     console.log(Exp)
@@ -44,4 +44,4 @@ mdns_register.connectToService = function (servicename, callback) {
   browser.start()
 }
 
-module.exports = mdns_register
+module.exports = mdnsRegister

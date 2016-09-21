@@ -1,7 +1,5 @@
 const spaceBro = require('../')
-const moment = require('moment');
 var startTime = null
-var nowmore = null
 
 spaceBro.connect('spacebro.space', 3333, {
   clientName: 'pinger',

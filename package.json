@@ -2,37 +2,29 @@
   "name": "spacebro-client",
   "version": "0.1.8",
   "description": "Allow to automagically 🌟 connect to a Spacebro server",
-  "main": "dist/index.js",
+  "main": "dist/spacebro-client.js",
   "scripts": {
-    "test": "echo \"Warning: no test specified\" && exit 0",
+    "test": "gulp",
+    "lint": "gulp lint",
+    "test-browser": "gulp test-browser",
+    "build-example": "./node_modules/.bin/babel ./example/src --out-dir ./example; echo \"now, run: \n npm run example-ping \n and \n npm run example-pong\n\"",
     "example-pong": "node ./example/ponger.js",
     "example-ping": "node ./example/pinger.js",
-    "build-example": "./node_modules/.bin/babel ./example/src --out-dir ./example; echo \"now, run: \n npm run example-ping \n and \n npm run example-pong\n\"",
-    "build": "./node_modules/.bin/babel src -d build",
-    "start": "gulp"
+    "watch": "gulp watch",
+    "build": "gulp build",
+    "coverage": "gulp coverage"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/soixantecircuits/spacebro-client.git"
+    "url": "https://github.com/soixantecircuits/spacebro-client.git"
   },
-  "keywords": [
-    "socket.io",
-    "mdns",
-    "spacebro",
-    "realtime",
-    "zeroconf"
-  ],
+  "keywords": [],
   "author": "Soixante circuits",
-  "contributors": [
-    "emmanuelgeoffray <manuel@soixantecircuits.fr> (https://github.com/emmanuelgeoffray)",
-    "gabrielstuff <gabriel@soixantecircuits.fr> (http://twitter.com/gabrielstuff)",
-    "hugohil <hugo@soixantecircuits.fr> (https://github.com/hugohil)"
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/soixantecircuits/spacebro-client/issues"
   },
-  "homepage": "https://github.com/soixantecircuits/spacebro-client#readme",
+  "homepage": "https://github.com/soixantecircuits/spacebro-client",
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "lodash": "3.10.1",
@@ -42,22 +34,39 @@
     "socketio-wildcard": "^0.3.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.3.17",
-    "babel-plugin-transform-runtime": "^6.12.0",
-    "babel-preset-es2015": "^6.3.13",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "moment": "^2.14.1"
+    "babel-cli": "^6.14.0",
+    "babel-core": "6.14.0",
+    "babel-loader": "6.2.5",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-polyfill": "6.13.0",
+    "babel-preset-latest": "6.14.0",
+    "babel-register": "6.14.0",
+    "chai": "3.5.0",
+    "del": "2.2.2",
+    "glob": "7.0.6",
+    "gulp": "3.9.1",
+    "gulp-eslint": "3.0.1",
+    "gulp-filter": "4.0.0",
+    "gulp-istanbul": "1.1.1",
+    "gulp-livereload": "3.8.1",
+    "gulp-load-plugins": "1.2.4",
+    "gulp-mocha": "3.0.1",
+    "gulp-plumber": "1.1.0",
+    "gulp-rename": "1.2.2",
+    "gulp-sourcemaps": "1.6.0",
+    "gulp-uglify": "2.0.0",
+    "isparta": "4.0.0",
+    "json-loader": "0.5.4",
+    "mocha": "3.0.2",
+    "moment": "^2.15.0",
+    "sinon": "1.17.5",
+    "sinon-chai": "2.8.0",
+    "webpack": "1.13.2",
+    "webpack-stream": "3.2.0"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "babel": {
-    "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "transform-runtime"
-    ]
+  "babelBoilerplateOptions": {
+    "entryFileName": "spacebro-client.js",
+    "mainVarName": "spacebroClient"
   }
 }
