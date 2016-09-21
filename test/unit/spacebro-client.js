@@ -9,6 +9,7 @@ describe('spacebroClient', () => {
 
     it('should have been run once', () => {
       expect(spacebroClient.connect).to.have.been.calledOnce
+      process.exit(0)
     })
 
     /*it('should have always returned hello', () => {
