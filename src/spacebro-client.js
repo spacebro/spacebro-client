@@ -15,7 +15,7 @@ let events = {}
 let sockets = []
 const patch = patchMaker(io.Manager)
 
-if (window === undefined) {
+if (typeof window === 'undefined') {
   var mdns = require('./mdns')
 }
 
@@ -29,9 +29,10 @@ function connect (address, port, options) {
   Object.assign(config, options)
 
   log('Connect with the config:', config)
+
   if (address && port) {
     socketioInit(null, address, port)
-  } else if (window === undefined && address) {
+  } else if (typeof window === 'undefined' && address) {
     mdns.connectToService(config.zeroconfName, function (err, addressReceived, port) {
       if (address === addressReceived){
         socketioInit(err, address, port)
@@ -39,7 +40,7 @@ function connect (address, port, options) {
         log(`Not connecting, the address does not match the one defined ${address}`)
       }
     })
-  } else if (window === undefined) {
+  } else if (typeof window === 'undefined') {
     mdns.connectToService(config.zeroconfName, function (err, address, port) {
       socketioInit(err, address, port)
     })
@@ -192,14 +193,6 @@ function dispose () {
   for (let eventName in events) touch(eventName).dispose()
 }
 
-module.exports = {
-  connect, addPacker, addUnpacker,
-  emit, sendTo,
-  on, once,
-  clear, remove, dispose,
-// Old Stuff
-registerToMaster, iKnowMyMaster}
-
 function filterHooks (eventName, hooks) {
   return hooks
     .filter(hook => [eventName, '*'].indexOf(hook.eventName) !== -1)
@@ -231,3 +224,20 @@ function registerToMaster (actionList, clientName, zeroconfName) {
   console.warn('this are deprecated function and will be removed')
   return connect(staticAddress, staticPort, { clientName, zeroconfName})
 }
+
+const spacebroClient = {
+  connect: connect,
+  addPacker: addPacker,
+  addUnpacker: addUnpacker,
+  emit: emit,
+  sendTo: sendTo,
+  on: on,
+  once: once,
+  clear: clear,
+  remove: remove,
+  dispose: dispose,
+  registerToMaster: registerToMaster,
+  iKnowMyMaster: iKnowMyMaster
+}
+
+export default spacebroClient
