@@ -16,15 +16,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/soixantecircuits/spacebro-client.git"
+    "url": "https://github.com/spacebro/spacebro-client.git"
   },
   "keywords": [],
   "author": "Soixante circuits",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/soixantecircuits/spacebro-client/issues"
+    "url": "https://github.com/spacebro/spacebro-client/issues"
   },
-  "homepage": "https://github.com/soixantecircuits/spacebro-client",
+  "homepage": "https://github.com/spacebro/spacebro-client",
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "lodash": "3.10.1",
