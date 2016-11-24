@@ -38,8 +38,8 @@ spacebroClient.emit('ping')
 
 ### spacebroClient.connect(address, port, options) or spacebroClient.connect(options)
 
-Allows you to connect to a spaceBro server. Options is hash table of settings that will be used to define your client.
-If you choose not to pass an address (*string*) and a port (*integer*), spaceBro will try to connect to a server using MDNS.
+Allows you to connect to a spacebro server. Options is hash table of settings that will be used to define your client.
+If you choose not to pass an address (*string*) and a port (*integer*), spacebro will try to connect to a server using MDNS.
 
 Available options are :
 - **clientName** (strongly advised) : The name of your app that will be used to receive and send events.
@@ -47,7 +47,7 @@ Available options are :
 - **zeroconfName** (optional) : String that is the name of the service that will be looked for if no address is given.
 - **packers** (optional) : Array of packers (see Hooks below), defined as hash object with the properties *handler* (required), *eventName* (all if null), *priority* (0 if null).
 - **unpackers** (optional) : Array of unpackers (see Hooks below), defined as hash object with the properties *handler* (required), *eventName* (all if null), *priority* (0 if null).
-- **verbose** (optional) : Boolean, if set to false, spaceBro will not show any log.
+- **verbose** (optional) : Boolean, if set to false, spacebro will not show any log.
 - **sendBack** (optional) : Boolean, if set to false, you will not receive the event you broadcast.
 
 ### spacebroClient.emit(eventName, data)

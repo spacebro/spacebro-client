@@ -1,14 +1,14 @@
-To showcase how spaceBro client works, we are going to make a simple ping - pong between two apps (named `pinger` and `ponger`).
+To showcase how spacebro client works, we are going to make a simple ping - pong between two apps (named `pinger` and `ponger`).
 
 ### Prerequisites
 
-First you need to have a spaceBro server running. If you do not have spacebro installed on your computer, you should follow the Installation guide [here](https://github.com/soixantecircuits/spacebro). Install spaceBro globally and launch a server by tapping the following lines in your terminal:
+First you need to have a spacebro server running. If you do not have spacebro installed on your computer, you should follow the Installation guide [here](https://github.com/soixantecircuits/spacebro). Install spacebro globally and launch a server by tapping the following lines in your terminal:
 ``` bash
 npm i -g --save spacebro
 spacebro
 ```
 
-There is now a spaceBro server running on your machine at the address `localhost:8888`.
+There is now a spacebro server running on your machine at the address `localhost:8888`.
 
 Now create two directories `pinger` and `ponger` and add `spacebro-client` as a dependency by running `npm install --save spacebro-client` in both `pinger/` and `ponger/`.
 
@@ -28,11 +28,11 @@ spacebroClient.iKnowMyMaster('localhost', 8888)
 spacebroClient.registerToMaster(actionList, 'pinger')
 ```
 
-And that's it ! If you start the application by running `node pinger.js` you should see it appear on you spaceBro server.
+And that's it ! If you start the application by running `node pinger.js` you should see it appear on you spacebro server.
 
 ### Action List
 
-With spaceBro, you will listen to events and perform actions in return. Currenty our application is not doing anything nor listening to any events. We need to set actionList.
+With spacebro, you will listen to events and perform actions in return. Currenty our application is not doing anything nor listening to any events. We need to set actionList.
 
 The actions list is an array of objects with two properties:
 - **name** (string) - the event's name

@@ -28,9 +28,9 @@ The `actionList` is an array of objects with two properties:
 - **name** (string) - the event's name
 - **trigger** (function) - the function that will be called when you receive the event. it can reveice one argument that will be passed with the event.
 
-The `clientName` is the name that will be used by spaceBro to identify your application. It's a string.
+The `clientName` is the name that will be used by spacebro to identify your application. It's a string.
 
-The `zeroconfName` is the name of the spaceBro service you want to connect to.
+The `zeroconfName` is the name of the spacebro service you want to connect to.
 
 #### emit (event [, data])
-The `emit` function is used to broadcast an event to all applications connected to the spaceBro server (including the very app that sending the event). It can have a second argument that will be passed to the trigger functions. For more that one argument, use an array or and object.
+The `emit` function is used to broadcast an event to all applications connected to the spacebro server (including the very app that sending the event). It can have a second argument that will be passed to the trigger functions. For more that one argument, use an array or and object.
