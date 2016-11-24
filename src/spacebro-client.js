@@ -17,7 +17,7 @@ let config = {
   unpackers: [],
   sendBack: true,
   verbose: true,
-  multiServers: false
+  multiService: false
 }
 
 let connected = false
@@ -39,7 +39,8 @@ function connect (_address, _port, _options) {
     initSocketIO(address, port, null)
   } else if (isNode && address) {
     autoconnect.setup(config.zeroconfName, (addressFound, port) => {
-      if (address === addressFound) {
+      if (address === addressFound && (!connected || config.multiService)) {
+        connected = true
         initSocketIO(address, port)
       } else {
         logger.log(`address found does not match ${address}`)
@@ -47,12 +48,12 @@ function connect (_address, _port, _options) {
     })
   } else if (isNode) {
     autoconnect.setup(config.zeroconfName, (addressFound, found) => {
-      if (!connected || config.multiServers) {
+      if (!connected || config.multiService) {
         connected = true
         initSocketIO(addressFound, port)
         logger.log(`connecting to the first ${config.zeroconfName} name we found on ${addressFound}:${port}`)
       } else {
-        logger.warn(`multiServers is disabled, skipping ${config.zeroconfName} on ${addressFound}:${port}`)
+        logger.warn(`multiService is disabled, skipping ${config.zeroconfName} on ${addressFound}:${port}`)
       }
     })
   } else {
