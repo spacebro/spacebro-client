@@ -23,6 +23,7 @@
   "dependencies": {
     "lodash": "3.10.1",
     "mdns": "2.3.3",
+    "signals": "^1.0.0",
     "socket.io-client": "1.4.5",
     "socketio-wildcard": "^0.3.0"
   },

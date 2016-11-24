@@ -2,6 +2,7 @@
 
 import wildcard from 'socketio-wildcard'
 import io from 'socket.io-client'
+import Signal from 'signals'
 
 const isNode = (typeof process !== 'undefined')
 const patch = wildcard(io.Manager)
@@ -20,6 +21,7 @@ let connected = false
 let unpackers = []
 let packers = []
 let sockets = []
+let events = {}
 
 const mdns = isNode ? require('./mdns') : null
 
@@ -92,14 +94,15 @@ function initSocketIO (address, port, err) {
     })
     .on('*', function ({ data }) {
       let [eventName, args] = data
-      log(`socket received ${eventName} with data:`, args)
       if (!config.sendBack && args._from === config.clientName) {
         return
-      } else {
+      } else if (events[eventName]) {
+        log(`socket received ${eventName} with data:`, args)
         for (let unpack of filterHooks(eventName, unpackers)) {
           const unpacked = unpack({ eventName, data: args })
-          data = unpacked || data
+          args = unpacked || args
         }
+        events[eventName].dispatch(args)
       }
     })
 }
@@ -132,15 +135,17 @@ function sendTo (eventName, to = null , data = {}) {
 
 // Reception
 function on (eventName, handler, handlerContext, priority) {
-  //
+  events[eventName] = new Signal()
+  events[eventName].add(handler, handlerContext, priority)
 }
 
 function once (eventName, handler, handlerContext, priority) {
-  //
+  events[eventName] = new Signal()
+  events[eventName].addOnce(handler, handlerContext, priority)
 }
 
 function off (eventName) {
-  //
+  delete events[eventName]
 }
 
 function filterHooks (eventName, hooks) {
@@ -158,4 +163,4 @@ function log (...args) {
   console.log('spacebro-client -', ...args)
 }
 
-export default { connect, addPacker, addUnpacker, emit, sendTo, on, once }
+export default { connect, addPacker, addUnpacker, emit, sendTo, on, once, off }
