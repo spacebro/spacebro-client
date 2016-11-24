@@ -36,6 +36,7 @@ function connect (_address, _port, _options) {
   logger.log('connected with config:\n', config)
 
   if (address && port) {
+    connected = true
     initSocketIO(address, port, null)
   } else if (isNode && address) {
     autoconnect.setup(config.zeroconfName, (addressFound, port) => {
@@ -88,6 +89,7 @@ function initSocketIO (address, port) {
     })
     .on('error', function (err) {
       logger.warn('error', err)
+      connected = false
     })
     .on('disconnect', function () {
       logger.log('socket down')
