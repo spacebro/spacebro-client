@@ -1,52 +1,55 @@
 'use strict'
 
-import patchMaker from 'socketio-wildcard'
+import wildcard from 'socketio-wildcard'
 import io from 'socket.io-client'
-import Signal from 'signals'
-import _ from 'lodash'
-import config from './config'
-import log from './log'
 
-// Variables
+const isNode = (typeof process !== 'undefined')
+const patch = wildcard(io.Manager)
+
+let config = {
+  zeroconfName: 'spacebro',
+  channelName: null,
+  clientName: null,
+  packers: [],
+  unpackers: [],
+  sendBack: true,
+  verbose: true
+}
+
 let connected = false
 let unpackers = []
 let packers = []
-let events = {}
 let sockets = []
-const patch = patchMaker(io.Manager)
 
-if (typeof window === 'undefined') {
-  var mdns = require('./mdns')
-}
+const mdns = isNode ? require('./mdns') : null
 
-// Initialization
-function connect (address, port, options) {
-  if (typeof address === 'object') {
-    return connect(false, false, address)
-  } else if (typeof port === 'object'){
-    return connect(address, false, port)
-  }
+function connect (_address, _port, _options) {
+  let address = (typeof _address === 'object') ? null : _address
+  let port = (typeof _address === 'object') ? null : (typeof _port === 'object') ? null : _port
+  let options = (typeof _address === 'object') ? _address : (typeof _port === 'object') ? _port : _options
+
   Object.assign(config, options)
-
-  log('Connect with the config:', config)
+  log('connected with config:\n', config)
 
   if (address && port) {
-    socketioInit(null, address, port)
-  } else if (typeof window === 'undefined' && address) {
-    mdns.connectToService(config.zeroconfName, function (err, addressReceived, port) {
+    initSocketIO(address, port, null)
+  // the following else if/else will be rewritten
+  } else if (isNode && address) {
+    mdns.connectToService(config.zeroconfName, (err, addressReceived, port) => {
       if (address === addressReceived){
-        socketioInit(err, address, port)
+        initSocketIO(address, port, err)
       } else {
-        log(`Not connecting, the address does not match the one defined ${address}`)
+        log(`address provides does not match ${address} mdns found`)
       }
     })
-  } else if (typeof window === 'undefined') {
-    mdns.connectToService(config.zeroconfName, function (err, address, port) {
-      socketioInit(err, address, port)
+  } else if (isNode) {
+    mdns.connectToService(config.zeroconfName, (err, addressReceived, port) => {
+      initSocketIO(addressReceived, port, err)
     })
   } else {
-    log('No host to connect to. Please provide a host address and port', config)
+    log('please provide a server address and port')
   }
+
   for (let packer of config.packers){
     addPacker(packer.handler, packer.priority, packer.eventName)
   }
@@ -55,90 +58,47 @@ function connect (address, port, options) {
   }
 }
 
-function socketioInit (err, address, port) {
-  if (err) log(err.stack)
-  const urlParser = require('url')
-  let parsedURI = urlParser.parse(address)
-  let protocol = 'ws://'
-  console.log(parsedURI.protocol)
-  if(parsedURI.protocol !== null){
-    protocol = ''
-  }
+function initSocketIO (address, port, err) {
+  err && log(err.stack)
+
+  let parsedURI = require('url').parse(address)
+  let protocol = parsedURI.protocol ? '' : 'ws://'
   let url = `${protocol}${address}:${port}`
-  console.log(url)
+
   let socket = io(url)
+
   patch(socket)
+
   socket
     .on('connect', function () {
-      log('Socket', url, 'connected')
+      log('socket connected')
+      sockets.push(socket)
       socket.emit('register', {
         clientName: config.clientName,
         channelName: config.channelName
       })
-      socket.broName = address
-      sockets.push(socket)
       connected = true
-      if (events['connect']) {
-        events['connect'].dispatch({
-          server: {
-            address: address,
-            port: port
-          }
-        })
-      }
     })
     .on('error', function (err) {
-      log('Socket', url, 'error:', err)
-      if (events['error']) {
-        events['error'].dispatch({
-          server: {
-            address: address,
-            port: port
-          }, 
-          err: err
-        })
-      }
+      log('error', err)
     })
     .on('disconnect', function () {
-      log('Socket', url, 'down')
-      sockets.splice(sockets.indexOf(socket), 1)
+      log('socket down')
       connected = false
-      if (events['disconnect']) {
-        events['disconnect'].dispatch({
-          server: {
-            address: address,
-            port: port
-          }
-        })
-      }
     })
     .on('reconnect', function(){
-      log('Socket', url, 'reconnected')
-      sockets.push(socket)
+      log('socket reconnected')
       connected = true
-      if (events['reconnect']) {
-        events['reconnect'].dispatch({
-          server: {
-            address: address,
-            port: port
-          }
-        })
-      }
     })
     .on('*', function ({ data }) {
       let [eventName, args] = data
-      log('Socket', url, 'received', eventName, 'with data:', args)
+      log(`socket received ${eventName} with data:`, args)
       if (!config.sendBack && args._from === config.clientName) {
-        log('Received my own event, not dispatching')
         return
       } else {
         for (let unpack of filterHooks(eventName, unpackers)) {
-          let unpacked = unpack({ eventName, data: args })
-          if (unpacked === false) return
+          const unpacked = unpack({ eventName, data: args })
           data = unpacked || data
-        }
-        if (_.has(events, eventName)) {
-          events[eventName].dispatch(args)
         }
       }
     })
@@ -147,8 +107,7 @@ function socketioInit (err, address, port) {
 function addPacker (handler, priority, eventName) { addHook(packers, eventName, handler, priority) }
 function addUnpacker (handler, priority, eventName) { addHook(unpackers, eventName, handler, priority) }
 
-// Emission
-function emit (eventName, data) {
+function emit (eventName, data = {}) {
   if(typeof data !== 'object'){
     data = {data: data}
     data.altered = true
@@ -157,9 +116,7 @@ function emit (eventName, data) {
 }
 
 function sendTo (eventName, to = null , data = {}) {
-  if (!connected) {
-    return log("You're not connected.")
-  } else {
+  if (connected) {
     data._to = to
     data._from = config.clientName
     for (let pack of filterHooks(eventName, packers)) {
@@ -168,29 +125,22 @@ function sendTo (eventName, to = null , data = {}) {
     for (let socket of sockets) {
       socket.emit(eventName, data)
     }
+  } else {
+    log('not connected')
   }
 }
 
 // Reception
 function on (eventName, handler, handlerContext, priority) {
-  return touch(eventName).add(handler, handlerContext, priority)
+  //
 }
 
 function once (eventName, handler, handlerContext, priority) {
-  return touch(eventName).addOnce(handler, handlerContext, priority)
+  //
 }
 
-// Disposal
-function clear (eventName) {
-  return touch(eventName).removeAll()
-}
-
-function remove (eventName, listener, context) {
-  return touch(eventName).remove(listener, context)
-}
-
-function dispose () {
-  for (let eventName in events) touch(eventName).dispose()
+function off (eventName) {
+  //
 }
 
 function filterHooks (eventName, hooks) {
@@ -204,40 +154,8 @@ function addHook (hooks, eventName = '*' , handler, priority = 0) {
   hooks.push({ eventName, handler, priority})
 }
 
-function touch (eventName) {
-  if (!_.has(events, eventName)) {
-    events[eventName] = new Signal()
-  }
-  return events[eventName]
+function log (...args) {
+  console.log('spacebro-client -', ...args)
 }
 
-// Old Stuff
-let staticAddress, staticPort
-
-function iKnowMyMaster (address, port) {
-  console.warn('this are deprecated function and will be removed')
-  staticAddress = address
-  staticPort = port
-}
-
-function registerToMaster (actionList, clientName, zeroconfName) {
-  console.warn('this are deprecated function and will be removed')
-  return connect(staticAddress, staticPort, { clientName, zeroconfName})
-}
-
-const spacebroClient = {
-  connect: connect,
-  addPacker: addPacker,
-  addUnpacker: addUnpacker,
-  emit: emit,
-  sendTo: sendTo,
-  on: on,
-  once: once,
-  clear: clear,
-  remove: remove,
-  dispose: dispose,
-  registerToMaster: registerToMaster,
-  iKnowMyMaster: iKnowMyMaster
-}
-
-export default spacebroClient
+export default { connect, addPacker, addUnpacker, emit, sendTo, on, once }
