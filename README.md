@@ -29,6 +29,7 @@ spacebroClient.emit('ping')
 ```
 
 ## Basic API
+
 ### spacebroClient.connect(address, port, options) or spacebroClient.connect(options)
 
 Allows you to connect to a spaceBro server. Options is hash table of settings that will be used to define your client.
@@ -63,7 +64,7 @@ Before you send an event to the server, all packers associated with that event a
 ### Unpackers
 Unpackers are call when you receive a message from the server, before any handler is called. You can use to alter data (same as packers) but also to check the message as if an unpacker returns *false*, the message will not be sent to the handlers, it will also break the unpacking chain.
 
-### The browser
+## The browser
 Now you can use spacebro in the browser. You will need few depencies that you will find bellow:
 
 ```
@@ -76,11 +77,23 @@ Now you can use spacebro in the browser. You will need few depencies that you wi
 After adding this depencies you can include the spacebro lib like any script and use the `window.spacebroClient` object.
 
 ### Testing the browser
-Install a standalone server: 
+Install a standalone server:
 
 `npm install budo -g`
 
-We recommand to use budo as a standalone server. Just copy the dist folder inside the example folder and run `budo --live --port=9966` 
+We recommand to use budo as a standalone server. Just copy the dist folder inside the example folder and run `budo --live --port=9966`
+
+## Troubleshooting
+
+### ping pong
+
+Do not try to test with `'ping'` and `'pong'` events, those are reserved.
+
+```
+- `ping`. Fired when a ping packet is written out to the server.
+- `pong`. Fired when a pong is received from the server.
+```
+*[source](https://github.com/socketio/socket.io-client/issues/1022)*
 
 ## Contribute
 
@@ -88,7 +101,7 @@ Please follow [standard style](https://github.com/feross/standard) conventions.
 
 We will name our version by the name of the stars that you can find here: https://en.wikipedia.org/wiki/List_of_stars_in_Andromeda
 
-Currently latest correspond to Sirrah which belongs to the Andromeda galaxy. 
+Currently latest correspond to Sirrah which belongs to the Andromeda galaxy.
 
 You can modify the source in `src/index.js`. Run `npm run build` to transpile and test.
 
