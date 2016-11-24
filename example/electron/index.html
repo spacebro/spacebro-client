@@ -1,0 +1,13 @@
+<!-- index.html -->
+<html>
+<body>
+  <script>
+    require('electron').ipcRenderer.on('hello', (event, message) => {
+      console.log(message)
+    })
+    require('electron').ipcRenderer.on('world', (event, message) => {
+      console.log(message)
+    })
+  </script>
+</body>
+</html>

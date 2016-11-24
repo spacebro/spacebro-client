@@ -116,13 +116,81 @@ You can use spacebro-client in the browser. You will need few depencies that you
 
 After adding this depencies you can include the spacebro-client lib like any script and use the `window.spacebroClient` object.
 
+## ⚛ Electron
+
+Spacebro-client also works in [Electron](http://electron.atom.io). You just `require('spacebro-client')` in your electron [main process](https://github.com/electron/electron/blob/master/docs/tutorial/quick-start.md#differences-between-main-process-and-renderer-process) and use [ipc](https://github.com/electron/electron/blob/master/docs/api/ipc-main.md) or [web-contents](https://github.com/electron/electron/blob/master/docs/api/web-contents.md) to forward events to the [renderer process](https://github.com/electron/electron/blob/master/docs/tutorial/quick-start.md#differences-between-main-process-and-renderer-process).
+
+From the `example/electron/` folder of this repository:
+
+```js
+// In the main process.
+const { app, BrowserWindow } = require('electron')
+const spacebroClient = require('../../dist/spacebro-client')
+
+let win = null
+
+spacebroClient.connect('127.0.0.1', 8888, {
+  clientName: 'foo',
+  channelName: 'bar'
+})
+
+app.on('ready', () => {
+  win = new BrowserWindow({ width: 800, height: 600 })
+  win.loadURL(`file://${__dirname}/index.html`)
+
+  const events = ['hello', 'world']
+  events.forEach((event) => {
+    spacebroClient.on(event, (data) => {
+      win.webContents.send(event, data)
+    })
+  })
+
+  win.webContents.on('did-finish-load', () => {
+    setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
+    setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 5000)
+  })
+})
+
+```
+
+```html
+<!-- index.html -->
+<html>
+<body>
+  <script>
+    require('electron').ipcRenderer.on('hello', (event, message) => {
+      console.log(message)
+    })
+    require('electron').ipcRenderer.on('world', (event, message) => {
+      console.log(message)
+    })
+  </script>
+</body>
+</html>
+```
+
 ## Examples
 
 You can find many real life examples in the `example/` folder of this repository.
 
-## Troubleshooting
+## 🕳 Troubleshooting
 
-### 🏓 ping pong
+### Using native module in Electron 🌀
+
+If you want to use `spacebro-client` into an Electron app, you'll have to use [electron-rebuild](https://github.com/electron/electron-rebuild) in order to rebuild MDNS according to version of Node.js that is embedded with Electron.
+
+Basically, you do:
+
+```bash
+$ npm i --save-dev electron-rebuild # or yarn
+$ ./node_modules/.bin/electron-rebuild # call the executable every time you add a new native module
+```
+
+You can also add `"rebuild": "./node_modules/.bin/electron-rebuild"` to your `package.json` and run `npm run rebuild` for convenience.
+
+*[source](https://github.com/electron/electron/blob/master/docs/tutorial/using-native-node-modules.md)*
+
+### ping pong 🏓
 
 Do not try to test with `'ping'` and `'pong'` events, those are reserved.
 
