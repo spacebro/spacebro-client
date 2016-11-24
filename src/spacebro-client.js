@@ -61,6 +61,11 @@ function connect (_address, _port, _options) {
     logger.warn('please provide a server address and port')
   }
 
+  autoconnect.emitter.addOnce((service) => {
+    console.log('spacebro-client.js - service down')
+    connected = false
+  })
+
   for (let packer of config.packers){
     addPacker(packer.handler, packer.priority, packer.eventName)
   }

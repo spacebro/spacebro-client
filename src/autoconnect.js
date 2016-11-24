@@ -32,8 +32,10 @@ const setup = function setup (servicename, callback) {
     }
   })
   browser.on('serviceDown', (_service) => {
+    delete services.find((service) => service === _service)
+    console.log('autoconnect.js - ', services)
     logger.log('service down: ', _service.type.name)
-    emitter.dispatch('service-down', _service.type.name)
+    emitter.dispatch(_service.type.name)
   })
   browser.on('error', (err) => {
     logger.warn(err)
