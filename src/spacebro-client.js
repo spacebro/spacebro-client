@@ -3,8 +3,10 @@
 import wildcard from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
+import logger from './logger'
+import autoconnect from './autoconnect'
+import isNode from './is-node'
 
-const isNode = (typeof process !== 'undefined')
 const patch = wildcard(io.Manager)
 
 let config = {
@@ -14,7 +16,8 @@ let config = {
   packers: [],
   unpackers: [],
   sendBack: true,
-  verbose: true
+  verbose: true,
+  multiServers: false
 }
 
 let connected = false
@@ -23,33 +26,37 @@ let packers = []
 let sockets = []
 let events = {}
 
-const mdns = isNode ? require('./mdns') : null
-
 function connect (_address, _port, _options) {
   let address = (typeof _address === 'object') ? null : _address
   let port = (typeof _address === 'object') ? null : (typeof _port === 'object') ? null : _port
   let options = (typeof _address === 'object') ? _address : (typeof _port === 'object') ? _port : _options
 
   Object.assign(config, options)
-  log('connected with config:\n', config)
+  logger.setup(config.verbose)
+  logger.log('connected with config:\n', config)
 
   if (address && port) {
     initSocketIO(address, port, null)
-  // the following else if/else will be rewritten
   } else if (isNode && address) {
-    mdns.connectToService(config.zeroconfName, (err, addressReceived, port) => {
-      if (address === addressReceived){
-        initSocketIO(address, port, err)
+    autoconnect.setup(config.zeroconfName, (addressFound, port) => {
+      if (address === addressFound) {
+        initSocketIO(address, port)
       } else {
-        log(`address provides does not match ${address} mdns found`)
+        logger.log(`address found does not match ${address}`)
       }
     })
   } else if (isNode) {
-    mdns.connectToService(config.zeroconfName, (err, addressReceived, port) => {
-      initSocketIO(addressReceived, port, err)
+    autoconnect.setup(config.zeroconfName, (addressFound, found) => {
+      if (!connected || config.multiServers) {
+        connected = true
+        initSocketIO(addressFound, port)
+        logger.log(`connecting to the first ${config.zeroconfName} name we found on ${addressFound}:${port}`)
+      } else {
+        logger.warn(`multiServers is disabled, skipping ${config.zeroconfName} on ${addressFound}:${port}`)
+      }
     })
   } else {
-    log('please provide a server address and port')
+    logger.warn('please provide a server address and port')
   }
 
   for (let packer of config.packers){
@@ -60,9 +67,7 @@ function connect (_address, _port, _options) {
   }
 }
 
-function initSocketIO (address, port, err) {
-  err && log(err.stack)
-
+function initSocketIO (address, port) {
   let parsedURI = require('url').parse(address)
   let protocol = parsedURI.protocol ? '' : 'ws://'
   let url = `${protocol}${address}:${port}`
@@ -73,23 +78,22 @@ function initSocketIO (address, port, err) {
 
   socket
     .on('connect', function () {
-      log('socket connected')
+      logger.log('socket connected')
       sockets.push(socket)
       socket.emit('register', {
         clientName: config.clientName,
         channelName: config.channelName
       })
-      connected = true
     })
     .on('error', function (err) {
-      log('error', err)
+      logger.warn('error', err)
     })
     .on('disconnect', function () {
-      log('socket down')
+      logger.log('socket down')
       connected = false
     })
     .on('reconnect', function(){
-      log('socket reconnected')
+      logger.log('socket reconnected')
       connected = true
     })
     .on('*', function ({ data }) {
@@ -97,7 +101,7 @@ function initSocketIO (address, port, err) {
       if (!config.sendBack && args._from === config.clientName) {
         return
       } else if (events[eventName]) {
-        log(`socket received ${eventName} with data:`, args)
+        logger.log(`socket received ${eventName} with data:`, args)
         for (let unpack of filterHooks(eventName, unpackers)) {
           const unpacked = unpack({ eventName, data: args })
           args = unpacked || args
@@ -129,7 +133,7 @@ function sendTo (eventName, to = null , data = {}) {
       socket.emit(eventName, data)
     }
   } else {
-    log('not connected')
+    logger.warn('not connected')
   }
 }
 
@@ -157,10 +161,6 @@ function filterHooks (eventName, hooks) {
 
 function addHook (hooks, eventName = '*' , handler, priority = 0) {
   hooks.push({ eventName, handler, priority})
-}
-
-function log (...args) {
-  console.log('spacebro-client -', ...args)
 }
 
 export default { connect, addPacker, addUnpacker, emit, sendTo, on, once, off }
