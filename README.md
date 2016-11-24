@@ -1,25 +1,31 @@
 # Spacebro client
 Allow to automagically 🌟 connect to a Spacebro server
 
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![node](https://img.shields.io/badge/node-0.10.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![node](https://img.shields.io/badge/node-0.10.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-6.x.x-brightgreen.svg)](https://nodejs.org/en/)
 
 ## Installation
+
 ```bash
 npm i -S spacebro-client
+# or
+yarn add spacebro-client
 ```
 
 ## Basic Usage
 
-First, you need to start a [spaceBro server](https://github.com/soixantecircuits/spacebro). To run one locally, run the following line in your terminal (mind that you need to have spaceBro installed):
+First, you need to start a [spacebro server](https://github.com/soixantecircuits/spacebro).
+
 ```bash
-spacebro
+$ npm i -g spacebro # or yarn global add spacebro
+$ spacebro
 ```
 
 Then, it's time to write some code:
+
 ```js
 const spacebroClient = require('spacebro-client')
 
-spacebroClient.connect('localhost', 8888, {
+spacebroClient.connect('127.0.0.1', 8888, {
   clientName: 'foo',
   channelName: 'bar'
 })
