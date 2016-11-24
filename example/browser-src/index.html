@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>spacebro client browser example</title>
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+    p:nth-child(even) {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Events logs:</h1>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+  <script src="https://wzrd.in/standalone/socketio-wildcard@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
+  <script src="../../dist/spacebro-client.js"></script>
+  <script type="text/javascript">
+    'use strict'
+
+    var spaceBro = window.spacebroClient
+    var startTime = null
+    var nowmore = null
+
+    spaceBro.connect('127.0.0.1', 8888, {
+      clientName: 'pinger',
+      channelName: 'pegasus',
+      unpackers: [{ handler: function handler(args) {
+          var latency = Date.now() - startTime
+          log(`Delay: ${latency}`)
+        }
+      }],
+      verbose: true
+    })
+
+    spaceBro.on('pingy', function (data) {
+      log(`got pingied: ${data.count}`)
+    })
+
+    function log (data) {
+      console.log(data)
+      document.body.innerHTML += `<p>${data}</p>`
+    }
+
+    var count = 0
+    setInterval(function () {
+      startTime = Date.now()
+      spaceBro.emit('pingy', {
+        count: ++count
+      })
+    }, 2000)
+  </script>
+</body>
+</html>
