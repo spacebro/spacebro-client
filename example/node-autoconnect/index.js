@@ -2,12 +2,9 @@
 
 const spacebroClient = require('../../')
 
-// spacebroClient.connect('127.0.0.1', 8888, {
-// spacebroClient.connect('undefined.local', {
 spacebroClient.connect({
   clientName: 'foo',
-  channelName: 'bar',
-  // verbose: false
+  channelName: 'bar'
 })
 
 spacebroClient.on('hello', (data) => {
