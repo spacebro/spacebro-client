@@ -114,7 +114,13 @@ You can use spacebro-client in the browser. You will need few depencies that you
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 ```
 
-After adding this depencies you can include the spacebro-client lib like any script and use the `window.spacebroClient` object.
+After adding this depencies you can include the spacebro-client lib like any script:
+
+```
+<script src="./dist/spacebro-client.js"></script>
+```
+
+Then use the `window.spacebroClient` object.
 
 ## ⚛ Electron
 
