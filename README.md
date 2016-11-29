@@ -181,6 +181,10 @@ You can find many real life examples in the `example/` folder of this repository
 
 ## 🕳 Troubleshooting
 
+### `new-member` event 👋
+
+Spacebro server automatically broadcasts a `new-memeber` event when a client connects. Thus, you should avoid using that event name. See the `example/simple-node` script more details.
+
 ### Using native module in Electron 🌀
 
 If you want to use `spacebro-client` into an Electron app, you'll have to use [electron-rebuild](https://github.com/electron/electron-rebuild) in order to rebuild MDNS according to version of Node.js that is embedded with Electron.
