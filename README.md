@@ -200,6 +200,12 @@ You can also add `"rebuild": "./node_modules/.bin/electron-rebuild"` to your `pa
 
 *[source](https://github.com/electron/electron/blob/master/docs/tutorial/using-native-node-modules.md)*
 
+### yarn and node-gyp issue (i.e not compiling) 🤖
+
+You need to use at least yarn version `0.17.8`. You might have similar problem with outdated versions of npm, simply try to update it.
+
+*[source](https://github.com/yarnpkg/yarn/issues/1979)*
+
 ### ping pong 🏓
 
 Do not try to test with `'ping'` and `'pong'` events, those are reserved.
