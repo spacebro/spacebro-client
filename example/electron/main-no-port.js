@@ -3,7 +3,7 @@ const spacebroClient = require('../../dist/spacebro-client')
 
 let win = null
 
-spacebroClient.connect('loup.local', 8888, {
+spacebroClient.connect('loup.local', {
   clientName: 'foo',
   channelName: 'bar'
 })
