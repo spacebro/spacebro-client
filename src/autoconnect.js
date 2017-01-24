@@ -8,7 +8,7 @@ const emitter = new Signal()
 const services = []
 const sequence = [
   mdns.rst.DNSServiceResolve(),
-  ('DNSServiceGetAddrInfo' in mdns.dns_sd) ? mdns.rst.DNSServiceGetAddrInfo() : mdns.rst.getaddrinfo({ families: [4] }),
+  ('DNSServiceGetAddrInfo' in mdns.dns_sd) ? mdns.rst.DNSServiceGetAddrInfo() : mdns.rst.getaddrinfo({ families: [0] }),
   mdns.rst.makeAddressesUnique()
 ]
 
