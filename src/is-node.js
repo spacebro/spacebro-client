@@ -1,3 +1,3 @@
 'use strict'
 
-export default (typeof process !== 'undefined')
+export default ((typeof process !== 'undefined') && (typeof process.versions.node !== 'undefined'))

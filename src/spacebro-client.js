@@ -4,7 +4,6 @@ import wildcard from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
 import logger from './logger'
-import autoconnect from './autoconnect'
 import isNode from './is-node'
 
 const patch = wildcard(io.Manager)
@@ -25,6 +24,8 @@ let unpackers = []
 let packers = []
 let sockets = []
 let events = {}
+
+const autoconnect = isNode ? require('./autoconnect') : null
 
 function connect (_address, _port, _options) {
   let address = (typeof _address === 'object') ? null : _address
