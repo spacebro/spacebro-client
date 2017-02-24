@@ -25,7 +25,6 @@ let packers = []
 let sockets = []
 let events = {}
 
-console.log
 const autoconnect = isNode ? require('./autoconnect') : null
 
 function connect (_address, _port, _options) {
