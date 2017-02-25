@@ -51,21 +51,12 @@ const option = {
 // this call does not use any auto-discovery (mdns/avahi/bonjour) feature
 // and just perfoms a basic connection request on `ws://${address}:${port}`.
 spacebroClient.connect('127.0.0.1', 8888, options)
-
-// use auto-discovery to find if the specified MDNS address (xyz.local)
-// broadcasts a 'spacebro' service, retrieve its port, and connect to it.
-spacebroClient.connect('specific-computer.local', options)
-
-// simply connects to the first 'spacebro' service that is broadcasted on the network.
-// (see the `multiService` option if you want to connect to multiple services)
-spacebroClient.connect(options)
 ```
 
 #### options:
 
 | name | default | required | description |
 |:---|:---|:---|:---|
-| **zeroconfName** | `'spacebro'` | *optional* | Name of the MDNS service that will be looked for if no address and port are given. |
 | **clientName** | `null` | *recommended* | Your client name. Can be useful to perform targeted events and for monitoring. |
 | **channelName** | `null` | *recommended* | The channel your app will communicate in. This is especially usefull if you have multiple apps using the same server. |
 | **packers** | `[]` | *optional* | Array of packers, see hooks below. |

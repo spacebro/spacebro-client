@@ -4,12 +4,10 @@ import wildcard from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
 import logger from './logger'
-import isNode from './is-node'
 
 const patch = wildcard(io.Manager)
 
 let config = {
-  zeroconfName: 'spacebro',
   channelName: null,
   clientName: null,
   packers: [],
@@ -25,8 +23,6 @@ let packers = []
 let sockets = []
 let events = {}
 
-const autoconnect = isNode ? require('./autoconnect') : null
-
 function connect (_address, _port, _options) {
   let address = (typeof _address === 'object') ? null : _address
   let port = (typeof _address === 'object') ? null : (typeof _port === 'object') ? null : _port
@@ -37,27 +33,7 @@ function connect (_address, _port, _options) {
   logger.log('connected with config:\n', config)
 
   if (address && port) {
-    connected = true
     initSocketIO(address, port, null)
-  } else if (isNode && address) {
-    autoconnect.setup(config.zeroconfName, (addressFound, port) => {
-      if (address === addressFound && (!connected || config.multiService)) {
-        connected = true
-        initSocketIO(address, port)
-      } else {
-        logger.log(`address found does not match ${address}`)
-      }
-    })
-  } else if (isNode) {
-    autoconnect.setup(config.zeroconfName, (addressFound, found) => {
-      if (!connected || config.multiService) {
-        connected = true
-        initSocketIO(addressFound, port)
-        logger.log(`connecting to the first ${config.zeroconfName} name we found on ${addressFound}:${port}`)
-      } else {
-        logger.warn(`multiService is disabled, skipping ${config.zeroconfName} on ${addressFound}:${port}`)
-      }
-    })
   } else {
     logger.warn('please provide a server address and port')
   }
@@ -81,6 +57,7 @@ function initSocketIO (address, port) {
 
   socket
     .on('connect', function () {
+      connected = true
       logger.log('socket connected')
       sockets.push(socket)
       socket.emit('register', {
@@ -119,7 +96,7 @@ function addPacker (handler, priority, eventName) { addHook(packers, eventName, 
 function addUnpacker (handler, priority, eventName) { addHook(unpackers, eventName, handler, priority) }
 
 function emit (eventName, data = {}) {
-  if(typeof data !== 'object'){
+  if (typeof data !== 'object') {
     data = {data: data}
     data.altered = true
   }
