@@ -83,22 +83,27 @@ function initSocketIO (address, port) {
     .on('connect', function () {
       logger.log('socket connected')
       sockets.push(socket)
-      socket.emit('register', {
+      var data = {
         clientName: config.clientName,
         channelName: config.channelName
-      })
+      }
+      socket.emit('register', data)
+      events['connect'] && events['connect'].dispatch(data)
     })
     .on('error', function (err) {
       logger.warn('error', err)
       connected = false
+      events['error'] && events['error'].dispatch(err)
     })
     .on('disconnect', function () {
       logger.log('socket down')
       connected = false
+      events['disconnect'] && events['disconnect'].dispatch()
     })
     .on('reconnect', function(){
       logger.log('socket reconnected')
       connected = true
+      events['reconnect'] && events['reconnect'].dispatch()
     })
     .on('*', function ({ data }) {
       let [eventName, args] = data
