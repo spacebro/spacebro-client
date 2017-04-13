@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron')
-const spacebroClient = require('../../dist/spacebro-client')
+const spacebroClient = require('../../')
 
 let win = null
 

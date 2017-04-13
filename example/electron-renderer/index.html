@@ -1,8 +1,16 @@
 <!-- index.html -->
 <html>
 <body>
+  <div id='log'>
+    <h1 id="p1">Log:</h1>  
+  </div>
+  
   <script>
-    var spacebroClient = require('../../dist/spacebro-client')
+    const spacebroClient = require('../../')
+    function addTextNode(text) {
+      let div = document.getElementById( 'log' )
+      div.insertAdjacentHTML( 'beforeend', `<p>${text}</p>` )
+    }
     spacebroClient.connect('127.0.0.1', 8888, {
       clientName: 'foo',
       channelName: 'bar'
@@ -10,7 +18,7 @@
     const events = ['hello', 'world']
     events.forEach((event) => {
       spacebroClient.on(event, (data) => {
-        win.webContents.send(event, data)
+        addTextNode(JSON.stringify(data))
       })
     })
     setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)

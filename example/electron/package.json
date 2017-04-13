@@ -1,5 +1,5 @@
 {
-  "name"    : "spacebro-renderer-test",
+  "name"    : "spacebro-test",
   "version" : "0.1.0",
   "main"    : "main.js"
 }
