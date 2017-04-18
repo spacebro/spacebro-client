@@ -1,5 +1,8 @@
-### [0.3.0]
 ### [0.3.0](https://github.com/spacebro/spacebro-client/releases/tag/v0.3.0)
+
+- Remove the mdns dependency. Stop auto-connect.
+
+### [0.1.9](https://github.com/soixantecircuits/spacebro-client/releases/tag/v0.1.9)
 
 - Use the babel template for generating UMD lib and support the browser (only tested on chrome)
 
