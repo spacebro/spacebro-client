@@ -108,21 +108,6 @@ function test() {
   return _mocha();
 }
 
-function coverage(done) {
-  _registerBabel();
-  gulp.src(['src/**/*.js'])
-    .pipe($.istanbul({
-      instrumenter: Instrumenter,
-      includeUntested: true
-    }))
-    .pipe($.istanbul.hookRequire())
-    .on('finish', () => {
-      return test()
-        .pipe($.istanbul.writeReports())
-        .on('end', done);
-    });
-}
-
 const watchFiles = ['src/**/*', 'test/**/*', 'package.json', '**/.eslintrc'];
 
 // Run the headless unit tests as you make changes.
@@ -206,9 +191,6 @@ gulp.task('build', ['lint', 'clean'], build);
 
 // Lint and run our tests
 gulp.task('test', ['lint'], test);
-
-// Set up coverage and run tests
-gulp.task('coverage', ['lint'], coverage);
 
 // Set up a livereload environment for our spec runner `test/runner.html`
 gulp.task('test-browser', ['lint', 'clean-tmp'], testBrowser);

@@ -1,6 +1,6 @@
 # spacebro client
 
-Automagically 🌟 connect to a [spacebro server](https://github.com/spacebro/spacebro).
+🌟 Connect easily to a [spacebro server](https://github.com/spacebro/spacebro).
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-6.x.x-brightgreen.svg)](https://nodejs.org/en/)
 
