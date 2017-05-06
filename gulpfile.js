@@ -8,7 +8,7 @@ const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 
 const Instrumenter = isparta.Instrumenter;
-const mochaGlobals = require('./test/setup/.globals');
+//const mochaGlobals = require('./test/setup/.globals');
 const manifest = require('./package.json');
 
 // Load all of our Gulp plugins
@@ -90,14 +90,14 @@ function build() {
     .pipe(gulp.dest(destinationFolder));
 }
 
-function _mocha() {
-  return gulp.src(['test/setup/node.js', 'test/unit/**/*.js'], {read: false})
-    .pipe($.mocha({
-      reporter: 'dot',
-      globals: Object.keys(mochaGlobals.globals),
-      ignoreLeaks: false
-    }));
-}
+// function _mocha() {
+//   return gulp.src(['test/setup/node.js', 'test/unit/**/*.js'], {read: false})
+//     .pipe($.mocha({
+//       reporter: 'dot',
+//       globals: Object.keys(mochaGlobals.globals),
+//       ignoreLeaks: false
+//     }));
+// }
 
 function _registerBabel() {
   require('babel-register');
@@ -105,7 +105,7 @@ function _registerBabel() {
 
 function test() {
   _registerBabel();
-  return _mocha();
+  //return _mocha();
 }
 
 const watchFiles = ['src/**/*', 'test/**/*', 'package.json', '**/.eslintrc'];
