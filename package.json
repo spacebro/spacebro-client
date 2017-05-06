@@ -1,6 +1,6 @@
 {
   "name": "spacebro-client",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "🌟 Connect easily to a Spacebro server",
   "main": "dist/spacebro-client.js",
   "scripts": {
