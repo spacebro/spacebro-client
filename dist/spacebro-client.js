@@ -256,7 +256,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	function emit(eventName) {
 	  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	
-	  if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) !== 'object') {
+	  // null is a type of Object. so we have to check null and undefined with loosy compare
+	  if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) !== 'object' || data == null) {
 	    data = { data: data };
 	    data.altered = true;
 	  }

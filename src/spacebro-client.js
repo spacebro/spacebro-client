@@ -96,14 +96,15 @@ function addPacker (handler, priority, eventName) { addHook(packers, eventName, 
 function addUnpacker (handler, priority, eventName) { addHook(unpackers, eventName, handler, priority) }
 
 function emit (eventName, data = {}) {
-  if (typeof data !== 'object') {
+  // null is a type of Object. so we have to check null and undefined with loosy compare
+  if (typeof data !== 'object' || data == null) {
     data = {data: data}
     data.altered = true
   }
   sendTo(eventName, null, data)
 }
 
-function sendTo (eventName, to = null , data = {}) {
+function sendTo (eventName, to = null, data = {}) {
   if (connected) {
     data._to = to
     data._from = config.clientName
