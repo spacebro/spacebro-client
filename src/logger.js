@@ -4,7 +4,6 @@ import isNode from './is-node'
 import chalk from 'chalk'
 
 let verbose = true
-
 const base = 'spacebro-client -'
 const prefix = {
   log: base,

@@ -119,7 +119,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  (0, _assign2.default)(config, options);
 	  _logger2.default.setup(config.verbose);
-	  _logger2.default.log('connected with config:\n', config);
+	  _logger2.default.log('Trying to connect on ' + address + ':' + port + ' with config:\n', config);
 	
 	  if (address && port) {
 	    initSocketIO(address, port, null);
@@ -195,6 +195,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      clientName: config.clientName,
 	      channelName: config.channelName
 	    });
+	    events['connect'] && events['connect'].dispatch(socket);
 	  }).on('error', function (err) {
 	    _logger2.default.warn('error', err);
 	    connected = false;
@@ -1894,7 +1895,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var verbose = true;
-	
 	var base = 'spacebro-client -';
 	var prefix = {
 	  log: base,

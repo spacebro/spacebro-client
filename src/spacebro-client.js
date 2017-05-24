@@ -30,7 +30,7 @@ function connect (_address, _port, _options) {
 
   Object.assign(config, options)
   logger.setup(config.verbose)
-  logger.log('connected with config:\n', config)
+  logger.log(`Trying to connect on ${address}:${port} with config:\n`, config)
 
   if (address && port) {
     initSocketIO(address, port, null)
@@ -64,6 +64,7 @@ function initSocketIO (address, port) {
         clientName: config.clientName,
         channelName: config.channelName
       })
+      events['connect'] && events['connect'].dispatch(socket)
     })
     .on('error', function (err) {
       logger.warn('error', err)
