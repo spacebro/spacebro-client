@@ -60,7 +60,7 @@
     "moment": "^2.15.0",
     "sinon": "1.17.5",
     "sinon-chai": "2.8.0",
-    "webpack": "1.13.2",
+    "webpack": "^2.6.1",
     "webpack-stream": "3.2.0"
   },
   "babelBoilerplateOptions": {

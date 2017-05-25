@@ -56,20 +56,13 @@ function build() {
         libraryTarget: 'umd',
         library: config.mainVarName
       },
-      // Add your own externals here. For instance,
-      // {
-      //   jquery: true
-      // }
-      // would externalize the `jquery` module.
       externals: {
-        mdns: true,
-        lodash: {amd: 'lodash', root: '_', commonjs: 'lodash', commonjs2: 'lodash'},
         signals: {amd: 'signals', root: 'signals', commonjs: 'signals', commonjs2: 'signals'},
         'socket.io-client': {amd: 'socket.io-client', root: 'io', commonjs: 'socket.io-client', commonjs2: 'socket.io-client'},
         'socketio-wildcard': {amd: 'socketio-wildcard', root: 'socketioWildcard', commonjs: 'socketio-wildcard', commonjs2: 'socketio-wildcard'}
       },
       module: {
-        loaders: [
+        rules: [
           {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
         ]
       },
@@ -80,7 +73,7 @@ function build() {
         net: 'empty',
         tls: 'empty'
       }
-    }))
+    }, webpack))
     .pipe(gulp.dest(destinationFolder))
     .pipe($.filter(['**', '!**/*.js.map']))
     .pipe($.rename(`${exportFileName}.min.js`))
