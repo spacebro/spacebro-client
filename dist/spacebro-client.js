@@ -119,7 +119,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  (0, _assign2.default)(config, options);
 	  _logger2.default.setup(config.verbose);
-	  _logger2.default.log('connected with config:\n', config);
+	  _logger2.default.log('Trying to connect on ' + address + ':' + port + ' with config:\n', config);
 	
 	  if (address && port) {
 	    initSocketIO(address, port, null);
@@ -195,15 +195,40 @@ return /******/ (function(modules) { // webpackBootstrap
 	      clientName: config.clientName,
 	      channelName: config.channelName
 	    });
+	    events['connect'] && events['connect'].dispatch(socket);
+	  }).on('connect_error', function (err) {
+	    _logger2.default.warn('error', err);
+	    connected = false;
+	    events['connect_error'] && events['connect_error'].dispatch(err);
+	  }).on('connect_timeout', function () {
+	    _logger2.default.warn('connection timeout');
+	    events['connect_timeout'] && events['connect_timeout'].dispatch();
 	  }).on('error', function (err) {
 	    _logger2.default.warn('error', err);
 	    connected = false;
-	  }).on('disconnect', function () {
+	    events['error'] && events['error'].dispatch(err);
+	  }).on('disconnect', function (err) {
 	    _logger2.default.log('socket down');
+	    events['disconnect'] && events['disconnect'].dispatch(err);
 	    connected = false;
-	  }).on('reconnect', function () {
+	  }).on('reconnect', function (data) {
 	    _logger2.default.log('socket reconnected');
+	    events['reconnect'] && events['reconnect'].dispatch(data);
 	    connected = true;
+	  }).on('reconnect_attempt', function (attempt) {
+	    _logger2.default.log('socket reconnect attempt: ' + attempt);
+	    events['reconnect_attempt'] && events['reconnect_attempt'].dispatch(attempt);
+	  }).on('reconnecting', function (attempt) {
+	    _logger2.default.log('socket try to reconnect, attempt: ' + attempt);
+	    events['reconnecting'] && events['reconnecting'].dispatch(attempt);
+	  }).on('reconnect_error', function (err) {
+	    _logger2.default.warn('socket reconnection error');
+	    _logger2.default.warn(err);
+	    events['reconnect_error'] && events['reconnect_error'].dispatch(err);
+	  }).on('reconnect_failed', function (err) {
+	    _logger2.default.warn('socket can\'t reconnect');
+	    _logger2.default.warn(err);
+	    events['reconnect_failed'] && events['reconnect_failed'].dispatch(err);
 	  }).on('*', function (_ref) {
 	    var data = _ref.data;
 	
@@ -1894,7 +1919,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var verbose = true;
-	
 	var base = 'spacebro-client -';
 	var prefix = {
 	  log: base,

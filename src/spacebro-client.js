@@ -30,7 +30,7 @@ function connect (_address, _port, _options) {
 
   Object.assign(config, options)
   logger.setup(config.verbose)
-  logger.log('connected with config:\n', config)
+  logger.log(`Trying to connect on ${address}:${port} with config:\n`, config)
 
   if (address && port) {
     initSocketIO(address, port, null)
@@ -64,19 +64,49 @@ function initSocketIO (address, port) {
         clientName: config.clientName,
         channelName: config.channelName
       })
+      events['connect'] && events['connect'].dispatch(socket)
+    })
+    .on('connect_error', (err) => {
+      logger.warn('error', err)
+      connected = false
+      events['connect_error'] && events['connect_error'].dispatch(err)
+    })
+    .on('connect_timeout', ()=>{
+      logger.warn('connection timeout')
+      events['connect_timeout'] && events['connect_timeout'].dispatch()
     })
     .on('error', function (err) {
       logger.warn('error', err)
       connected = false
+      events['error'] && events['error'].dispatch(err)
     })
-    .on('disconnect', function () {
+    .on('disconnect', function (err) {
       logger.log('socket down')
+      events['disconnect'] && events['disconnect'].dispatch(err)
       connected = false
     })
-    .on('reconnect', function(){
+    .on('reconnect', function (data) {
       logger.log('socket reconnected')
+      events['reconnect'] && events['reconnect'].dispatch(data)
       connected = true
     })
+    .on('reconnect_attempt', function (attempt) {
+      logger.log(`socket reconnect attempt: ${attempt}`)
+      events['reconnect_attempt'] && events['reconnect_attempt'].dispatch(attempt)
+    })
+    .on('reconnecting', function (attempt) {
+      logger.log(`socket try to reconnect, attempt: ${attempt}`)
+      events['reconnecting'] && events['reconnecting'].dispatch(attempt)
+    }).on('reconnect_error', function (err) {
+      logger.warn(`socket reconnection error`)
+      logger.warn(err)
+      events['reconnect_error'] && events['reconnect_error'].dispatch(err)
+    }).on('reconnect_failed', function (err) {
+      logger.warn(`socket can't reconnect`)
+      logger.warn(err)
+      events['reconnect_failed'] && events['reconnect_failed'].dispatch(err)
+    })
+
     .on('*', function ({ data }) {
       let [eventName, args] = data
       if (!config.sendBack && args._from === config.clientName) {
