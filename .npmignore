@@ -3,3 +3,4 @@ example
 .vscode
 build
 node_modules
+test

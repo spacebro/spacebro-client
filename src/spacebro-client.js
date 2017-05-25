@@ -59,7 +59,15 @@ function initSocketIO (address, port) {
     .on('connect', function () {
       connected = true
       logger.log('socket connected')
-      sockets.push(socket)
+      if (sockets.length < 1) {
+        sockets.push(socket)
+      } else {
+        sockets.forEach((el) => {
+          if (el.id !== socket.id) {
+            sockets.push(socket)
+          }
+        })
+      }
       socket.emit('register', {
         clientName: config.clientName,
         channelName: config.channelName
@@ -139,13 +147,13 @@ function sendTo (eventName, to = null, data = {}) {
     data._to = to
     data._from = config.clientName
     for (let pack of filterHooks(eventName, packers)) {
-      data = pack({ eventName, data}) || data
+      data = pack({eventName, data}) || data
     }
     for (let socket of sockets) {
       socket.emit(eventName, data)
     }
   } else {
-    logger.warn('not connected')
+    logger.warn('can\'t emit, not connected.')
   }
 }
 

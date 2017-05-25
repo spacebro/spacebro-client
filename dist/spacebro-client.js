@@ -190,7 +190,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  socket.on('connect', function () {
 	    connected = true;
 	    _logger2.default.log('socket connected');
-	    sockets.push(socket);
+	    if (sockets.length < 1) {
+	      sockets.push(socket);
+	    } else {
+	      sockets.forEach(function (el) {
+	        if (el.id !== socket.id) {
+	          sockets.push(socket);
+	        }
+	      });
+	    }
 	    socket.emit('register', {
 	      clientName: config.clientName,
 	      channelName: config.channelName
@@ -346,7 +354,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	  } else {
-	    _logger2.default.warn('not connected');
+	    _logger2.default.warn('can\'t emit, not connected.');
 	  }
 	}
 	
@@ -382,8 +390,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  hooks.push({ eventName: eventName, handler: handler, priority: priority });
 	}
+	var send = emit;
 	
-	exports.default = { connect: connect, addPacker: addPacker, addUnpacker: addUnpacker, emit: emit, sendTo: sendTo, on: on, once: once, off: off };
+	exports.default = { connect: connect, addPacker: addPacker, addUnpacker: addUnpacker, emit: emit, send: send, sendTo: sendTo, on: on, once: once, off: off };
 	module.exports = exports['default'];
 
 /***/ },
