@@ -2,9 +2,10 @@
 
 const spacebroClient = require('spacebro-client')
 
-function addTextNode(text) {
+function addTextNode (text) {
   let logDiv = document.getElementById('log')
   logDiv.insertAdjacentHTML('beforeend', `<p>${text}</p>`)
+  console.log(text)
 }
 
 spacebroClient.connect('127.0.0.1', 8888, {
