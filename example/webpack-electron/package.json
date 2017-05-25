@@ -1,0 +1,16 @@
+{
+  "name": "spacebro-renderer-test",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "build": "webpack -p"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.5.1",
+    "webpack": "^2.6.1"
+  },
+  "dependencies": {
+    "spacebro-client": "^0.3.4"
+  },
+  "license": "MIT"
+}
