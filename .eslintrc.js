@@ -3,7 +3,7 @@ module.exports = {
   parser: 'babel-eslint',
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 6
+    ecmaVersion: 7
   },
   // https://github.com/feross/standard/blob/master/RULES.md
   extends: 'standard',

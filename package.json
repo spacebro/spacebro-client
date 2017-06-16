@@ -6,8 +6,8 @@
   "scripts": {
     "test": "npm run lint && npm run unittest",
     "lint": "eslint --ext .js tests src",
-    "unittest": "ava tests/*.js --verbose --timeout=2s",
-    "unittest:watch": "ava testss/*.js --verbose --watch --timeout=2s",
+    "unittest": "ava --verbose --timeout=4s",
+    "unittest:watch": "ava --verbose --watch --timeout=4s",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
     "coverage": "gulp coverage"
@@ -72,6 +72,7 @@
     "moment": "^2.15.0",
     "sinon": "^2.3.1",
     "sinon-chai": "^2.10.0",
+    "sleep-promise": "^2.0.0",
     "webpack": "^2.6.1",
     "webpack-stream": "3.2.0"
   },
@@ -81,7 +82,9 @@
   },
   "ava": {
     "files": [
-      "test/*.js"
-    ]
+      "tests/*.js"
+    ],
+    "require": "babel-register",
+    "babel": "inherit"
   }
 }
