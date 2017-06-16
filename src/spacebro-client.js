@@ -56,7 +56,7 @@ function initSocketIO (address, port) {
   patch(socket)
 
   socket
-    .on('connect', function () {
+    .on('connect', () => {
       connected = true
       logger.log('socket connected')
       if (sockets.length < 1) {
@@ -70,8 +70,7 @@ function initSocketIO (address, port) {
       }
       socket.emit('register', {
         clientName: config.clientName,
-        channelName: config.channelName,
-        events: config.events
+        channelName: config.channelName
       })
       events['connect'] && events['connect'].dispatch(socket)
     })
@@ -84,41 +83,44 @@ function initSocketIO (address, port) {
       logger.warn('connection timeout')
       events['connect_timeout'] && events['connect_timeout'].dispatch()
     })
-    .on('error', function (err) {
+    .on('error', (err) => {
       logger.warn('error', err)
       connected = false
       events['error'] && events['error'].dispatch(err)
     })
-    .on('disconnect', function (err) {
+    .on('disconnect', (err) => {
       logger.log('socket down')
       events['disconnect'] && events['disconnect'].dispatch(err)
       connected = false
     })
-    .on('reconnect', function (data) {
+    .on('reconnect', (data) => {
       logger.log('socket reconnected')
       events['reconnect'] && events['reconnect'].dispatch(data)
       connected = true
     })
-    .on('reconnect_attempt', function (attempt) {
+    .on('reconnect_attempt', (attempt) => {
       logger.log(`socket reconnect attempt: ${attempt}`)
       events['reconnect_attempt'] && events['reconnect_attempt'].dispatch(attempt)
     })
-    .on('reconnecting', function (attempt) {
+    .on('reconnecting', (attempt) => {
       logger.log(`socket try to reconnect, attempt: ${attempt}`)
       events['reconnecting'] && events['reconnecting'].dispatch(attempt)
-    }).on('reconnect_error', function (err) {
-      logger.warn(`socket reconnection error`)
+    })
+    .on('reconnect_error', (err) => {
+      logger.warn('socket reconnection error')
       logger.warn(err)
       events['reconnect_error'] && events['reconnect_error'].dispatch(err)
-    }).on('reconnect_failed', function (err) {
-      logger.warn(`socket can't reconnect`)
+    })
+    .on('reconnect_failed', (err) => {
+      logger.warn('socket cannot reconnect')
       logger.warn(err)
       events['reconnect_failed'] && events['reconnect_failed'].dispatch(err)
     })
 
-    .on('*', function ({ data }) {
+    .on('*', ({ data }) => {
       let [eventName, args] = data
       if (!config.sendBack && args._from === config.clientName) {
+        return
       } else if (events[eventName]) {
         logger.log(`socket received ${eventName} with data:`, args)
         for (let unpack of filterHooks(eventName, unpackers)) {
@@ -130,8 +132,12 @@ function initSocketIO (address, port) {
     })
 }
 
-function addPacker (handler, priority, eventName) { addHook(packers, eventName, handler, priority) }
-function addUnpacker (handler, priority, eventName) { addHook(unpackers, eventName, handler, priority) }
+function addPacker (handler, priority, eventName) {
+  addHook(packers, eventName, handler, priority)
+}
+function addUnpacker (handler, priority, eventName) {
+  addHook(unpackers, eventName, handler, priority)
+}
 
 function emit (eventName, data = {}) {
   // null is a type of Object. so we have to check null and undefined with loosy compare
@@ -180,8 +186,12 @@ function filterHooks (eventName, hooks) {
 }
 
 function addHook (hooks, eventName = '*', handler, priority = 0) {
-  hooks.push({eventName, handler, priority})
+  hooks.push({ eventName, handler, priority })
 }
-var send = emit
 
-export default { connect, addPacker, addUnpacker, emit, send, sendTo, on, once, off }
+export default {
+  connect,
+  addPacker, addUnpacker,
+  emit, send: emit, sendTo,
+  on, once, off
+}
