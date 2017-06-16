@@ -4,8 +4,10 @@
   "description": "🌟 Connect easily to a Spacebro server",
   "main": "dist/spacebro-client.js",
   "scripts": {
-    "test": "ava",
-    "lint": "eslint --ext .js test src",
+    "test": "npm run lint && npm run unittest",
+    "lint": "eslint --ext .js tests src",
+    "unittest": "ava tests/*.js --verbose --timeout=2s",
+    "unittest:watch": "ava testss/*.js --verbose --watch --timeout=2s",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
     "coverage": "gulp coverage"
