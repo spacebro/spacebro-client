@@ -4,13 +4,11 @@ import sleep from 'sleep-promise'
 import spacebroClient from '../src/spacebro-client.js'
 
 test.failing.serial('clientName', async t => {
-  console.log("Hello")
-  t.pass()
-
   spacebroClient.connect('spacebro.space', 3333, {
     clientName: 'client1',
     channelName: 'channelTest',
-    verbose: false
+    verbose: false,
+    sendBack: false
   })
 
   spacebroClient.connect('spacebro.space', 3333, {
