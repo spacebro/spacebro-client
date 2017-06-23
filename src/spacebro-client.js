@@ -70,7 +70,8 @@ function initSocketIO (address, port) {
       }
       socket.emit('register', {
         clientName: config.clientName,
-        channelName: config.channelName
+        channelName: config.channelName,
+        events: config.events
       })
       events['connect'] && events['connect'].dispatch(socket)
     })
