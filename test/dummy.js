@@ -3,9 +3,9 @@
 import test from 'ava'
 
 test('My passing test', t => {
-	t.pass()
+  t.pass()
 })
 
 test('My passing test 2', t => {
-	t.pass()
+  t.pass()
 })
