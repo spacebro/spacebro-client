@@ -204,7 +204,7 @@ function addHook (hooks, eventName = '*', handler, priority = 0) {
 }
 
 export default {
-  connect,
+  connect, disconnect,
   addPacker, addUnpacker,
   emit, send: emit, sendTo,
   on, once, off
