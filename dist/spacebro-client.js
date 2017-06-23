@@ -3320,7 +3320,8 @@ function initSocketIO(address, port) {
     }
     socket.emit('register', {
       clientName: config.clientName,
-      channelName: config.channelName
+      channelName: config.channelName,
+      events: config.events
     });
     events['connect'] && events['connect'].dispatch(socket);
   }).on('connect_error', function (err) {
@@ -3363,9 +3364,7 @@ function initSocketIO(address, port) {
         eventName = _data[0],
         args = _data[1];
 
-    if (!config.sendBack && args._from === config.clientName) {
-      return;
-    } else if (events[eventName]) {
+    if (!config.sendBack && args._from === config.clientName) {} else if (events[eventName]) {
       _logger2.default.log('socket received ' + eventName + ' with data:', args);
       var _iteratorNormalCompletion3 = true;
       var _didIteratorError3 = false;
