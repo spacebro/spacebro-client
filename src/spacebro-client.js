@@ -38,10 +38,10 @@ function connect (_address, _port, _options) {
     logger.warn('please provide a server address and port')
   }
 
-  for (let packer of config.packers){
+  for (let packer of config.packers) {
     addPacker(packer.handler, packer.priority, packer.eventName)
   }
-  for (let unpacker of config.unpackers){
+  for (let unpacker of config.unpackers) {
     addUnpacker(unpacker.handler, unpacker.priority, unpacker.eventName)
   }
 }
@@ -79,7 +79,7 @@ function initSocketIO (address, port) {
       connected = false
       events['connect_error'] && events['connect_error'].dispatch(err)
     })
-    .on('connect_timeout', ()=>{
+    .on('connect_timeout', () => {
       logger.warn('connection timeout')
       events['connect_timeout'] && events['connect_timeout'].dispatch()
     })
@@ -118,7 +118,6 @@ function initSocketIO (address, port) {
     .on('*', function ({ data }) {
       let [eventName, args] = data
       if (!config.sendBack && args._from === config.clientName) {
-        return
       } else if (events[eventName]) {
         logger.log(`socket received ${eventName} with data:`, args)
         for (let unpack of filterHooks(eventName, unpackers)) {
@@ -179,8 +178,8 @@ function filterHooks (eventName, hooks) {
     .map(hook => hook.handler)
 }
 
-function addHook (hooks, eventName = '*' , handler, priority = 0) {
-  hooks.push({ eventName, handler, priority})
+function addHook (hooks, eventName = '*', handler, priority = 0) {
+  hooks.push({eventName, handler, priority})
 }
 var send = emit
 
