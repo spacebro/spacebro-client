@@ -6,8 +6,8 @@
   "scripts": {
     "test": "npm run lint && npm run unittest",
     "lint": "eslint --ext .js tests src",
-    "unittest": "ava --verbose --timeout=4s",
-    "unittest:watch": "ava --verbose --watch --timeout=4s",
+    "unittest": "ava --verbose --timeout=8s",
+    "unittest:watch": "ava --verbose --watch --timeout=8s",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
     "coverage": "gulp coverage"
