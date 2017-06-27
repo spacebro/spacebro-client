@@ -121,7 +121,8 @@ function initSocketIO (address, port) {
       let [eventName, args] = data
       if (!config.sendBack && args._from === config.clientName) {
         return
-      } else if (events[eventName]) {
+      }
+      if (events[eventName]) {
         logger.log(`socket received ${eventName} with data:`, args)
         for (let unpack of filterHooks(eventName, unpackers)) {
           const unpacked = unpack({ eventName, data: args })
@@ -191,7 +192,12 @@ function addHook (hooks, eventName = '*', handler, priority = 0) {
 
 export default {
   connect,
-  addPacker, addUnpacker,
-  emit, send: emit, sendTo,
-  on, once, off
+  addPacker,
+  addUnpacker,
+  emit,
+  send: emit,
+  sendTo,
+  on,
+  once,
+  off
 }
