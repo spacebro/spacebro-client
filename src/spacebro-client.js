@@ -130,6 +130,20 @@ function initSocketIO (address, port) {
     })
 }
 
+function disconnect () {
+  connected = false
+  unpackers = []
+  packers = []
+  for (const socket of sockets) {
+    socket.close()
+  }
+  sockets = []
+  for (const eventName of events.keys()) {
+    events[eventName].dispose()
+  }
+  events = {}
+}
+
 function addPacker (handler, priority, eventName) {
   addHook(packers, eventName, handler, priority)
 }
@@ -189,6 +203,7 @@ function addHook (hooks, eventName = '*', handler, priority = 0) {
 
 export default {
   connect,
+  disconnect,
   addPacker,
   addUnpacker,
   emit,
