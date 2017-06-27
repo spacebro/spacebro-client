@@ -1684,10 +1684,11 @@ var prefix = {
   info: _isNode2.default ? _chalk2.default.blue(base) : base,
   warn: _isNode2.default ? _chalk2.default.yellow(base) : base,
   error: _isNode2.default ? _chalk2.default.red(base) : base
-  // chalk does not seem to work here.
-  // This is not important but one should take a look at some point
+};
+// chalk does not seem to work here.
+// This is not important but one should take a look at some point
 
-};function setup(_verbose) {
+function setup(_verbose) {
   verbose = _verbose;
 }
 
