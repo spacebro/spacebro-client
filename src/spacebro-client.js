@@ -130,8 +130,12 @@ function initSocketIO (address, port) {
     })
 }
 
-function addPacker (handler, priority, eventName) { addHook(packers, eventName, handler, priority) }
-function addUnpacker (handler, priority, eventName) { addHook(unpackers, eventName, handler, priority) }
+function addPacker (handler, priority, eventName) {
+  addHook(packers, eventName, handler, priority)
+}
+function addUnpacker (handler, priority, eventName) {
+  addHook(unpackers, eventName, handler, priority)
+}
 
 function emit (eventName, data = {}) {
   // null is a type of Object. so we have to check null and undefined with loosy compare
@@ -182,6 +186,15 @@ function filterHooks (eventName, hooks) {
 function addHook (hooks, eventName = '*', handler, priority = 0) {
   hooks.push({eventName, handler, priority})
 }
-var send = emit
 
-export default { connect, addPacker, addUnpacker, emit, send, sendTo, on, once, off }
+export default {
+  connect,
+  addPacker,
+  addUnpacker,
+  emit,
+  send: emit,
+  sendTo,
+  on,
+  once,
+  off
+}

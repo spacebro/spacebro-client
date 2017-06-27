@@ -5,7 +5,7 @@
   "main": "dist/spacebro-client.js",
   "scripts": {
     "test": "ava",
-    "lint": "gulp lint",
+    "lint": "eslint --ext .js test src",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
     "coverage": "gulp coverage"
