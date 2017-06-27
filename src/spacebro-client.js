@@ -56,7 +56,7 @@ function initSocketIO (address, port) {
   patch(socket)
 
   socket
-    .on('connect', function () {
+    .on('connect', () => {
       connected = true
       logger.log('socket connected')
       if (sockets.length < 1) {
@@ -84,39 +84,41 @@ function initSocketIO (address, port) {
       logger.warn('connection timeout')
       events['connect_timeout'] && events['connect_timeout'].dispatch()
     })
-    .on('error', function (err) {
+    .on('error', (err) => {
       logger.warn('error', err)
       connected = false
       events['error'] && events['error'].dispatch(err)
     })
-    .on('disconnect', function (err) {
+    .on('disconnect', (err) => {
       logger.log('socket down')
       events['disconnect'] && events['disconnect'].dispatch(err)
       connected = false
     })
-    .on('reconnect', function (data) {
+    .on('reconnect', (data) => {
       logger.log('socket reconnected')
       events['reconnect'] && events['reconnect'].dispatch(data)
       connected = true
     })
-    .on('reconnect_attempt', function (attempt) {
+    .on('reconnect_attempt', (attempt) => {
       logger.log(`socket reconnect attempt: ${attempt}`)
       events['reconnect_attempt'] && events['reconnect_attempt'].dispatch(attempt)
     })
-    .on('reconnecting', function (attempt) {
+    .on('reconnecting', (attempt) => {
       logger.log(`socket try to reconnect, attempt: ${attempt}`)
       events['reconnecting'] && events['reconnecting'].dispatch(attempt)
-    }).on('reconnect_error', function (err) {
+    })
+    .on('reconnect_error', (err) => {
       logger.warn(`socket reconnection error`)
       logger.warn(err)
       events['reconnect_error'] && events['reconnect_error'].dispatch(err)
-    }).on('reconnect_failed', function (err) {
+    })
+    .on('reconnect_failed', (err) => {
       logger.warn(`socket can't reconnect`)
       logger.warn(err)
       events['reconnect_failed'] && events['reconnect_failed'].dispatch(err)
     })
 
-    .on('*', function ({ data }) {
+    .on('*', ({ data }) => {
       let [eventName, args] = data
       if (!config.sendBack && args._from === config.clientName) {
       } else if (events[eventName]) {
