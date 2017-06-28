@@ -29,9 +29,11 @@ class SpacebroClient {
     this.config = Object.assign({}, defaultConfig, options)
     this.logger = new Logger(this.config.verbose)
 
+    this.packers = []
     for (const packer of this.config.packers) {
       this.addPacker(packer.handler, packer.priority, packer.eventName)
     }
+    this.unpackers = []
     for (const unpacker of this.config.unpackers) {
       this.addUnpacker(unpacker.handler, unpacker.priority, unpacker.eventName)
     }
