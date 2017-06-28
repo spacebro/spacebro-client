@@ -140,7 +140,7 @@ function disconnect () {
     socket.close()
   }
   sockets = []
-  for (const eventName of events.keys()) {
+  for (const eventName of Object.keys(events)) {
     events[eventName].dispose()
   }
   events = {}
