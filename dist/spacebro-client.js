@@ -1739,10 +1739,10 @@ var prefix = {
   info: _isNode2.default ? _chalk2.default.blue(base) : base,
   warn: _isNode2.default ? _chalk2.default.yellow(base) : base,
   error: _isNode2.default ? _chalk2.default.red(base) : base
-  // chalk does not seem to work here.
-  // This is not important but one should take a look at some point
-
 };
+// chalk does not seem to work here.
+// This is not important but one should take a look at some point
+
 var Logger = function () {
   function Logger(verbose) {
     (0, _classCallCheck3.default)(this, Logger);
@@ -3486,30 +3486,6 @@ var SpacebroClient = function () {
       this.connected = false;
       this.unpackers = [];
       this.packers = [];
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
-
-      try {
-        for (var _iterator4 = (0, _getIterator3.default)(this.events.keys()), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var eventName = _step4.value;
-
-          this.off(eventName);
-        }
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
-      }
     }
   }, {
     key: 'addPacker',
@@ -3542,27 +3518,27 @@ var SpacebroClient = function () {
       if (this.connected) {
         data._to = to;
         data._from = this.config.clientName;
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
         try {
-          for (var _iterator5 = (0, _getIterator3.default)(filterHooks(eventName, this.packers)), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var pack = _step5.value;
+          for (var _iterator4 = (0, _getIterator3.default)(filterHooks(eventName, this.packers)), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var pack = _step4.value;
 
             data = pack({ eventName: eventName, data: data }) || data;
           }
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+              _iterator4.return();
             }
           } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
