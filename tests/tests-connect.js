@@ -4,7 +4,9 @@ import sleep from 'sleep-promise'
 import client from '../src/spacebro-client'
 
 test.afterEach((t) => {
-  client.disconnect()
+  if (!t.context.isDisconnected) {
+    client.disconnect()
+  }
 })
 
 test.serial.cb('Simple connect', (t) => {
@@ -48,7 +50,7 @@ test.serial.cb('connect - wrong port', (t) => {
   })
 })
 
-test.serial.cb.failing('disconnect', (t) => {
+test.serial.cb('disconnect', (t) => {
   client.connect('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect4',
@@ -58,13 +60,13 @@ test.serial.cb.failing('disconnect', (t) => {
   t.plan(2)
 
   client.on('connect', async () => {
-    client.disconnect()
     client.on('disconnect', () => t.pass('Disconnected'))
-    client.on('test-disconnect', () => t.fail('Should be disconnected'))
-    client.emit('test-disconnect')
-    await sleep(200)
+    client.disconnect()
 
-    t.pass('Disconnected')
+    await sleep(200)
+    await t.throws(() => client.emit('what', () => 'ever'))
+
+    t.context.isDisconnected = true
     t.end()
   })
 })

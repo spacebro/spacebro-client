@@ -15,7 +15,7 @@ test.afterEach((t) => {
   client.disconnect()
 })
 
-test.serial.cb('emit/on - no data', (t) => {
+test.serial.cb.failing('emit/on - no data', (t) => {
   connect('emit-on-no-data')
 
   client.on('connect', () => {
@@ -69,17 +69,18 @@ test.serial('once', async (t) => {
   await sleep(200)
 })
 
-test.serial.failing('off', async (t) => {
+test.serial.cb.failing('off', (t) => {
   connect('once')
 
   t.plan(1)
 
-  client.on('connect', () => {
+  client.on('connect', async () => {
     client.emit('hello')
+    await sleep(200)
     client.off('hello')
     client.emit('hello')
+    await sleep(200)
+    t.end()
   })
   client.on('hello', () => t.pass('Message received'))
-
-  await sleep(200)
 })

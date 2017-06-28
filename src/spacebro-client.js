@@ -138,9 +138,6 @@ class SpacebroClient {
     this.connected = false
     this.unpackers = []
     this.packers = []
-    for (const eventName of this.events.keys()) {
-      this.off(eventName)
-    }
   }
 
   addPacker (handler, priority, eventName) {
