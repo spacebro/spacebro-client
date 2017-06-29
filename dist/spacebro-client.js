@@ -3310,7 +3310,8 @@ function filterHooks(eventName, hooks) {
 }
 
 var SpacebroClient = function () {
-  function SpacebroClient(address, port, options) {
+  function SpacebroClient(address, port) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     (0, _classCallCheck3.default)(this, SpacebroClient);
 
     this.config = (0, _assign2.default)({}, defaultConfig, options);
@@ -3368,24 +3369,33 @@ var SpacebroClient = function () {
       }
     }
 
-    if (typeof address !== 'string') {
-      throw new Error('address must be a valid string');
-    }
-    if (!(port > 0)) {
-      throw new Error('port must be a positive integer');
-    }
-
     this.events = {};
     this.connected = false;
     this.socket = null;
 
-    this.logger.log('Trying to connect on ' + address + ':' + port + ' with config:\n', this.config);
-    this.initSocketIO(address, port);
+    if (address == null && port == null) {
+      return;
+    }
+
+    this.connect(address, port);
   }
 
   (0, _createClass3.default)(SpacebroClient, [{
-    key: 'initSocketIO',
-    value: function initSocketIO(address, port) {
+    key: 'connect',
+    value: function connect(address, port) {
+      if (typeof address !== 'string') {
+        throw new Error('address must be a valid string');
+      }
+      if (!(port > 0)) {
+        throw new Error('port must be a positive integer');
+      }
+
+      this.logger.log('Trying to connect to ' + address + ':' + port + ' with config:\n', this.config);
+      this._initSocketIO(address, port);
+    }
+  }, {
+    key: '_initSocketIO',
+    value: function _initSocketIO(address, port) {
       var _this = this;
 
       var parsedURI = __webpack_require__(54).parse(address);
@@ -3399,7 +3409,7 @@ var SpacebroClient = function () {
       socket.on('connect', function () {
         _this.connected = true;
         _this.logger.log('socket connected');
-        lastSocket = socket;
+        _this.socket = socket;
         socket.emit('register', {
           clientName: _this.config.clientName,
           channelName: _this.config.channelName
@@ -3483,6 +3493,9 @@ var SpacebroClient = function () {
   }, {
     key: 'disconnect',
     value: function disconnect() {
+      if (this.socket) {
+        this.socket.disconnect();
+      }
       this.connected = false;
       this.unpackers = [];
       this.packers = [];
@@ -3580,12 +3593,18 @@ var SpacebroClient = function () {
 }();
 
 var lastSocket = null;
+var fakeSocket = new SpacebroClient();
 
 function connect(address, port, options) {
   if (lastSocket) {
     console.warn('A SpacebroClient socket is already open');
   }
   lastSocket = new SpacebroClient(address, port, options);
+  if (fakeSocket) {
+    lastSocket.events = fakeSocket.events;
+    fakeSocket = null;
+  }
+  return lastSocket;
 }
 
 function checkSocket() {
@@ -3627,18 +3646,24 @@ function sendTo(eventName) {
 
 // Reception
 function on(eventName, handler, handlerContext, priority) {
-  checkSocket();
-  lastSocket.on(eventName, handler, handlerContext, priority);
+  if (!lastSocket && !fakeSocket) {
+    throw new Error('No SpacebroClient socket is open');
+  }
+  (lastSocket || fakeSocket).on(eventName, handler, handlerContext, priority);
 }
 
 function once(eventName, handler, handlerContext, priority) {
-  checkSocket();
-  lastSocket.once(eventName, handler, handlerContext, priority);
+  if (!lastSocket && !fakeSocket) {
+    throw new Error('No SpacebroClient socket is open');
+  }
+  (lastSocket || fakeSocket).once(eventName, handler, handlerContext, priority);
 }
 
 function off(eventName) {
-  checkSocket();
-  lastSocket.off(eventName);
+  if (!lastSocket && !fakeSocket) {
+    throw new Error('No SpacebroClient socket is open');
+  }
+  (lastSocket || fakeSocket).off(eventName);
 }
 
 exports.default = {
