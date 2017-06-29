@@ -15,6 +15,18 @@ test.afterEach((t) => {
   client.disconnect()
 })
 
+test.serial.cb('emit/on - after connect', (t) => {
+  client.on('connect', () => {
+    client.emit('hello')
+  })
+  client.on('hello', (data) => {
+    t.pass('Message received')
+    t.deepEqual(data, { _from: 'emit-on-after-connect', _to: null })
+    t.end()
+  })
+  connect('emit-on-after-connect')
+})
+
 test.serial.cb('emit/on - no data', (t) => {
   connect('emit-on-no-data')
 

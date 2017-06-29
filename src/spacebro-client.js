@@ -204,12 +204,17 @@ class SpacebroClient {
 }
 
 let lastSocket = null
+let fakeSocket = new SpacebroClient()
 
 function connect (address, port, options) {
   if (lastSocket) {
     console.warn('A SpacebroClient socket is already open')
   }
   lastSocket = new SpacebroClient(address, port, options)
+  if (fakeSocket) {
+    lastSocket.events = fakeSocket.events
+    fakeSocket = null
+  }
   return lastSocket
 }
 
@@ -247,18 +252,24 @@ function sendTo (eventName, to = null, data = {}) {
 
 // Reception
 function on (eventName, handler, handlerContext, priority) {
-  checkSocket()
-  lastSocket.on(eventName, handler, handlerContext, priority)
+  if (!lastSocket && !fakeSocket) {
+    throw new Error('No SpacebroClient socket is open')
+  }
+  (lastSocket || fakeSocket).on(eventName, handler, handlerContext, priority)
 }
 
 function once (eventName, handler, handlerContext, priority) {
-  checkSocket()
-  lastSocket.once(eventName, handler, handlerContext, priority)
+  if (!lastSocket && !fakeSocket) {
+    throw new Error('No SpacebroClient socket is open')
+  }
+  (lastSocket || fakeSocket).once(eventName, handler, handlerContext, priority)
 }
 
 function off (eventName) {
-  checkSocket()
-  lastSocket.off(eventName)
+  if (!lastSocket && !fakeSocket) {
+    throw new Error('No SpacebroClient socket is open')
+  }
+  (lastSocket || fakeSocket).off(eventName)
 }
 
 export default {
