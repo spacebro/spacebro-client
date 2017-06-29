@@ -15,7 +15,7 @@ test.afterEach((t) => {
   client.disconnect()
 })
 
-test.serial.cb.failing('emit/on - no data', (t) => {
+test.serial.cb('emit/on - no data', (t) => {
   connect('emit-on-no-data')
 
   client.on('connect', () => {
@@ -69,7 +69,7 @@ test.serial('once', async (t) => {
   await sleep(200)
 })
 
-test.serial.cb.failing('off', (t) => {
+test.serial.cb('off', (t) => {
   connect('once')
 
   t.plan(1)

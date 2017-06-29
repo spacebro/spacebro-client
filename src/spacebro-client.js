@@ -25,7 +25,7 @@ function filterHooks (eventName, hooks) {
 }
 
 class SpacebroClient {
-  constructor (address, port, options) {
+  constructor (address, port, options = {}) {
     this.config = Object.assign({}, defaultConfig, options)
     this.logger = new Logger(this.config.verbose)
 
@@ -38,6 +38,18 @@ class SpacebroClient {
       this.addUnpacker(unpacker.handler, unpacker.priority, unpacker.eventName)
     }
 
+    this.events = {}
+    this.connected = false
+    this.socket = null
+
+    if (address == null && port == null) {
+      return
+    }
+
+    this.connect(address, port)
+  }
+
+  connect (address, port) {
     if (typeof address !== 'string') {
       throw new Error('address must be a valid string')
     }
@@ -45,17 +57,13 @@ class SpacebroClient {
       throw new Error('port must be a positive integer')
     }
 
-    this.events = {}
-    this.connected = false
-    this.socket = null
-
     this.logger.log(
-      `Trying to connect on ${address}:${port} with config:\n`, this.config
+      `Trying to connect to ${address}:${port} with config:\n`, this.config
     )
-    this.initSocketIO(address, port)
+    this._initSocketIO(address, port)
   }
 
-  initSocketIO (address, port) {
+  _initSocketIO (address, port) {
     let parsedURI = require('url').parse(address)
     let protocol = parsedURI.protocol ? '' : 'ws://'
     let url = `${protocol}${address}:${port}`
@@ -68,7 +76,7 @@ class SpacebroClient {
       .on('connect', () => {
         this.connected = true
         this.logger.log('socket connected')
-        lastSocket = socket
+        this.socket = socket
         socket.emit('register', {
           clientName: this.config.clientName,
           channelName: this.config.channelName
@@ -135,6 +143,9 @@ class SpacebroClient {
   }
 
   disconnect () {
+    if (this.socket) {
+      this.socket.disconnect()
+    }
     this.connected = false
     this.unpackers = []
     this.packers = []
@@ -199,6 +210,7 @@ function connect (address, port, options) {
     console.warn('A SpacebroClient socket is already open')
   }
   lastSocket = new SpacebroClient(address, port, options)
+  return lastSocket
 }
 
 function checkSocket () {
