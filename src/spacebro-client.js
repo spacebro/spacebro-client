@@ -218,6 +218,17 @@ function connect (address, port, options) {
   return lastSocket
 }
 
+function create (address, port, options) {
+  const sc = new SpacebroClient(address, port, options)
+
+  return new Promise((resolve, reject) => {
+    sc.on('connect', () => resolve(sc))
+    sc.on('connect_error', (err) => reject(err))
+    sc.on('connect_timeout', () => reject(new Error('Connection timeout')))
+    sc.on('error', (err) => reject(err))
+  })
+}
+
 function checkSocket () {
   if (!lastSocket) {
     throw new Error('No SpacebroClient socket is open')
@@ -275,6 +286,7 @@ function off (eventName) {
 export default {
   SpacebroClient,
   connect,
+  create,
   disconnect,
   addPacker,
   addUnpacker,
