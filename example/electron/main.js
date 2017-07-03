@@ -20,7 +20,7 @@ app.on('ready', () => {
   })
 
   win.webContents.on('did-finish-load', () => {
-    setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
-    setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 5000)
+    setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 2000)
+    setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 3000)
   })
 })

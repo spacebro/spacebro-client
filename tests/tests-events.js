@@ -11,7 +11,7 @@ function connect (name) {
   })
 }
 
-test.afterEach((t) => {
+test.afterEach.always((t) => {
   client.disconnect()
 })
 

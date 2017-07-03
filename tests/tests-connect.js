@@ -3,7 +3,7 @@ import sleep from 'sleep-promise'
 
 import client from '../src/spacebro-client'
 
-test.afterEach((t) => {
+test.afterEach.always((t) => {
   if (!t.context.isDisconnected) {
     client.disconnect()
   }
