@@ -2,22 +2,24 @@
 <html>
 <body>
   <div id='log'>
-    <h1 id="p1">Log:</h1>  
+    <h1 id="p1">Log:</h1>
   </div>
-  
+
   <script>
-    const spacebroClient = require('../../')
+    const { SpacebroClient } = require('../../')
+
     function addTextNode(text) {
       let div = document.getElementById( 'log' )
       div.insertAdjacentHTML( 'beforeend', `<p>${text}</p>` )
     }
-    spacebroClient.connect('pangu.fendi-app-player.estu.la', 6000, {
+
+    const client = new SpacebroClient('spacebro.space', 3333, {
       clientName: 'foo',
       channelName: 'bar'
     })
-    const events = ['hello', 'world']
-    events.forEach((event) => {
-      spacebroClient.on(event, (data) => {
+
+    for (const eventName of ['hello', 'world']) {
+      spacebroClient.on(eventName, (data) => {
         addTextNode(JSON.stringify(data))
       })
     })

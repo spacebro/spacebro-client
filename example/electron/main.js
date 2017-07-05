@@ -1,9 +1,8 @@
 const { app, BrowserWindow } = require('electron')
-const spacebroClient = require('../../')
+const { SpacebroClient } = require('../../')
 
 let win = null
-
-spacebroClient.connect('127.0.0.1', 8888, {
+const client = new SpacebroClient('spacebro.space', 3333, {
   clientName: 'foo',
   channelName: 'bar'
 })
@@ -12,15 +11,14 @@ app.on('ready', () => {
   win = new BrowserWindow({ width: 800, height: 600 })
   win.loadURL(`file://${__dirname}/index.html`)
 
-  const events = ['hello', 'world']
-  events.forEach((event) => {
-    spacebroClient.on(event, (data) => {
-      win.webContents.send(event, data)
+  for (const eventName of ['hello', 'world']) {
+    client.on(eventName, (data) => {
+      win.webContents.send(eventName, data)
     })
   })
 
   win.webContents.on('did-finish-load', () => {
-    setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 2000)
-    setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 3000)
+    setTimeout(() => { client.emit('hello', { hello: 'world' }) }, 2000)
+    setTimeout(() => { client.emit('world', { world: 'hello' }) }, 3000)
   })
 })

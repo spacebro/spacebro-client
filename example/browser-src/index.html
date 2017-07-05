@@ -26,9 +26,9 @@
     var startTime = null
     var nowmore = null
 
-    spacebro.connect('127.0.0.1', 8888, {
+    spacebro.connect('spacebro.space', 3333, {
       clientName: 'pinger',
-      channelName: 'pegasus',
+      channelName: 'browserExample',
       unpackers: [{ handler: function handler(args) {
           var latency = Date.now() - startTime
           log(`Delay: ${latency}`)
@@ -49,10 +49,11 @@
     var count = 0
     setInterval(function () {
       startTime = Date.now()
-      spacebro.emit('pingy', {
-        count: ++count
-      })
-    }, 2000)
+      if (count < 3) {
+        spacebro.emit('pingy', {count})
+        count++
+      }
+    }, 500)
   </script>
 </body>
 </html>
