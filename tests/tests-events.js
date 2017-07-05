@@ -81,6 +81,18 @@ test.serial('once', async (t) => {
   await sleep(200)
 })
 
+test.serial.failing('on - wildcard', async (t) => {
+  connect('emit-on-wildcard')
+
+  client.on('connect', () => {
+    client.emit('hello')
+  })
+  client.on('*', (data) => {
+    t.pass('Message received')
+  })
+  await sleep(200)
+})
+
 test.serial.cb('off', (t) => {
   connect('once')
 
