@@ -14,7 +14,7 @@ test('create', async (t) => {
     t.pass('Message received')
   })
   myClient.emit('hello')
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('create - Wrong address', async (t) => {

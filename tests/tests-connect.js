@@ -13,7 +13,7 @@ test('connect - Legacy version', async (t) => {
   sbClient.on('connect', () => {
     t.pass('Connected')
   })
-  await sleep(4000)
+  await sleep(5000)
   sbClient.disconnect()
 })
 
@@ -27,7 +27,7 @@ test('connect', async (t) => {
   client.on('connect', () => {
     t.pass('Connected')
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('connect - Delayed', async (t) => {
@@ -41,7 +41,7 @@ test('connect - Delayed', async (t) => {
   client.on('connect', () => {
     t.pass('Connected')
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('connect - Wrong address', async (t) => {
@@ -55,7 +55,7 @@ test('connect - Wrong address', async (t) => {
     t.pass('Connection error')
     t.skip.is(err, 'Cannot find server at address "a.wrong.address:12345"')
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('connect - Wrong port', async (t) => {
@@ -69,7 +69,7 @@ test('connect - Wrong port', async (t) => {
     t.pass('Connection error')
     t.skip.is(err, 'Cannot connect to server - wrong port')
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test.failing('disconnect', async (t) => {
@@ -88,5 +88,5 @@ test.failing('disconnect', async (t) => {
     await sleep(2000)
     await t.throws(() => client.emit('what', () => 'ever'))
   })
-  await sleep(4000)
+  await sleep(5000)
 })

@@ -24,7 +24,7 @@ test.serial('emit / on - Before connect (legacy version)', async (t) => {
     clientName: 'emit-on-after-connect',
     verbose: false
   })
-  await sleep(4000)
+  await sleep(5000)
   sbClient.disconnect()
 })
 
@@ -38,7 +38,7 @@ test('emit / on - No data', async (t) => {
     t.pass('Message received')
     t.deepEqual(data, { _from: 'emit-on-no-data', _to: null })
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('emit / on - With string', async (t) => {
@@ -51,7 +51,7 @@ test('emit / on - With string', async (t) => {
     t.pass('Message received')
     t.deepEqual(data, 'abcd')
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test.failing('on - Twice with same event name', async (t) => {
@@ -65,7 +65,7 @@ test.failing('on - Twice with same event name', async (t) => {
   client.on('hello', () => t.pass('Message received'))
   client.on('hello', () => t.pass('Message received again'))
 
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('once', async (t) => {
@@ -79,7 +79,7 @@ test('once', async (t) => {
   })
   client.once('hello', () => t.pass('Message received'))
 
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test.failing('on - Wildcard', async (t) => {
@@ -91,7 +91,7 @@ test.failing('on - Wildcard', async (t) => {
   client.on('*', (data) => {
     t.pass('Message received')
   })
-  await sleep(4000)
+  await sleep(5000)
 })
 
 test('off', async (t) => {
@@ -101,10 +101,10 @@ test('off', async (t) => {
 
   client.on('connect', async () => {
     client.emit('hello')
-    await sleep(4000)
+    await sleep(5000)
     client.off('hello')
     client.emit('hello')
   })
   client.on('hello', () => t.pass('Message received'))
-  await sleep(4000)
+  await sleep(5000)
 })
