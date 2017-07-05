@@ -1,29 +1,24 @@
 import test from 'ava'
 import sleep from 'sleep-promise'
 
-import client from '../src/spacebro-client'
+import sbClient, { SpacebroClient } from '../src/spacebro-client'
 
-test.afterEach.always((t) => {
-  if (!t.context.isDisconnected) {
-    client.disconnect()
-  }
-})
-
-test.serial.cb('Simple connect', (t) => {
-  client.connect('spacebro.space', 3333, {
+test('Simple connect', async (t) => {
+  sbClient.connect('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect1',
     verbose: false
   })
 
-  client.on('connect', () => {
+  sbClient.on('connect', () => {
     t.pass('Connected')
-    t.end()
   })
+  await sleep(500)
+  sbClient.disconnect()
 })
 
-test.serial.cb('connect - wrong address', (t) => {
-  client.connect('a.wrong.address', 12345, {
+test('connect - wrong address', async (t) => {
+  const client = new SpacebroClient('a.wrong.address', 12345, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect2',
     verbose: false
@@ -32,12 +27,12 @@ test.serial.cb('connect - wrong address', (t) => {
   client.on('connect_error', (err) => {
     t.pass('Connection error')
     t.skip.is(err, 'Cannot find server at address "a.wrong.address:12345"')
-    t.end()
   })
+  await sleep(500)
 })
 
-test.serial.cb('connect - wrong port', (t) => {
-  client.connect('spacebro.space', 12345, {
+test('connect - wrong port', async (t) => {
+  const client = new SpacebroClient('spacebro.space', 12345, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect3',
     verbose: false
@@ -46,12 +41,12 @@ test.serial.cb('connect - wrong port', (t) => {
   client.on('connect_error', (err) => {
     t.pass('Connection error')
     t.skip.is(err, 'Cannot connect to server - wrong port')
-    t.end()
   })
+  await sleep(500)
 })
 
-test.serial.cb('disconnect', (t) => {
-  client.connect('spacebro.space', 3333, {
+test.failing('disconnect', async (t) => {
+  const client = new SpacebroClient('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect4',
     verbose: false
@@ -65,8 +60,6 @@ test.serial.cb('disconnect', (t) => {
 
     await sleep(200)
     await t.throws(() => client.emit('what', () => 'ever'))
-
-    t.context.isDisconnected = true
-    t.end()
   })
+  await sleep(500)
 })

@@ -210,7 +210,8 @@ function connect (address, port, options) {
   if (lastSocket) {
     console.warn('A SpacebroClient socket is already open')
   }
-  lastSocket = new SpacebroClient(address, port, options)
+  lastSocket = new SpacebroClient(null, null, options)
+  lastSocket.connect(address, port)
   if (fakeSocket) {
     lastSocket.events = fakeSocket.events
     fakeSocket = null
@@ -236,7 +237,9 @@ function checkSocket () {
 }
 
 function disconnect () {
-  checkSocket()
+  if (!lastSocket) {
+    console.warn('No SpacebroClient socket is open')
+  }
   lastSocket.disconnect()
   lastSocket = null
 }

@@ -1,34 +1,35 @@
 import test from 'ava'
 import sleep from 'sleep-promise'
 
-import client from '../src/spacebro-client'
+import sbClient, { SpacebroClient } from '../src/spacebro-client'
 
 function connect (name) {
-  client.connect('spacebro.space', 3333, {
+  return new SpacebroClient('spacebro.space', 3333, {
     channelName: `spacebro-client-test-${name}`,
     clientName: name,
     verbose: false
   })
 }
 
-test.afterEach.always((t) => {
-  client.disconnect()
-})
-
-test.serial.cb('emit/on - after connect', (t) => {
-  client.on('connect', () => {
-    client.emit('hello')
+test.serial('emit/on - before connect', async (t) => {
+  sbClient.on('connect', () => {
+    sbClient.emit('hello')
   })
-  client.on('hello', (data) => {
+  sbClient.on('hello', (data) => {
     t.pass('Message received')
     t.deepEqual(data, { _from: 'emit-on-after-connect', _to: null })
-    t.end()
   })
-  connect('emit-on-after-connect')
+  sbClient.connect('spacebro.space', 3333, {
+    channelName: 'spacebro-client-test-emit-on-after-connect',
+    clientName: 'emit-on-after-connect',
+    verbose: false
+  })
+  await sleep(500)
+  sbClient.disconnect()
 })
 
-test.serial.cb('emit/on - no data', (t) => {
-  connect('emit-on-no-data')
+test('emit/on - no data', async (t) => {
+  const client = connect('emit-on-no-data')
 
   client.on('connect', () => {
     client.emit('hello')
@@ -36,12 +37,12 @@ test.serial.cb('emit/on - no data', (t) => {
   client.on('hello', (data) => {
     t.pass('Message received')
     t.deepEqual(data, { _from: 'emit-on-no-data', _to: null })
-    t.end()
   })
+  await sleep(500)
 })
 
-test.serial.cb('emit/on - with string', (t) => {
-  connect('emit-on-with-data')
+test('emit/on - with string', async (t) => {
+  const client = connect('emit-on-with-string')
 
   client.on('connect', () => {
     client.emit('hello', 'abcd')
@@ -49,12 +50,12 @@ test.serial.cb('emit/on - with string', (t) => {
   client.on('hello', (data) => {
     t.pass('Message received')
     t.deepEqual(data, 'abcd')
-    t.end()
   })
+  await sleep(500)
 })
 
-test.serial.failing('Double on', async (t) => {
-  connect('double-on')
+test.failing('Double on', async (t) => {
+  const client = connect('double-on')
 
   t.plan(2)
 
@@ -64,11 +65,11 @@ test.serial.failing('Double on', async (t) => {
   client.on('hello', () => t.pass('Message received'))
   client.on('hello', () => t.pass('Message received again'))
 
-  await sleep(200)
+  await sleep(500)
 })
 
-test.serial('once', async (t) => {
-  connect('once')
+test('once', async (t) => {
+  const client = connect('once')
 
   t.plan(1)
 
@@ -78,11 +79,11 @@ test.serial('once', async (t) => {
   })
   client.once('hello', () => t.pass('Message received'))
 
-  await sleep(200)
+  await sleep(500)
 })
 
-test.serial.failing('on - wildcard', async (t) => {
-  connect('emit-on-wildcard')
+test.failing('on - wildcard', async (t) => {
+  const client = connect('emit-on-wildcard')
 
   client.on('connect', () => {
     client.emit('hello')
@@ -90,21 +91,20 @@ test.serial.failing('on - wildcard', async (t) => {
   client.on('*', (data) => {
     t.pass('Message received')
   })
-  await sleep(200)
+  await sleep(500)
 })
 
-test.serial.cb('off', (t) => {
-  connect('once')
+test('off', async (t) => {
+  const client = connect('off')
 
   t.plan(1)
 
   client.on('connect', async () => {
     client.emit('hello')
-    await sleep(200)
+    await sleep(500)
     client.off('hello')
     client.emit('hello')
-    await sleep(200)
-    t.end()
   })
   client.on('hello', () => t.pass('Message received'))
+  await sleep(500)
 })
