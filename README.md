@@ -24,22 +24,22 @@ $ spacebro
 Then, write the following client code:
 
 ```js
-const spacebroClient = require('spacebro-client')
+const { SpacebroClient } = require('spacebro-client')
 
-spacebroClient.connect('127.0.0.1', 8888, {
+const client = new SpacebroClient('127.0.0.1', 8888, {
   clientName: 'foo',
   channelName: 'bar'
 })
 
-spacebroClient.on('hello', () => console.log('world'))
-spacebroClient.emit('hello')
+client.on('hello', () => console.log('world'))
+client.emit('hello')
 ```
 
 ## 🚀 API
 
-### `spacebroClient.connect([[address, ]port, ]options)`
+### `class SpacebroClient([[address, port, ]options])`
 
-Look for a server.
+Look for a server, and return a handle to the connection.
 
 ```js
 // For more details about possible options, see below.
@@ -50,7 +50,7 @@ const option = {
 
 // this call does not use any auto-discovery (mdns/avahi/bonjour) feature
 // and just perfoms a basic connection request on `ws://${address}:${port}`.
-spacebroClient.connect('127.0.0.1', 8888, options)
+const client = new SpacebroClient('127.0.0.1', 8888, options)
 ```
 
 #### options:
@@ -62,25 +62,33 @@ spacebroClient.connect('127.0.0.1', 8888, options)
 | **verbose** | `true` | *optional* | Should spacebro-client display logs (connection / emission / reception)? |
 | **sendBack** | `true` | *optional* | Should this client receive the events it sent? |
 
-### `spacebroClient.emit(eventName[, data])`
+### `create([[address, port, ]options])`
+
+Look for a server, and creates handle to the connection. Unlike `new SpacebroClient`, returns a promise to the handle that resolves when the connection is established.
+
+### `client.emit(eventName[, data])`
 
 Broadcast a specific event to all the clients in the channel. `data` must be a JSON object.
 
-### `spacebroClient.sendTo(eventName, target[, data])`
+### `client.sendTo(eventName, target[, data])`
 
 Send an event to a specific target in the channel. `data` must be a JSON object.
 
-### `spacebroClient.on(eventName, handler)`
+### `client.on(eventName, handler)`
 
 Listen to a specific event.
 
-### `spacebroClient.once(eventName, handler)`
+### `client.once(eventName, handler)`
 
 Listen to a specific event only once.
 
-### `spacebroClient.off(eventName)`
+### `client.off(eventName)`
 
 Remove a specific event listener.
+
+### `client.disconnect()`
+
+Close the connection.
 
 ## 🖥 Browser
 
