@@ -224,7 +224,7 @@ function create (address, port, options) {
 ** Instances of SpacebroClient should be used instead
 */
 
-let socketSingleton = null
+let spacebroClientSingleton = null
 
 /*
 ** This variable is used to allow calling `on` before `connect`
@@ -232,61 +232,61 @@ let socketSingleton = null
 let fakeSocket = new SpacebroClient()
 
 function connect (address, port, options) {
-  if (socketSingleton) {
+  if (spacebroClientSingleton) {
     console.warn('A SpacebroClient socket is already open')
   }
-  socketSingleton = new SpacebroClient(null, null, options)
-  socketSingleton.connect(address, port)
+  spacebroClientSingleton = new SpacebroClient(null, null, options)
+  spacebroClientSingleton.connect(address, port)
   if (fakeSocket) {
-    socketSingleton.events = fakeSocket.events
+    spacebroClientSingleton.events = fakeSocket.events
     fakeSocket = null
   }
-  return socketSingleton
+  return spacebroClientSingleton
 }
 
 function _checkSocket () {
-  if (!socketSingleton) {
+  if (!spacebroClientSingleton) {
     console.warn('No SpacebroClient socket is open')
   }
-  return !!socketSingleton
+  return !!spacebroClientSingleton
 }
 
 function disconnect () {
   if (_checkSocket()) {
-    socketSingleton.disconnect()
+    spacebroClientSingleton.disconnect()
   }
-  socketSingleton = null
+  spacebroClientSingleton = null
 }
 
 function addPacker (handler, priority, eventName) {
   if (_checkSocket()) {
-    socketSingleton.addPacker(handler, priority, eventName)
+    spacebroClientSingleton.addPacker(handler, priority, eventName)
   }
 }
 
 function addUnpacker (handler, priority, eventName) {
   if (_checkSocket()) {
-    socketSingleton.addUnpacker(handler, priority, eventName)
+    spacebroClientSingleton.addUnpacker(handler, priority, eventName)
   }
 }
 
 function emit (eventName, data = {}) {
   if (_checkSocket()) {
-    socketSingleton.emit(eventName, data)
+    spacebroClientSingleton.emit(eventName, data)
   }
 }
 
 function sendTo (eventName, to = null, data = {}) {
   if (_checkSocket()) {
-    socketSingleton.sendTo(eventName, to, data)
+    spacebroClientSingleton.sendTo(eventName, to, data)
   }
 }
 
 function _eventSocket () {
-  if (!socketSingleton && !fakeSocket) {
+  if (!spacebroClientSingleton && !fakeSocket) {
     console.warn('No SpacebroClient socket is open')
   }
-  return socketSingleton || fakeSocket
+  return spacebroClientSingleton || fakeSocket
 }
 
 function on (eventName, handler, handlerContext, priority) {
