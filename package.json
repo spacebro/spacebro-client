@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run lint && npm run unittest && npm run test-karma",
     "lint": "eslint --ext .js tests src",
-    "unittest": "ava --verbose --timeout=8s",
+    "unittest": "ava --verbose --timeout=16s",
     "test-karma": "karma start tests/karma.conf.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",

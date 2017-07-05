@@ -17,7 +17,11 @@ const defaultConfig = {
   multiService: false
 }
 
-function filterHooks (eventName, hooks) {
+/*
+** Returns an array of packers / unpackers applicable to a given event, sorted
+** by priority; used by `SpacebroClient.on` and `SpacebroClient.sendTo`
+*/
+function _filterHooks (eventName, hooks) {
   return hooks
     .filter(hook => [eventName, '*'].indexOf(hook.eventName) !== -1)
     .sort(hook => -hook.priority || 0)
@@ -128,12 +132,13 @@ class SpacebroClient {
 
       .on('*', ({ data }) => {
         let [eventName, args] = data
+
         if (!this.config.sendBack && args._from === this.config.clientName) {
           return
         }
         if (this.events[eventName]) {
           this.logger.log(`socket received ${eventName} with data:`, args)
-          for (let unpack of filterHooks(eventName, this.unpackers)) {
+          for (let unpack of _filterHooks(eventName, this.unpackers)) {
             const unpacked = unpack({ eventName, data: args })
             args = unpacked || args
           }
@@ -160,7 +165,7 @@ class SpacebroClient {
 
   emit (eventName, data = {}) {
     // null is a type of Object. so we have to check null and undefined with loosy compare
-    if (typeof data !== 'object' || data == null) {
+    if (typeof data !== 'object' || data === null) {
       data = {data: data}
       data.altered = true
     }
@@ -171,7 +176,7 @@ class SpacebroClient {
     if (this.connected) {
       data._to = to
       data._from = this.config.clientName
-      for (let pack of filterHooks(eventName, this.packers)) {
+      for (let pack of _filterHooks(eventName, this.packers)) {
         data = pack({eventName, data}) || data
       }
       this.socket.emit(eventName, data)
@@ -203,22 +208,6 @@ class SpacebroClient {
   }
 }
 
-let lastSocket = null
-let fakeSocket = new SpacebroClient()
-
-function connect (address, port, options) {
-  if (lastSocket) {
-    console.warn('A SpacebroClient socket is already open')
-  }
-  lastSocket = new SpacebroClient(null, null, options)
-  lastSocket.connect(address, port)
-  if (fakeSocket) {
-    lastSocket.events = fakeSocket.events
-    fakeSocket = null
-  }
-  return lastSocket
-}
-
 function create (address, port, options) {
   const sc = new SpacebroClient(address, port, options)
 
@@ -230,60 +219,98 @@ function create (address, port, options) {
   })
 }
 
-function checkSocket () {
-  if (!lastSocket) {
-    throw new Error('No SpacebroClient socket is open')
+/*
+** The following functions are for legacy purposes
+** Instances of SpacebroClient should be used instead
+*/
+
+let socketSingleton = null
+
+/*
+** This variable is used to allow calling `on` before `connect`
+*/
+let fakeSocket = new SpacebroClient()
+
+function connect (address, port, options) {
+  if (socketSingleton) {
+    console.warn('A SpacebroClient socket is already open')
   }
+  socketSingleton = new SpacebroClient(null, null, options)
+  socketSingleton.connect(address, port)
+  if (fakeSocket) {
+    socketSingleton.events = fakeSocket.events
+    fakeSocket = null
+  }
+  return socketSingleton
+}
+
+function _checkSocket () {
+  if (!socketSingleton) {
+    console.warn('No SpacebroClient socket is open')
+  }
+  return !!socketSingleton
 }
 
 function disconnect () {
-  if (!lastSocket) {
-    console.warn('No SpacebroClient socket is open')
+  if (_checkSocket()) {
+    socketSingleton.disconnect()
   }
-  lastSocket.disconnect()
-  lastSocket = null
+  socketSingleton = null
 }
 
 function addPacker (handler, priority, eventName) {
-  checkSocket()
-  lastSocket.addPacker(handler, priority, eventName)
+  if (_checkSocket()) {
+    socketSingleton.addPacker(handler, priority, eventName)
+  }
 }
 
 function addUnpacker (handler, priority, eventName) {
-  checkSocket()
-  lastSocket.addUnpacker(handler, priority, eventName)
+  if (_checkSocket()) {
+    socketSingleton.addUnpacker(handler, priority, eventName)
+  }
 }
 
 function emit (eventName, data = {}) {
-  checkSocket()
-  lastSocket.emit(eventName, data)
+  if (_checkSocket()) {
+    socketSingleton.emit(eventName, data)
+  }
 }
 
 function sendTo (eventName, to = null, data = {}) {
-  checkSocket()
-  lastSocket.sendTo(eventName, to, data)
+  if (_checkSocket()) {
+    socketSingleton.sendTo(eventName, to, data)
+  }
 }
 
-// Reception
-function on (eventName, handler, handlerContext, priority) {
-  if (!lastSocket && !fakeSocket) {
-    throw new Error('No SpacebroClient socket is open')
+function _eventSocket () {
+  if (!socketSingleton && !fakeSocket) {
+    console.warn('No SpacebroClient socket is open')
   }
-  (lastSocket || fakeSocket).on(eventName, handler, handlerContext, priority)
+  return socketSingleton || fakeSocket
+}
+
+function on (eventName, handler, handlerContext, priority) {
+  const socket = _eventSocket()
+
+  if (socket) {
+    socket.on(eventName, handler, handlerContext, priority)
+  }
 }
 
 function once (eventName, handler, handlerContext, priority) {
-  if (!lastSocket && !fakeSocket) {
-    throw new Error('No SpacebroClient socket is open')
+  const socket = _eventSocket()
+
+  if (socket) {
+    socket.once(eventName, handler, handlerContext, priority)
   }
-  (lastSocket || fakeSocket).once(eventName, handler, handlerContext, priority)
 }
 
 function off (eventName) {
-  if (!lastSocket && !fakeSocket) {
-    throw new Error('No SpacebroClient socket is open')
+  const socket = _eventSocket()
+
+  if (socket) {
+    socket.off(eventName)
   }
-  (lastSocket || fakeSocket).off(eventName)
 }
 
 export default {
@@ -294,7 +321,6 @@ export default {
   addPacker,
   addUnpacker,
   emit,
-  send: emit,
   sendTo,
   on,
   once,

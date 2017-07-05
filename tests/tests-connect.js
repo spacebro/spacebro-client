@@ -3,7 +3,7 @@ import sleep from 'sleep-promise'
 
 import sbClient, { SpacebroClient } from '../src/spacebro-client'
 
-test('Simple connect', async (t) => {
+test('connect - Legacy version', async (t) => {
   sbClient.connect('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect1',
@@ -13,11 +13,38 @@ test('Simple connect', async (t) => {
   sbClient.on('connect', () => {
     t.pass('Connected')
   })
-  await sleep(500)
+  await sleep(4000)
   sbClient.disconnect()
 })
 
-test('connect - wrong address', async (t) => {
+test('connect', async (t) => {
+  const client = new SpacebroClient('spacebro.space', 3333, {
+    channelName: 'spacebro-client-test-connect',
+    clientName: 'connect1',
+    verbose: false
+  })
+
+  client.on('connect', () => {
+    t.pass('Connected')
+  })
+  await sleep(4000)
+})
+
+test('connect - Delayed', async (t) => {
+  const client = new SpacebroClient(null, null, {
+    channelName: 'spacebro-client-test-connect',
+    clientName: 'connect1',
+    verbose: false
+  })
+
+  client.connect('spacebro.space', 3333)
+  client.on('connect', () => {
+    t.pass('Connected')
+  })
+  await sleep(4000)
+})
+
+test('connect - Wrong address', async (t) => {
   const client = new SpacebroClient('a.wrong.address', 12345, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect2',
@@ -28,10 +55,10 @@ test('connect - wrong address', async (t) => {
     t.pass('Connection error')
     t.skip.is(err, 'Cannot find server at address "a.wrong.address:12345"')
   })
-  await sleep(500)
+  await sleep(4000)
 })
 
-test('connect - wrong port', async (t) => {
+test('connect - Wrong port', async (t) => {
   const client = new SpacebroClient('spacebro.space', 12345, {
     channelName: 'spacebro-client-test-connect',
     clientName: 'connect3',
@@ -42,7 +69,7 @@ test('connect - wrong port', async (t) => {
     t.pass('Connection error')
     t.skip.is(err, 'Cannot connect to server - wrong port')
   })
-  await sleep(500)
+  await sleep(4000)
 })
 
 test.failing('disconnect', async (t) => {
@@ -58,8 +85,8 @@ test.failing('disconnect', async (t) => {
     client.on('disconnect', () => t.pass('Disconnected'))
     client.disconnect()
 
-    await sleep(200)
+    await sleep(2000)
     await t.throws(() => client.emit('what', () => 'ever'))
   })
-  await sleep(500)
+  await sleep(4000)
 })

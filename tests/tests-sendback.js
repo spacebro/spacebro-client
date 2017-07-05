@@ -1,23 +1,43 @@
 import test from 'ava'
 import sleep from 'sleep-promise'
+import util from 'util'
 
-import client from '../src/spacebro-client'
+import { SpacebroClient } from '../src/spacebro-client'
 
-test.failing('connect - sendback', async (t) => {
-  client.connect('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-sendback',
-    clientName: 'sendback',
-    sendback: false,
+function connectSendback (name) {
+  return new SpacebroClient('spacebro.space', 3333, {
+    channelName: `spacebro-client-test-${name}`,
+    clientName: name,
+    sendBack: false,
     verbose: false
   })
+}
 
+function inspect (obj) {
+  return util.inspect(obj, {showHidden: false, depth: null})
+}
+
+test('connect - Sendback', async (t) => {
+  const client = connectSendback('sendBack')
+
+  t.plan(0)
+
+  client.on('sendBack', (data) => t.fail(`Received own data: ${inspect(data)}`))
   client.on('connect', () => {
-    t.pass('Connected')
-
-    client.on('sendback', () => t.fail('Received own data'))
-    client.emit('sendback')
-    client.emit('sendback', {})
-    client.emit('sendback', 'helloWorld')
+    client.emit('sendBack', {})
   })
-  await sleep(500)
+  await sleep(5000)
+})
+
+test.failing('connect - Sendback with special data', async (t) => {
+  const client = connectSendback('sendBack-special-data')
+
+  t.plan(0)
+
+  client.on('sendBack', (data) => t.fail(`Received own data: ${inspect(data)}`))
+  client.on('connect', () => {
+    client.emit('sendBack')
+    client.emit('sendBack', 'helloWorld')
+  })
+  await sleep(5000)
 })

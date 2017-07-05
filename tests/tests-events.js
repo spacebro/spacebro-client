@@ -11,7 +11,7 @@ function connect (name) {
   })
 }
 
-test.serial('emit/on - before connect', async (t) => {
+test.serial('emit / on - Before connect (legacy version)', async (t) => {
   sbClient.on('connect', () => {
     sbClient.emit('hello')
   })
@@ -24,11 +24,11 @@ test.serial('emit/on - before connect', async (t) => {
     clientName: 'emit-on-after-connect',
     verbose: false
   })
-  await sleep(500)
+  await sleep(4000)
   sbClient.disconnect()
 })
 
-test('emit/on - no data', async (t) => {
+test('emit / on - No data', async (t) => {
   const client = connect('emit-on-no-data')
 
   client.on('connect', () => {
@@ -38,10 +38,10 @@ test('emit/on - no data', async (t) => {
     t.pass('Message received')
     t.deepEqual(data, { _from: 'emit-on-no-data', _to: null })
   })
-  await sleep(500)
+  await sleep(4000)
 })
 
-test('emit/on - with string', async (t) => {
+test('emit / on - With string', async (t) => {
   const client = connect('emit-on-with-string')
 
   client.on('connect', () => {
@@ -51,10 +51,10 @@ test('emit/on - with string', async (t) => {
     t.pass('Message received')
     t.deepEqual(data, 'abcd')
   })
-  await sleep(500)
+  await sleep(4000)
 })
 
-test.failing('Double on', async (t) => {
+test.failing('on - Twice with same event name', async (t) => {
   const client = connect('double-on')
 
   t.plan(2)
@@ -65,7 +65,7 @@ test.failing('Double on', async (t) => {
   client.on('hello', () => t.pass('Message received'))
   client.on('hello', () => t.pass('Message received again'))
 
-  await sleep(500)
+  await sleep(4000)
 })
 
 test('once', async (t) => {
@@ -79,10 +79,10 @@ test('once', async (t) => {
   })
   client.once('hello', () => t.pass('Message received'))
 
-  await sleep(500)
+  await sleep(4000)
 })
 
-test.failing('on - wildcard', async (t) => {
+test.failing('on - Wildcard', async (t) => {
   const client = connect('emit-on-wildcard')
 
   client.on('connect', () => {
@@ -91,7 +91,7 @@ test.failing('on - wildcard', async (t) => {
   client.on('*', (data) => {
     t.pass('Message received')
   })
-  await sleep(500)
+  await sleep(4000)
 })
 
 test('off', async (t) => {
@@ -101,10 +101,10 @@ test('off', async (t) => {
 
   client.on('connect', async () => {
     client.emit('hello')
-    await sleep(500)
+    await sleep(4000)
     client.off('hello')
     client.emit('hello')
   })
   client.on('hello', () => t.pass('Message received'))
-  await sleep(500)
+  await sleep(4000)
 })
