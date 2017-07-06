@@ -229,7 +229,7 @@ let spacebroClientSingleton = null
 /*
 ** This variable is used to allow calling `on` before `connect`
 */
-let fakeSocket = new SpacebroClient()
+let beforeConnectSocket = new SpacebroClient()
 
 function connect (address, port, options) {
   if (spacebroClientSingleton) {
@@ -237,9 +237,9 @@ function connect (address, port, options) {
   }
   spacebroClientSingleton = new SpacebroClient(null, null, options)
   spacebroClientSingleton.connect(address, port)
-  if (fakeSocket) {
-    spacebroClientSingleton.events = fakeSocket.events
-    fakeSocket = null
+  if (beforeConnectSocket) {
+    spacebroClientSingleton.events = beforeConnectSocket.events
+    beforeConnectSocket = null
   }
   return spacebroClientSingleton
 }
@@ -283,10 +283,10 @@ function sendTo (eventName, to = null, data = {}) {
 }
 
 function _eventSocket () {
-  if (!spacebroClientSingleton && !fakeSocket) {
+  if (!spacebroClientSingleton && !beforeConnectSocket) {
     console.warn('No SpacebroClient socket is open')
   }
-  return spacebroClientSingleton || fakeSocket
+  return spacebroClientSingleton || beforeConnectSocket
 }
 
 function on (eventName, handler, handlerContext, priority) {
