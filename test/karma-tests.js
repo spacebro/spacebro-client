@@ -6,7 +6,7 @@ const { SpacebroClient } = require('../src/spacebro-client')
 function connect (name) {
   return new SpacebroClient('spacebro.space', 3333, {
     channelName: `spacebro-client-test-${name}`,
-    clientName: name,
+    client: {name: name},
     verbose: false
   })
 }
