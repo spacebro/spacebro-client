@@ -3,7 +3,6 @@
 import isNode from './is-node'
 import chalk from 'chalk'
 
-let verbose = true
 const base = 'spacebro-client -'
 const prefix = {
   log: base,
@@ -14,24 +13,26 @@ const prefix = {
 // chalk does not seem to work here.
 // This is not important but one should take a look at some point
 
-function setup (_verbose) {
-  verbose = _verbose
+class Logger {
+  constructor (verbose) {
+    this.verbose = verbose
+  }
+
+  log (...args) {
+    this.verbose && console.log(prefix.log, ...args)
+  }
+
+  info (...args) {
+    this.verbose && console.log(prefix.info, ...args)
+  }
+
+  warn (...args) {
+    this.verbose && console.log(prefix.warn, ...args)
+  }
+
+  error (...args) {
+    this.verbose && console.log(prefix.error, ...args)
+  }
 }
 
-function log (...args) {
-  verbose && console.log(prefix.log, ...args)
-}
-
-function info (...args) {
-  verbose && console.log(prefix.info, ...args)
-}
-
-function warn (...args) {
-  verbose && console.log(prefix.warn, ...args)
-}
-
-function error (...args) {
-  verbose && console.log(prefix.error, ...args)
-}
-
-export default { setup, log, warn, info, error }
+export default Logger

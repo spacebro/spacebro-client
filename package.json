@@ -1,11 +1,13 @@
 {
   "name": "spacebro-client",
-  "version": "0.3.6",
+  "version": "0.4.0-beta.5",
   "description": "🌟 Connect easily to a Spacebro server",
   "main": "dist/spacebro-client.js",
   "scripts": {
-    "test": "ava",
-    "lint": "gulp lint",
+    "test": "npm run lint && npm run unittest && npm run test-karma",
+    "lint": "eslint --ext .js tests src",
+    "unittest": "ava --verbose --timeout=16s",
+    "test-karma": "karma start tests/karma.conf.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
     "coverage": "gulp coverage"
@@ -24,6 +26,7 @@
   "dependencies": {
     "babel-runtime": "6.23.0",
     "chalk": "1.1.3",
+    "eslint": "^4.1.1",
     "signals": "1.0.0",
     "socket.io-client": "2.0.1",
     "socketio-wildcard": "2.0.0"
@@ -33,7 +36,7 @@
     "babel-cli": "^6.14.0",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.0.0",
+    "babel-loader": "^7.1.1",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-polyfill": "^6.23.0",
@@ -43,6 +46,7 @@
     "del": "2.2.2",
     "electron": "^1.6.6",
     "electron-rebuild": "^1.4.0",
+    "eslint": "^4.1.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-html": "^3.0.0",
     "eslint-plugin-import": "^2.6.0",
@@ -63,10 +67,18 @@
     "gulp-uglify": "^3.0.0",
     "isparta": "4.0.0",
     "json-loader": "0.5.4",
+    "karma": "^1.7.0",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-electron": "^5.2.1",
+    "karma-mocha": "^1.3.0",
+    "karma-webpack": "^2.0.3",
     "mocha": "^3.4.2",
     "moment": "^2.15.0",
     "sinon": "^2.3.1",
     "sinon-chai": "^2.10.0",
+    "sleep-promise": "^2.0.0",
+    "spectron": "^3.7.2",
     "webpack": "^2.6.1",
     "webpack-stream": "3.2.0"
   },
@@ -76,7 +88,9 @@
   },
   "ava": {
     "files": [
-      "test/*.js"
-    ]
+      "tests/tests-*.js"
+    ],
+    "require": "babel-register",
+    "babel": "inherit"
   }
 }
