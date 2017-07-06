@@ -1,21 +1,7 @@
 import test from 'ava'
 import sleep from 'sleep-promise'
 
-import sbClient, { SpacebroClient } from '../src/spacebro-client'
-
-test('connect - Legacy version', async (t) => {
-  sbClient.connect('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-connect',
-    clientName: 'connect1',
-    verbose: false
-  })
-
-  sbClient.on('connect', () => {
-    t.pass('Connected')
-  })
-  await sleep(5000)
-  sbClient.disconnect()
-})
+import { SpacebroClient } from '../src/spacebro-client'
 
 test('connect', async (t) => {
   const client = new SpacebroClient('spacebro.space', 3333, {
