@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/spacebro/spacebro-client",
   "dependencies": {
+    "assignment": "^2.2.1",
     "babel-runtime": "6.23.0",
     "chalk": "1.1.3",
     "eslint": "^4.1.1",

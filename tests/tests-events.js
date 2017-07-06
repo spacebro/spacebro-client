@@ -17,11 +17,11 @@ test.serial('emit / on - Before connect (legacy version)', async (t) => {
   })
   sbClient.on('hello', (data) => {
     t.pass('Message received')
-    t.deepEqual(data, { _from: 'emit-on-after-connect', _to: null })
+    t.deepEqual(data, { _from: 'emit-on-before-connect', _to: null })
   })
   sbClient.connect('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-emit-on-after-connect',
-    clientName: 'emit-on-after-connect',
+    channelName: 'spacebro-client-test-emit-on-before-connect',
+    clientName: 'emit-on-before-connect',
     verbose: false
   })
   await sleep(5000)
