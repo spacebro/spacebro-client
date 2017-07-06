@@ -27,12 +27,29 @@ Then, write the following client code:
 const { SpacebroClient } = require('spacebro-client')
 
 const client = new SpacebroClient('127.0.0.1', 8888, {
-  clientName: 'foo',
   channelName: 'bar'
+  client: {
+    name: 'foo',
+    description: "a foo tool",
+    in: {
+      inFoo: {
+        eventName: "inFoo",
+        description: "Input foo",
+        type: "all"
+      }
+    },
+    out: {
+      outBar: {
+        eventName: "outBar",
+        description: "Output bar",
+        type: "all"
+      }
+    }
+  }
 })
 
-client.on('hello', () => console.log('world'))
-client.emit('hello')
+client.on('inFoo', data() => console.log('inFoo', data))
+client.emit('outBar', { do: stuff})
 ```
 
 ## 🚀 API
@@ -44,7 +61,7 @@ Look for a server, and return a handle to the connection.
 ```js
 // For more details about possible options, see below.
 const option = {
-  clientName: 'foo',
+  client: {name: 'foo'},
   channelName: 'bar'
 }
 
@@ -57,7 +74,7 @@ const client = new SpacebroClient('127.0.0.1', 8888, options)
 
 | name | default | required | description |
 |:---|:---|:---|:---|
-| **clientName** | `null` | *recommended* | Your client's name. Can be useful to perform targeted events and for monitoring. |
+| **client.name** | `null` | *recommended* | Your client's name. Can be useful to perform targeted events and for monitoring. |
 | **channelName** | `null` | *recommended* | The channel your app will communicate in. This is especially usefull if you have multiple apps using the same server. |
 | **verbose** | `true` | *optional* | Should spacebro-client display logs (connection / emission / reception)? |
 | **sendBack** | `true` | *optional* | Should this client receive the events it sent? |
@@ -122,7 +139,7 @@ const spacebroClient = require('../../dist/spacebro-client')
 let win = null
 
 spacebroClient.connect('127.0.0.1', 8888, {
-  clientName: 'foo',
+  client: {name: 'foo'},
   channelName: 'bar'
 })
 
