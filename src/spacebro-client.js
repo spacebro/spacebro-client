@@ -33,7 +33,7 @@ class SpacebroClient {
     this.config = assignment(defaultConfig, options)
     // legacy
     if (this.config.clientName) {
-      console.warn(`clientName is deprecated, please use \`client: {name: ${this.config.clientName}}\` instead`)
+      console.warn(`DEPRECATED: clientName is deprecated, please use \`client: {name: ${this.config.clientName}}\` instead`)
       this.config.client.name = this.config.clientName
     }
 

@@ -6,7 +6,7 @@ import { SpacebroClient } from '../src/spacebro-client'
 test('connect', async (t) => {
   const client = new SpacebroClient('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-connect',
-    clientName: 'connect1',
+    client: {name: 'connect1'},
     verbose: false
   })
 
@@ -19,7 +19,7 @@ test('connect', async (t) => {
 test('connect - Delayed', async (t) => {
   const client = new SpacebroClient(null, null, {
     channelName: 'spacebro-client-test-connect',
-    clientName: 'connect1',
+    client: {name: 'connect1'},
     verbose: false
   })
 
@@ -33,7 +33,7 @@ test('connect - Delayed', async (t) => {
 test('connect - Wrong address', async (t) => {
   const client = new SpacebroClient('a.wrong.address', 12345, {
     channelName: 'spacebro-client-test-connect',
-    clientName: 'connect2',
+    client: {name: 'connect2'},
     verbose: false
   })
 
@@ -47,7 +47,7 @@ test('connect - Wrong address', async (t) => {
 test('connect - Wrong port', async (t) => {
   const client = new SpacebroClient('spacebro.space', 12345, {
     channelName: 'spacebro-client-test-connect',
-    clientName: 'connect3',
+    client: {name: 'connect3'},
     verbose: false
   })
 
@@ -61,7 +61,7 @@ test('connect - Wrong port', async (t) => {
 test.failing('disconnect', async (t) => {
   const client = new SpacebroClient('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-connect',
-    clientName: 'connect4',
+    client: {name: 'connect4'},
     verbose: false
   })
 
