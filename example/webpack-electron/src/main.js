@@ -8,8 +8,8 @@ function addTextNode (text) {
   console.log(text)
 }
 
-spacebroClient.connect('127.0.0.1', 8888, {
-  clientName: 'foo',
+spacebroClient.connect('spacebro.space', 3333, {
+  client: {name: 'foo'},
   channelName: 'bar'
 })
 
@@ -25,4 +25,3 @@ events.forEach((event) => {
 })
 
 setInterval(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
-

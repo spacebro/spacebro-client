@@ -27,7 +27,7 @@
     var nowmore = null
 
     spacebro.connect('spacebro.space', 3333, {
-      clientName: 'pinger',
+      client: {name: 'pinger'},
       channelName: 'browserExample',
       unpackers: [{ handler: function handler(args) {
           var latency = Date.now() - startTime

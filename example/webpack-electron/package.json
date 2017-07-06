@@ -10,7 +10,7 @@
     "webpack": "^2.6.1"
   },
   "dependencies": {
-    "spacebro-client": "^0.3.4"
+    "spacebro-client": "../../"
   },
   "license": "MIT"
 }

@@ -6,15 +6,15 @@
   </div>
 
   <script>
-    const { SpacebroClient } = require('../../')
+    const { SpacebroClient } = require('../../dist/spacebro-client')
 
     function addTextNode(text) {
       let div = document.getElementById( 'log' )
       div.insertAdjacentHTML( 'beforeend', `<p>${text}</p>` )
     }
 
-    const client = new SpacebroClient('spacebro.space', 3333, {
-      clientName: 'foo',
+    const spacebroClient = new SpacebroClient('spacebro.space', 3333, {
+      client: {name: 'foo'},
       channelName: 'bar'
     })
 
@@ -22,7 +22,7 @@
       spacebroClient.on(eventName, (data) => {
         addTextNode(JSON.stringify(data))
       })
-    })
+    }
     setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
     setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 5000)
   </script>
