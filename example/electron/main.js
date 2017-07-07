@@ -3,7 +3,7 @@ const { SpacebroClient } = require('../../')
 
 let win = null
 const client = new SpacebroClient('spacebro.space', 3333, {
-  clientName: 'foo',
+  client: {name: 'foo'},
   channelName: 'bar'
 })
 
@@ -15,7 +15,7 @@ app.on('ready', () => {
     client.on(eventName, (data) => {
       win.webContents.send(eventName, data)
     })
-  })
+  }
 
   win.webContents.on('did-finish-load', () => {
     setTimeout(() => { client.emit('hello', { hello: 'world' }) }, 2000)

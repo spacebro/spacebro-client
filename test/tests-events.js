@@ -1,32 +1,15 @@
 import test from 'ava'
 import sleep from 'sleep-promise'
 
-import sbClient, { SpacebroClient } from '../src/spacebro-client'
+import { SpacebroClient } from '../src/spacebro-client'
 
 function connect (name) {
   return new SpacebroClient('spacebro.space', 3333, {
     channelName: `spacebro-client-test-${name}`,
-    clientName: name,
+    client: {name: name},
     verbose: false
   })
 }
-
-test.serial('emit / on - Before connect (legacy version)', async (t) => {
-  sbClient.on('connect', () => {
-    sbClient.emit('hello')
-  })
-  sbClient.on('hello', (data) => {
-    t.pass('Message received')
-    t.deepEqual(data, { _from: 'emit-on-after-connect', _to: null })
-  })
-  sbClient.connect('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-emit-on-after-connect',
-    clientName: 'emit-on-after-connect',
-    verbose: false
-  })
-  await sleep(5000)
-  sbClient.disconnect()
-})
 
 test('emit / on - No data', async (t) => {
   const client = connect('emit-on-no-data')

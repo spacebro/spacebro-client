@@ -3,7 +3,7 @@
 const spacebroClient = require('../../')
 
 spacebroClient.connect('spacebro.space', 3333, {
-  clientName: 'foo',
+  client: {name: 'foo'},
   channelName: 'bar',
   verbose: true
 })

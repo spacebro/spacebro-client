@@ -4,18 +4,9 @@ import wildcard from 'socketio-wildcard'
 import io from 'socket.io-client'
 import Signal from 'signals'
 import Logger from './logger'
+import assignment from 'assignment'
 
 const patch = wildcard(io.Manager)
-
-const defaultConfig = {
-  channelName: null,
-  clientName: null,
-  packers: [],
-  unpackers: [],
-  sendBack: true,
-  verbose: true,
-  multiService: false
-}
 
 /*
 ** Returns an array of packers / unpackers applicable to a given event, sorted
@@ -30,7 +21,22 @@ function _filterHooks (eventName, hooks) {
 
 class SpacebroClient {
   constructor (address, port, options = {}) {
-    this.config = Object.assign({}, defaultConfig, options)
+    const defaultConfig = {
+      channelName: null,
+      client: {name: null},
+      packers: [],
+      unpackers: [],
+      sendBack: true,
+      verbose: true,
+      multiService: false
+    }
+    this.config = assignment(defaultConfig, options)
+    // legacy
+    if (this.config.clientName) {
+      console.warn(`DEPRECATED: clientName is deprecated, please use \`client: {name: ${this.config.clientName}}\` instead`)
+      this.config.client.name = this.config.clientName
+    }
+
     this.logger = new Logger(this.config.verbose)
 
     this.packers = []
@@ -82,8 +88,10 @@ class SpacebroClient {
         this.logger.log('socket connected')
         this.socket = socket
         socket.emit('register', {
-          clientName: this.config.clientName,
-          channelName: this.config.channelName
+          channelName: this.config.channelName,
+          client: this.config.client,
+          // legacy
+          clientName: this.config.client.name
         })
         this.events['connect'] && this.events['connect'].dispatch(socket)
       })
@@ -133,7 +141,7 @@ class SpacebroClient {
       .on('*', ({ data }) => {
         let [eventName, args] = data
 
-        if (!this.config.sendBack && args._from === this.config.clientName) {
+        if (!this.config.sendBack && args._from === this.config.client.name) {
           return
         }
         if (this.events[eventName]) {
@@ -175,7 +183,7 @@ class SpacebroClient {
   sendTo (eventName, to = null, data = {}) {
     if (this.connected) {
       data._to = to
-      data._from = this.config.clientName
+      data._from = this.config.client.name
       for (let pack of _filterHooks(eventName, this.packers)) {
         data = pack({eventName, data}) || data
       }
@@ -229,7 +237,7 @@ let spacebroClientSingleton = null
 /*
 ** This variable is used to allow calling `on` before `connect`
 */
-let beforeConnectSocket = new SpacebroClient()
+let beforeConnectSpacebroClient = new SpacebroClient()
 
 function connect (address, port, options) {
   if (spacebroClientSingleton) {
@@ -237,9 +245,9 @@ function connect (address, port, options) {
   }
   spacebroClientSingleton = new SpacebroClient(null, null, options)
   spacebroClientSingleton.connect(address, port)
-  if (beforeConnectSocket) {
-    spacebroClientSingleton.events = beforeConnectSocket.events
-    beforeConnectSocket = null
+  if (beforeConnectSpacebroClient) {
+    spacebroClientSingleton.events = beforeConnectSpacebroClient.events
+    beforeConnectSpacebroClient = null
   }
   return spacebroClientSingleton
 }
@@ -283,10 +291,10 @@ function sendTo (eventName, to = null, data = {}) {
 }
 
 function _eventSocket () {
-  if (!spacebroClientSingleton && !beforeConnectSocket) {
+  if (!spacebroClientSingleton && !beforeConnectSpacebroClient) {
     console.warn('No SpacebroClient socket is open')
   }
-  return spacebroClientSingleton || beforeConnectSocket
+  return spacebroClientSingleton || beforeConnectSpacebroClient
 }
 
 function on (eventName, handler, handlerContext, priority) {
