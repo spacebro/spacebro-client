@@ -182,9 +182,9 @@ You can find many real life examples in the `example/` folder of this repository
 
 ## 🕳 Troubleshooting
 
-### `new-member` event 👋
+### `newClient` event 👋
 
-The Spacebro server automatically broadcasts a `new-member` event when a client connects. Thus, you should avoid using that event name. See the `example/simple-node` script for more details.
+The Spacebro server automatically broadcasts a `newClient` event when a client connects. Thus, you should avoid using that event name. See the `example/simple-node` script for more details.
 
 ### Using native modules in Electron 🌀
 
