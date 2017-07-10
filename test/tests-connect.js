@@ -106,7 +106,7 @@ test.serial('disconnect', async (t) => {
   t.plan(2)
 
   client.on('connect', async () => {
-    const console_error = console.error
+    const consoleError = console.error
 
     console.error = (err) => {
       t.is(err, 'Error: "connect4" is disconnected and cannot emit "what"')
@@ -116,7 +116,7 @@ test.serial('disconnect', async (t) => {
     client.disconnect()
     client.emit('what', () => 'ever')
 
-    console.error = console_error
+    console.error = consoleError
   })
   await sleep(5000)
 })
