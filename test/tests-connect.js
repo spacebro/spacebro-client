@@ -96,10 +96,8 @@ test('connect - Without port', (t) => {
   t.deepEqual(warnings, ['Cannot connect without host address and port'])
 })
 
-test.failing('disconnect', async (t) => {
-  const client = new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
+test.serial('disconnect', async (t) => {
+  const client = new SpacebroClient('spacebro.space', 3333, {
     channelName: 'spacebro-client-test-disconnect',
     client: {name: 'connect4'},
     verbose: false
@@ -108,11 +106,17 @@ test.failing('disconnect', async (t) => {
   t.plan(2)
 
   client.on('connect', async () => {
+    const console_error = console.error
+
+    console.error = (err) => {
+      t.is(err, 'Error: "connect4" is disconnected and cannot emit "what"')
+    }
+
     client.on('disconnect', () => t.pass('Disconnected'))
     client.disconnect()
+    client.emit('what', () => 'ever')
 
-    await sleep(2000)
-    await t.throws(() => client.emit('what', () => 'ever'))
+    console.error = console_error
   })
   await sleep(5000)
 })

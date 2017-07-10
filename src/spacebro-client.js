@@ -199,19 +199,19 @@ class SpacebroClient {
   }
 
   sendTo (eventName, to = null, data = {}) {
-    if (this.connected) {
-      if (typeof data === 'object' && typeof data.toJSON === 'function') {
-        data = data.toJSON()
-      }
-      data._to = to
-      data._from = this.config.client.name
-      for (let pack of _filterHooks(eventName, this.packers)) {
-        data = pack({eventName, data}) || data
-      }
-      this.socket.emit(eventName, data)
-    } else {
-      this.logger.warn('can\'t emit, not connected.')
+    if (!this.connected) {
+      console.error(`Error: "${this.config.client.name}" is disconnected and cannot emit "${eventName}"`)
+      return
     }
+    if (typeof data === 'object' && typeof data.toJSON === 'function') {
+      data = data.toJSON()
+    }
+    data._to = to
+    data._from = this.config.client.name
+    for (let pack of _filterHooks(eventName, this.packers)) {
+      data = pack({eventName, data}) || data
+    }
+    this.socket.emit(eventName, data)
   }
 
   // Reception
