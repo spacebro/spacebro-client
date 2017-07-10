@@ -162,13 +162,14 @@ class SpacebroClient {
         if (!this.config.sendBack && args._from === this.config.client.name) {
           return
         }
-        if (this.events[eventName]) {
+        if (this.events[eventName] || this.events['*']) {
           this.logger.log(`socket received ${eventName} with data:`, args)
           for (let unpack of _filterHooks(eventName, this.unpackers)) {
             const unpacked = unpack({ eventName, data: args })
             args = unpacked || args
           }
-          this.events[eventName].dispatch(args)
+          this.events[eventName] && this.events[eventName].dispatch(args)
+          this.events['*'] && this.events['*'].dispatch(args)
         }
       })
   }

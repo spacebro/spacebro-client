@@ -67,11 +67,15 @@ test('once', async (t) => {
   await sleep(5000)
 })
 
-test.failing('on - Wildcard', async (t) => {
+test('on - Wildcard', async (t) => {
   const client = connect('emit-on-wildcard')
+
+  t.plan(4)
 
   client.on('connect', () => {
     client.emit('hello')
+    client.emit('again')
+    client.emit('and', 'welcome to the Aperture Science enrichment center')
   })
   client.on('*', (data) => {
     t.pass('Message received')
