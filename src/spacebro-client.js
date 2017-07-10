@@ -6,6 +6,13 @@ import Signal from 'signals'
 import Logger from './logger'
 import assignment from 'assignment'
 
+let settings
+try {
+  settings = require('standard-settings')
+} catch (err) {
+  settings = null
+}
+
 const patch = wildcard(io.Manager)
 
 /*
@@ -20,7 +27,7 @@ function _filterHooks (eventName, hooks) {
 }
 
 class SpacebroClient {
-  constructor (address, port, options = {}) {
+  constructor (address, port, options) {
     const defaultConfig = {
       channelName: null,
       client: {name: null},
@@ -30,7 +37,16 @@ class SpacebroClient {
       verbose: true,
       multiService: false
     }
-    this.config = assignment(defaultConfig, options)
+
+    if (options) {
+      this.config = assignment(defaultConfig, options)
+    } else if (settings) {
+      this.config = assignment(defaultConfig, settings)
+    } else {
+      console.warn('SpacebroClient instance constructed without options; and standard-settings was not loaded')
+      this.config = assignment(defaultConfig)
+    }
+
     // legacy
     if (this.config.clientName) {
       console.warn(`DEPRECATED: clientName is deprecated, please use \`client: {name: ${this.config.clientName}}\` instead`)
@@ -237,7 +253,9 @@ let spacebroClientSingleton = null
 /*
 ** This variable is used to allow calling `on` before `connect`
 */
-let beforeConnectSpacebroClient = new SpacebroClient()
+let beforeConnectSpacebroClient = new SpacebroClient(null, null, {
+  verbose: true
+})
 
 function connect (address, port, options) {
   if (spacebroClientSingleton) {

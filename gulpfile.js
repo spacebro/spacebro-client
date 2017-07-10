@@ -57,9 +57,30 @@ function build () {
         library: config.mainVarName
       },
       externals: {
-        signals: {amd: 'signals', root: 'signals', commonjs: 'signals', commonjs2: 'signals'},
-        'socket.io-client': {amd: 'socket.io-client', root: 'io', commonjs: 'socket.io-client', commonjs2: 'socket.io-client'},
-        'socketio-wildcard': {amd: 'socketio-wildcard', root: 'socketioWildcard', commonjs: 'socketio-wildcard', commonjs2: 'socketio-wildcard'}
+        'standard-settings': {
+          amd: 'standard-settings',
+          root: 'standardSettings',
+          commonjs: 'standard-settings',
+          commonjs2: 'standard-settings'
+        },
+        signals: {
+          amd: 'signals',
+          root: 'signals',
+          commonjs: 'signals',
+          commonjs2: 'signals'
+        },
+        'socket.io-client': {
+          amd: 'socket.io-client',
+          root: 'io',
+          commonjs: 'socket.io-client',
+          commonjs2: 'socket.io-client'
+        },
+        'socketio-wildcard': {
+          amd: 'socketio-wildcard',
+          root: 'socketioWildcard',
+          commonjs: 'socketio-wildcard',
+          commonjs2: 'socketio-wildcard'
+        }
       },
       module: {
         rules: [
