@@ -216,16 +216,15 @@ class SpacebroClient {
 
   // Reception
   on (eventName, handler, handlerContext, priority) {
-    if (this.events[eventName]) {
-      this.logger.warn(`Signal ${eventName} already exists`)
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Signal()
     }
-    this.events[eventName] = new Signal()
     this.events[eventName].add(handler, handlerContext, priority)
   }
 
   once (eventName, handler, handlerContext, priority) {
-    if (this.events[eventName]) {
-      this.logger.warn(`Signal ${eventName} already exists`)
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Signal()
     }
     this.events[eventName] = new Signal()
     this.events[eventName].addOnce(handler, handlerContext, priority)

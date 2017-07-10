@@ -39,7 +39,7 @@ test('emit / on - With string', async (t) => {
   await sleep(5000)
 })
 
-test.failing('on - Twice with same event name', async (t) => {
+test('on - Twice with same event name', async (t) => {
   const client = connect('double-on')
 
   t.plan(2)
