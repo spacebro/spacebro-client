@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run lint && npm run unittest && npm run test-karma",
     "lint": "eslint --ext .js test src",
-    "unittest": "ava --verbose --timeout=16s",
+    "unittest": "SETTINGS=test/settings.json ava --verbose --timeout=16s",
     "test-karma": "karma start test/karma.conf.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
@@ -76,10 +76,12 @@
     "karma-webpack": "^2.0.3",
     "mocha": "^3.4.2",
     "moment": "^2.15.0",
+    "nconf": "^0.8.4",
     "sinon": "^2.3.1",
     "sinon-chai": "^2.10.0",
     "sleep-promise": "^2.0.0",
     "spectron": "^3.7.2",
+    "standard-settings": "^1.1.9",
     "webpack": "^2.6.1",
     "webpack-stream": "3.2.0"
   },

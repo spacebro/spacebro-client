@@ -16,20 +16,6 @@ test('connect', async (t) => {
   await sleep(5000)
 })
 
-test('connect - Delayed', async (t) => {
-  const client = new SpacebroClient(null, null, {
-    channelName: 'spacebro-client-test-connect',
-    client: {name: 'connect1'},
-    verbose: false
-  })
-
-  client.connect('spacebro.space', 3333)
-  client.on('connect', () => {
-    t.pass('Connected')
-  })
-  await sleep(5000)
-})
-
 test('connect - Wrong address', async (t) => {
   const client = new SpacebroClient('a.wrong.address', 12345, {
     channelName: 'spacebro-client-test-connect',

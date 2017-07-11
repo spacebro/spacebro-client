@@ -10,6 +10,14 @@ module.exports = config => {
       './karma-tests.js': ['webpack']
     },
     webpack: {
+      externals: {
+        'standard-settings': {
+          amd: 'standard-settings',
+          root: 'standardSettings',
+          commonjs: 'standard-settings',
+          commonjs2: 'standard-settings'
+        }
+      },
       module: {
         rules: [
           {

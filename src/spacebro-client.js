@@ -6,12 +6,13 @@ import Signal from 'signals'
 import Logger from './logger'
 import assignment from 'assignment'
 
-let settings
+let spacebroSettings = null
+let settings = null
+let getSettings = require('./getSettings')._getSettings
 try {
-  settings = require('standard-settings')
-} catch (err) {
-  settings = null
-}
+  settings = require('standard-settings').getSettings()
+  spacebroSettings = settings && settings.service && settings.service.spacebro
+} catch (err) {}
 
 const patch = wildcard(io.Manager)
 
@@ -40,10 +41,14 @@ class SpacebroClient {
 
     if (options) {
       this.config = assignment(defaultConfig, options)
-    } else if (settings) {
-      this.config = assignment(defaultConfig, settings)
+    } else if (getSettings() && spacebroSettings) {
+      this.config = assignment(defaultConfig, spacebroSettings)
     } else {
-      console.warn('SpacebroClient instance constructed without options; and standard-settings was not loaded')
+      if (!settings) {
+        console.warn('SpacebroClient instance constructed without options; and standard-settings was not loaded')
+      } else {
+        console.warn('SpacebroClient instance constructed without options; and service.spacebro not found in standard-settings')
+      }
       this.config = assignment(defaultConfig)
     }
 
@@ -69,7 +74,13 @@ class SpacebroClient {
     this.socket = null
 
     if (address == null && port == null) {
-      return
+      if (getSettings() && spacebroSettings) {
+        address = spacebroSettings.host
+        port = spacebroSettings.port
+      } else {
+        console.warn('Cannot connect without host address and port from standard-settings')
+        return
+      }
     }
 
     this.connect(address, port)
@@ -253,9 +264,29 @@ let spacebroClientSingleton = null
 /*
 ** This variable is used to allow calling `on` before `connect`
 */
-let beforeConnectSpacebroClient = new SpacebroClient(null, null, {
-  verbose: true
-})
+let beforeConnectEvents = {
+  events: [],
+
+  on (eventName, handler, handlerContext, priority) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Signal()
+    }
+    this.events[eventName].add(handler, handlerContext, priority)
+  },
+
+  once (eventName, handler, handlerContext, priority) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Signal()
+    }
+    this.events[eventName] = new Signal()
+    this.events[eventName].addOnce(handler, handlerContext, priority)
+  },
+
+  off (eventName) {
+    this.events[eventName].dispose()
+    delete this.events[eventName]
+  }
+}
 
 function connect (address, port, options) {
   if (spacebroClientSingleton) {
@@ -263,9 +294,9 @@ function connect (address, port, options) {
   }
   spacebroClientSingleton = new SpacebroClient(null, null, options)
   spacebroClientSingleton.connect(address, port)
-  if (beforeConnectSpacebroClient) {
-    spacebroClientSingleton.events = beforeConnectSpacebroClient.events
-    beforeConnectSpacebroClient = null
+  if (beforeConnectEvents) {
+    spacebroClientSingleton.events = beforeConnectEvents.events
+    beforeConnectEvents = null
   }
   return spacebroClientSingleton
 }
@@ -309,10 +340,10 @@ function sendTo (eventName, to = null, data = {}) {
 }
 
 function _eventSocket () {
-  if (!spacebroClientSingleton && !beforeConnectSpacebroClient) {
+  if (!spacebroClientSingleton && !beforeConnectEvents) {
     console.warn('No SpacebroClient socket is open')
   }
-  return spacebroClientSingleton || beforeConnectSpacebroClient
+  return spacebroClientSingleton || beforeConnectEvents
 }
 
 function on (eventName, handler, handlerContext, priority) {
