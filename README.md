@@ -54,9 +54,9 @@ client.emit('outBar', { do: stuff})
 
 ## 🚀 API
 
-### `class SpacebroClient([[address, port, ]options])`
+### `class SpacebroClient([address, port, options])`
 
-Look for a server, and return a handle to the connection.
+Look for a server, and return a handle to the connection. If you don't pass those parameters, spacebro-client will try to fetch them from [standard-settings](https://github.com/soixantecircuits/standard-settings).
 
 ```js
 // For more details about possible options, see below.
@@ -79,7 +79,7 @@ const client = new SpacebroClient('127.0.0.1', 8888, options)
 | **verbose** | `true` | *optional* | Should spacebro-client display logs (connection / emission / reception)? |
 | **sendBack** | `true` | *optional* | Should this client receive the events it sent? |
 
-### `create([[address, port, ]options])`
+### `create([address, port, options])`
 
 Look for a server, and creates handle to the connection. Unlike `new SpacebroClient`, returns a promise to the handle that resolves when the connection is established.
 
