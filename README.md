@@ -27,7 +27,7 @@ Then, write the following client code:
 const { SpacebroClient } = require('spacebro-client')
 
 const client = new SpacebroClient('127.0.0.1', 8888, {
-  channelName: 'bar'
+  channelName: 'bar',
   client: {
     name: 'foo',
     description: "a foo tool",
