@@ -42,13 +42,16 @@ test('emit / on - With string', async (t) => {
 test('on - Twice with same event name', async (t) => {
   const client = connect('double-on')
 
-  t.plan(2)
+  t.plan(4)
 
   client.on('connect', () => {
     client.emit('hello')
+    client.emit('world')
   })
   client.on('hello', () => t.pass('Message received'))
   client.on('hello', () => t.pass('Message received again'))
+  client.once('world', () => t.pass('Message received'))
+  client.once('world', () => t.pass('Message received again'))
 
   await sleep(5000)
 })
@@ -70,7 +73,7 @@ test('once', async (t) => {
 test('on - Wildcard', async (t) => {
   const client = connect('emit-on-wildcard')
 
-  t.plan(4)
+  t.plan(5)
 
   client.on('connect', () => {
     client.emit('hello')
@@ -79,6 +82,9 @@ test('on - Wildcard', async (t) => {
   })
   client.on('*', (data) => {
     t.pass('Message received')
+  })
+  client.once('*', (data) => {
+    t.pass('Message received once')
   })
   await sleep(5000)
 })
@@ -95,5 +101,20 @@ test('off', async (t) => {
     client.emit('hello')
   })
   client.on('hello', () => t.pass('Message received'))
+  await sleep(5000)
+})
+
+test('off - Multiple events', async (t) => {
+  const client = connect('off-multiple')
+
+  t.plan(0)
+
+  client.on('connect', async () => {
+    client.off('hello')
+    client.emit('hello')
+  })
+  client.on('hello', () => t.fail('Received message after off'))
+  client.on('hello', () => t.fail('Received message after off'))
+  client.once('hello', () => t.fail('Received message after off'))
   await sleep(5000)
 })

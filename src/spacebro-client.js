@@ -227,7 +227,6 @@ class SpacebroClient {
     if (!this.events[eventName]) {
       this.events[eventName] = new Signal()
     }
-    this.events[eventName] = new Signal()
     this.events[eventName].addOnce(handler, handlerContext, priority)
   }
 
