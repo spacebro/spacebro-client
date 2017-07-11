@@ -182,6 +182,9 @@ class SpacebroClient {
 
   sendTo (eventName, to = null, data = {}) {
     if (this.connected) {
+      if (typeof data === 'object' && typeof data.toJSON === 'function') {
+        data = data.toJSON()
+      }
       data._to = to
       data._from = this.config.client.name
       for (let pack of _filterHooks(eventName, this.packers)) {
