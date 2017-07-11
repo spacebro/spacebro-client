@@ -6,13 +6,13 @@ import Signal from 'signals'
 import Logger from './logger'
 import assignment from 'assignment'
 
-let spacebroSettings = null
 let settings = null
-let getSettings = require('./getSettings')._getSettings
 try {
-  settings = require('standard-settings').getSettings()
-  spacebroSettings = settings && settings.service && settings.service.spacebro
+  if (!process.env.NO_STANDARD_SETTINGS) {
+    settings = require('standard-settings').getSettings()
+  }
 } catch (err) {}
+const spacebroSettings = settings && settings.service && settings.service.spacebro
 
 const patch = wildcard(io.Manager)
 
@@ -41,14 +41,15 @@ class SpacebroClient {
 
     if (options) {
       this.config = assignment(defaultConfig, options)
-    } else if (getSettings() && spacebroSettings) {
-      this.config = assignment(defaultConfig, spacebroSettings)
-    } else {
-      if (!settings) {
-        console.warn('SpacebroClient instance constructed without options; and standard-settings was not loaded')
+    } else if (settings) {
+      if (spacebroSettings) {
+        this.config = assignment(defaultConfig, spacebroSettings)
       } else {
         console.warn('SpacebroClient instance constructed without options; and service.spacebro not found in standard-settings')
+        this.config = assignment(defaultConfig)
       }
+    } else {
+      console.warn('SpacebroClient instance constructed without options; and standard-settings was not loaded')
       this.config = assignment(defaultConfig)
     }
 
@@ -74,7 +75,7 @@ class SpacebroClient {
     this.socket = null
 
     if (address == null && port == null) {
-      if (getSettings() && spacebroSettings) {
+      if (spacebroSettings) {
         address = spacebroSettings.host
         port = spacebroSettings.port
       } else {

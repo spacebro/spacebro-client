@@ -4,10 +4,11 @@
   "description": "🌟 Connect easily to a Spacebro server",
   "main": "dist/spacebro-client.js",
   "scripts": {
-    "test": "npm run lint && npm run unittest && npm run test-karma",
+    "test": "npm run lint && npm run unittest && npm run test-standard-settings && npm run test-karma",
     "lint": "eslint --ext .js test src",
-    "unittest": "SETTINGS=test/settings.json ava --verbose --timeout=16s",
+    "unittest": "NO_STANDARD_SETTINGS=1 ava --verbose --timeout=16s",
     "test-karma": "karma start test/karma.conf.js",
+    "test-standard-settings": "SETTINGS=test/settings.json ava --verbose --timeout=16s test/standard-settings-tests.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
     "coverage": "gulp coverage"
