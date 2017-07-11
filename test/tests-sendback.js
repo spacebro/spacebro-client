@@ -5,7 +5,9 @@ import util from 'util'
 import { SpacebroClient } from '../src/spacebro-client'
 
 function connectSendback (name) {
-  return new SpacebroClient('spacebro.space', 3333, {
+  return new SpacebroClient({
+    host: 'spacebro.space',
+    port: 3333,
     channelName: `spacebro-client-test-${name}`,
     client: {name: name},
     sendBack: false,

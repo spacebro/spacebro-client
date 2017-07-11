@@ -5,14 +5,7 @@ import io from 'socket.io-client'
 import Signal from 'signals'
 import Logger from './logger'
 import assignment from 'assignment'
-
-let settings = null
-try {
-  if (!process.env.NO_STANDARD_SETTINGS) {
-    settings = require('standard-settings').getSettings()
-  }
-} catch (err) {}
-const spacebroSettings = settings && settings.service && settings.service.spacebro
+import util from 'util'
 
 const patch = wildcard(io.Manager)
 
@@ -27,33 +20,20 @@ function _filterHooks (eventName, hooks) {
     .map(hook => hook.handler)
 }
 
+const defaultConfig = {
+  channelName: null,
+  client: {name: null},
+  packers: [],
+  unpackers: [],
+  sendBack: true,
+  verbose: true,
+  multiService: false
+}
+
 class SpacebroClient {
-  constructor (address, port, options) {
-    const defaultConfig = {
-      channelName: null,
-      client: {name: null},
-      packers: [],
-      unpackers: [],
-      sendBack: true,
-      verbose: true,
-      multiService: false
-    }
+  constructor (options = {}, connect = true) {
+    this.config = assignment({}, defaultConfig, options)
 
-    if (options) {
-      this.config = assignment(defaultConfig, options)
-    } else if (settings) {
-      if (spacebroSettings) {
-        this.config = assignment(defaultConfig, spacebroSettings)
-      } else {
-        console.warn('SpacebroClient instance constructed without options; and service.spacebro not found in standard-settings')
-        this.config = assignment(defaultConfig)
-      }
-    } else {
-      console.warn('SpacebroClient instance constructed without options; and standard-settings was not loaded')
-      this.config = assignment(defaultConfig)
-    }
-
-    // legacy
     if (this.config.clientName) {
       console.warn(`DEPRECATED: clientName is deprecated, please use \`client: {name: '${this.config.clientName}'}\` instead`)
       this.config.client.name = this.config.clientName
@@ -74,17 +54,13 @@ class SpacebroClient {
     this.connected = false
     this.socket = null
 
-    if (address == null && port == null) {
-      if (spacebroSettings) {
-        address = spacebroSettings.host
-        port = spacebroSettings.port
-      } else {
-        console.warn('Cannot connect without host address and port from standard-settings')
+    if (connect) {
+      if (this.config.host == null || this.config.port == null) {
+        console.warn('Cannot connect without host address and port')
         return
       }
+      this.connect(this.config.host, this.config.port)
     }
-
-    this.connect(address, port)
   }
 
   connect (address, port) {
@@ -244,8 +220,45 @@ class SpacebroClient {
   }
 }
 
-function create (address, port, options) {
-  const sc = new SpacebroClient(address, port, options)
+function setDefaultSettings (options = null, verbose = false) {
+  const inspect = (obj) => util.inspect(obj, {showHidden: false, depth: null})
+
+  if (options == null) {
+    let settings = null
+
+    try {
+      if (!process.env.NO_STANDARD_SETTINGS) {
+        settings = require('standard-settings').getSettings()
+      }
+    } catch (err) {}
+
+    if (!settings) {
+      console.warn('Cannot load standard-settings; did you add it to node_modules?')
+      return
+    }
+
+    const spacebroSettings = settings.service && settings.service.spacebro
+    if (!spacebroSettings) {
+      console.warn('Settings file does not include service.spacebro')
+      if (verbose) {
+        console.warn('Settings object:', inspect(spacebroSettings))
+      }
+      return
+    }
+
+    options = spacebroSettings
+  }
+  if (verbose) {
+    console.log('Former settings:', inspect(defaultConfig))
+  }
+  assignment(defaultConfig, options)
+  if (verbose) {
+    console.log('New settings:', inspect(defaultConfig))
+  }
+}
+
+function create (options = {}, connect = true) {
+  const sc = new SpacebroClient(options, connect)
 
   return new Promise((resolve, reject) => {
     sc.on('connect', () => resolve(sc))
@@ -289,12 +302,13 @@ let beforeConnectEvents = {
   }
 }
 
-function connect (address, port, options) {
+function connect (host, port, options) {
   if (spacebroClientSingleton) {
     console.warn('A SpacebroClient socket is already open')
   }
-  spacebroClientSingleton = new SpacebroClient(null, null, options)
-  spacebroClientSingleton.connect(address, port)
+  spacebroClientSingleton = new SpacebroClient(
+    assignment({}, options, {host, port})
+  )
   if (beforeConnectEvents) {
     spacebroClientSingleton.events = beforeConnectEvents.events
     beforeConnectEvents = null
@@ -373,8 +387,9 @@ function off (eventName) {
 
 export default {
   SpacebroClient,
-  connect,
+  setDefaultSettings,
   create,
+  connect,
   disconnect,
   addPacker,
   addUnpacker,

@@ -1,17 +1,27 @@
 import test from 'ava'
 import sleep from 'sleep-promise'
 
-import { SpacebroClient } from '../src/spacebro-client'
+import { SpacebroClient, setDefaultSettings } from '../src/spacebro-client'
 
-test('connect - With standard-settings', async (t) => {
+test('setDefaultSettings - With standard-settings', async (t) => {
+  setDefaultSettings()
+
   const client = new SpacebroClient()
 
-  client.on('connect', () => {
-    client.emit('hello')
-  })
-  client.on('hello', (data) => {
-    t.pass('Message received')
-    t.deepEqual(data, { _from: 'with-standard', _to: null })
-  })
+  t.deepEqual(
+    client.config,
+    {
+      packers: [],
+      unpackers: [],
+      sendBack: true,
+      multiService: false,
+      host: 'spacebro.space',
+      port: 3333,
+      channelName: 'spacebro-client-test-with-standard',
+      client: {name: 'with-standard'},
+      verbose: false
+    }
+  )
+
   await sleep(5000)
 })

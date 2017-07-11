@@ -4,8 +4,12 @@ import sleep from 'sleep-promise'
 import sbClient from '../src/spacebro-client'
 
 test('connect - Legacy version', async (t) => {
+  const consoleWarn = console.warn
+  const warnings = []
+  console.warn = (message) => warnings.push(message)
+
   sbClient.connect('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-connect',
+    channelName: 'spacebro-client-test-legacy-connect',
     clientName: 'connect1',
     verbose: false
   })
@@ -15,9 +19,18 @@ test('connect - Legacy version', async (t) => {
   })
   await sleep(5000)
   sbClient.disconnect()
+
+  t.deepEqual(warnings, [
+    'DEPRECATED: clientName is deprecated, please use `client: {name: \'connect1\'}` instead'
+  ])
+  console.warn = consoleWarn
 })
 
 test.serial('emit / on - Before connect (legacy version)', async (t) => {
+  const consoleWarn = console.warn
+  const warnings = []
+  console.warn = (message) => warnings.push(message)
+
   sbClient.on('connect', () => {
     sbClient.emit('hello')
   })
@@ -32,4 +45,9 @@ test.serial('emit / on - Before connect (legacy version)', async (t) => {
   })
   await sleep(5000)
   sbClient.disconnect()
+
+  t.deepEqual(warnings, [
+    'DEPRECATED: clientName is deprecated, please use `client: {name: \'emit-on-before-connect\'}` instead'
+  ])
+  console.warn = consoleWarn
 })

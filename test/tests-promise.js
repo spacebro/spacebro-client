@@ -4,8 +4,10 @@ import sleep from 'sleep-promise'
 import client from '../src/spacebro-client'
 
 test('create', async (t) => {
-  const myClient = await client.create('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-connect',
+  const myClient = await client.create({
+    host: 'spacebro.space',
+    port: 3333,
+    channelName: 'spacebro-client-test-create',
     client: {name: 'connect1'},
     verbose: false
   })
@@ -18,8 +20,10 @@ test('create', async (t) => {
 })
 
 test('create - Wrong address', async (t) => {
-  await t.throws(client.create('a.wrong.address', 12345, {
-    channelName: 'spacebro-client-test-connect',
+  await t.throws(client.create({
+    host: 'a.wrong.address',
+    port: 12345,
+    channelName: 'spacebro-client-test-wrong-create',
     client: {name: 'connect2'},
     verbose: false
   }))
