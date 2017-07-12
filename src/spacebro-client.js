@@ -60,6 +60,7 @@ class SpacebroClient {
         return
       }
       this.connect(this.config.host, this.config.port)
+        .catch(() => {})
     }
   }
 
@@ -165,13 +166,14 @@ class SpacebroClient {
         if (!this.config.sendBack && args._from === this.config.client.name) {
           return
         }
-        if (this.events[eventName]) {
+        if (this.events[eventName] || this.events['*']) {
           this.logger.log(`socket received ${eventName} with data:`, args)
           for (let unpack of _filterHooks(eventName, this.unpackers)) {
             const unpacked = unpack({ eventName, data: args })
             args = unpacked || args
           }
-          this.events[eventName].dispatch(args)
+          this.events[eventName] && this.events[eventName].dispatch(args)
+          this.events['*'] && this.events['*'].dispatch(args)
         }
       })
   }
@@ -202,35 +204,33 @@ class SpacebroClient {
   }
 
   sendTo (eventName, to = null, data = {}) {
-    if (this.connected) {
-      if (typeof data === 'object' && typeof data.toJSON === 'function') {
-        data = data.toJSON()
-      }
-      data._to = to
-      data._from = this.config.client.name
-      for (let pack of _filterHooks(eventName, this.packers)) {
-        data = pack({eventName, data}) || data
-      }
-      this.socket.emit(eventName, data)
-    } else {
-      this.logger.warn('can\'t emit, not connected.')
+    if (!this.connected) {
+      console.error(`Error: "${this.config.client.name}" is disconnected and cannot emit "${eventName}"`)
+      return
     }
+    if (typeof data === 'object' && typeof data.toJSON === 'function') {
+      data = data.toJSON()
+    }
+    data._to = to
+    data._from = this.config.client.name
+    for (let pack of _filterHooks(eventName, this.packers)) {
+      data = pack({eventName, data}) || data
+    }
+    this.socket.emit(eventName, data)
   }
 
   // Reception
   on (eventName, handler, handlerContext, priority) {
-    if (this.events[eventName]) {
-      this.logger.warn(`Signal ${eventName} already exists`)
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Signal()
     }
-    this.events[eventName] = new Signal()
     this.events[eventName].add(handler, handlerContext, priority)
   }
 
   once (eventName, handler, handlerContext, priority) {
-    if (this.events[eventName]) {
-      this.logger.warn(`Signal ${eventName} already exists`)
+    if (!this.events[eventName]) {
+      this.events[eventName] = new Signal()
     }
-    this.events[eventName] = new Signal()
     this.events[eventName].addOnce(handler, handlerContext, priority)
   }
 

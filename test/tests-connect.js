@@ -3,10 +3,13 @@ import sleep from 'sleep-promise'
 
 import { SpacebroClient } from '../src/spacebro-client'
 
+const SB_TEST_ADDRESS = process.env.SB_TEST_ADDRESS || 'spacebro.space'
+const SB_TEST_PORT = process.env.SB_TEST_PORT || 3333
+
 test('connect', async (t) => {
   const client = new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect1'},
     verbose: false
@@ -36,7 +39,7 @@ test('connect - Wrong address', async (t) => {
 
 test('connect - Wrong port', async (t) => {
   const client = new SpacebroClient({
-    host: 'spacebro.space',
+    host: SB_TEST_ADDRESS,
     port: 12345,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect3'},
@@ -59,7 +62,7 @@ test('connect - Delayed', async (t) => {
     verbose: false
   }, false)
 
-  client.connect('spacebro.space', 3333)
+  client.connect(SB_TEST_ADDRESS, SB_TEST_PORT)
   client.on('connect', () => {
     t.pass('Connected')
   })
@@ -88,7 +91,7 @@ test('connect - Without port', (t) => {
 
   /* eslint-disable no-new */
   new SpacebroClient({
-    host: 'spacebro.space',
+    host: SB_TEST_ADDRESS,
     verbose: false
   })
 
@@ -96,10 +99,41 @@ test('connect - Without port', (t) => {
   t.deepEqual(warnings, ['Cannot connect without host address and port'])
 })
 
+test.serial('disconnect', async (t) => {
+  const client = new SpacebroClient({
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
+    channelName: 'spacebro-client-test-disconnect',
+    client: {name: 'connect4'},
+    verbose: false
+  })
+
+  t.plan(2)
+
+  client.on('connect', async () => {
+    const consoleError = console.error
+    const errors = []
+
+    console.error = (err) => {
+      errors.push(err)
+    }
+
+    client.on('disconnect', () => t.pass('Disconnected'))
+    client.disconnect()
+    client.emit('what', () => 'ever')
+
+    t.deepEqual(errors, [
+      'Error: "connect4" is disconnected and cannot emit "what"'
+    ])
+    console.error = consoleError
+  })
+  await sleep(5000)
+})
+
 test('connect with connection', async (t) => {
   const client = new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: 'spacebro-client-test-connect-connection',
     client: {name: 'connect-connections'},
     verbose: false,
@@ -123,8 +157,8 @@ test('connect with connection', async (t) => {
 
 test('connect with connections', async (t) => {
   const client = new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: 'spacebro-client-test-connect-connections',
     client: {name: 'connect-connections'},
     verbose: false,
@@ -156,26 +190,6 @@ test('connect with connections', async (t) => {
         }
       }
     ])
-  })
-  await sleep(5000)
-})
-test.failing('disconnect', async (t) => {
-  const client = new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
-    channelName: 'spacebro-client-test-disconnect',
-    client: {name: 'connect4'},
-    verbose: false
-  })
-
-  t.plan(2)
-
-  client.on('connect', async () => {
-    client.on('disconnect', () => t.pass('Disconnected'))
-    client.disconnect()
-
-    await sleep(2000)
-    await t.throws(() => client.emit('what', () => 'ever'))
   })
   await sleep(5000)
 })
