@@ -3567,7 +3567,7 @@ var SpacebroClient = function () {
         console.warn('Cannot connect without host address and port');
         return;
       }
-      this.connect(this.config.host, this.config.port);
+      this.connect(this.config.host, this.config.port).catch(function () {});
     }
   }
 
@@ -3678,7 +3678,7 @@ var SpacebroClient = function () {
         if (!_this2.config.sendBack && args._from === _this2.config.client.name) {
           return;
         }
-        if (_this2.events[eventName]) {
+        if (_this2.events[eventName] || _this2.events['*']) {
           _this2.logger.log('socket received ' + eventName + ' with data:', args);
           var _iteratorNormalCompletion3 = true;
           var _didIteratorError3 = false;
@@ -3706,7 +3706,8 @@ var SpacebroClient = function () {
             }
           }
 
-          _this2.events[eventName].dispatch(args);
+          _this2.events[eventName] && _this2.events[eventName].dispatch(args);
+          _this2.events['*'] && _this2.events['*'].dispatch(args);
         }
       });
     }
@@ -3748,41 +3749,41 @@ var SpacebroClient = function () {
       var to = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-      if (this.connected) {
-        if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object' && typeof data.toJSON === 'function') {
-          data = data.toJSON();
-        }
-        data._to = to;
-        data._from = this.config.client.name;
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
-
-        try {
-          for (var _iterator4 = (0, _getIterator3.default)(_filterHooks(eventName, this.packers)), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var pack = _step4.value;
-
-            data = pack({ eventName: eventName, data: data }) || data;
-          }
-        } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-              _iterator4.return();
-            }
-          } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
-            }
-          }
-        }
-
-        this.socket.emit(eventName, data);
-      } else {
-        this.logger.warn('can\'t emit, not connected.');
+      if (!this.connected) {
+        console.error('Error: "' + this.config.client.name + '" is disconnected and cannot emit "' + eventName + '"');
+        return;
       }
+      if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object' && typeof data.toJSON === 'function') {
+        data = data.toJSON();
+      }
+      data._to = to;
+      data._from = this.config.client.name;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        for (var _iterator4 = (0, _getIterator3.default)(_filterHooks(eventName, this.packers)), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var pack = _step4.value;
+
+          data = pack({ eventName: eventName, data: data }) || data;
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4.return) {
+            _iterator4.return();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+
+      this.socket.emit(eventName, data);
     }
 
     // Reception
@@ -3790,19 +3791,17 @@ var SpacebroClient = function () {
   }, {
     key: 'on',
     value: function on(eventName, handler, handlerContext, priority) {
-      if (this.events[eventName]) {
-        this.logger.warn('Signal ' + eventName + ' already exists');
+      if (!this.events[eventName]) {
+        this.events[eventName] = new _signals2.default();
       }
-      this.events[eventName] = new _signals2.default();
       this.events[eventName].add(handler, handlerContext, priority);
     }
   }, {
     key: 'once',
     value: function once(eventName, handler, handlerContext, priority) {
-      if (this.events[eventName]) {
-        this.logger.warn('Signal ' + eventName + ' already exists');
+      if (!this.events[eventName]) {
+        this.events[eventName] = new _signals2.default();
       }
-      this.events[eventName] = new _signals2.default();
       this.events[eventName].addOnce(handler, handlerContext, priority);
     }
   }, {
