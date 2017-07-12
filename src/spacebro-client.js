@@ -111,6 +111,9 @@ class SpacebroClient {
           // legacy
           clientName: this.config.client.name
         })
+        if (this.config.connection) {
+          this.emit('addConnections', this.config.connection)
+        }
         this.events['connect'] && this.events['connect'].dispatch(socket)
       })
       .on('connect_error', (err) => {

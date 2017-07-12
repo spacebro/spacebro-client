@@ -3631,6 +3631,9 @@ var SpacebroClient = function () {
           // legacy
           clientName: _this2.config.client.name
         });
+        if (_this2.config.connection) {
+          _this2.emit('addConnections', _this2.config.connection);
+        }
         _this2.events['connect'] && _this2.events['connect'].dispatch(socket);
       }).on('connect_error', function (err) {
         _this2.logger.warn('error', err);
@@ -3746,6 +3749,9 @@ var SpacebroClient = function () {
       var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       if (this.connected) {
+        if ((typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) === 'object' && typeof data.toJSON === 'function') {
+          data = data.toJSON();
+        }
         data._to = to;
         data._from = this.config.client.name;
         var _iteratorNormalCompletion4 = true;
@@ -3813,6 +3819,8 @@ function setDefaultSettings() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
   var verbose = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+  var _noErr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
   var inspect = function inspect(obj) {
     return _util2.default.inspect(obj, { showHidden: false, depth: null });
   };
@@ -3827,7 +3835,9 @@ function setDefaultSettings() {
     } catch (err) {}
 
     if (!settings) {
-      console.warn('Cannot load standard-settings; did you add it to node_modules?');
+      if (!_noErr) {
+        console.warn('Cannot load standard-settings; did you add it to node_modules?');
+      }
       return;
     }
 
@@ -3961,6 +3971,8 @@ function off(eventName) {
     socket.off(eventName);
   }
 }
+
+setDefaultSettings(null, false, true);
 
 exports.default = {
   SpacebroClient: SpacebroClient,

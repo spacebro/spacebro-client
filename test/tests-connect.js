@@ -96,6 +96,69 @@ test('connect - Without port', (t) => {
   t.deepEqual(warnings, ['Cannot connect without host address and port'])
 })
 
+test('connect with connection', async (t) => {
+  const client = new SpacebroClient({
+    host: 'spacebro.space',
+    port: 3333,
+    channelName: 'spacebro-client-test-connect-connection',
+    client: {name: 'connect-connections'},
+    verbose: false,
+    connection: 'chokibro/outMedia => etna/inMedia'
+  })
+
+  client.on('connections', (data) => {
+    t.deepEqual(data, [{
+      src: {
+        clientName: 'chokibro',
+        eventName: 'outMedia'
+      },
+      tgt: {
+        clientName: 'etna',
+        eventName: 'inMedia'
+      }
+    }])
+  })
+  await sleep(5000)
+})
+
+test('connect with connections', async (t) => {
+  const client = new SpacebroClient({
+    host: 'spacebro.space',
+    port: 3333,
+    channelName: 'spacebro-client-test-connect-connections',
+    client: {name: 'connect-connections'},
+    verbose: false,
+    connection: [
+      'chokibro/outMedia => etna/inMedia',
+      'foo/outMedia => bar/inMedia'
+    ]
+  })
+
+  client.on('connections', (data) => {
+    t.deepEqual(data, [
+      {
+        src: {
+          clientName: 'chokibro',
+          eventName: 'outMedia'
+        },
+        tgt: {
+          clientName: 'etna',
+          eventName: 'inMedia'
+        }
+      }, {
+        src: {
+          clientName: 'foo',
+          eventName: 'outMedia'
+        },
+        tgt: {
+          clientName: 'bar',
+          eventName: 'inMedia'
+        }
+      }
+    ])
+  })
+  await sleep(5000)
+})
 test.failing('disconnect', async (t) => {
   const client = new SpacebroClient({
     host: 'spacebro.space',
