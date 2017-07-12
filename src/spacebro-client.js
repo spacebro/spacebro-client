@@ -60,6 +60,7 @@ class SpacebroClient {
         return
       }
       this.connect(this.config.host, this.config.port)
+        .catch(() => {})
     }
   }
 

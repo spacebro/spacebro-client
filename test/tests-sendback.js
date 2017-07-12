@@ -4,10 +4,13 @@ import util from 'util'
 
 import { SpacebroClient } from '../src/spacebro-client'
 
+const SB_TEST_ADDRESS = process.env.SB_TEST_ADDRESS || 'spacebro.space'
+const SB_TEST_PORT = process.env.SB_TEST_PORT || 3333
+
 function connectSendback (name) {
   return new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: `spacebro-client-test-${name}`,
     client: {name: name},
     sendBack: false,

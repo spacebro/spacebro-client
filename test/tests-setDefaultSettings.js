@@ -3,10 +3,13 @@ import sleep from 'sleep-promise'
 
 import { SpacebroClient, setDefaultSettings } from '../src/spacebro-client'
 
+const SB_TEST_ADDRESS = process.env.SB_TEST_ADDRESS || 'spacebro.space'
+const SB_TEST_PORT = process.env.SB_TEST_PORT || 3333
+
 test('setDefaultSettings', async (t) => {
   setDefaultSettings({
-    host: 'spacebro.space',
-    port: 3333,
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: 'spacebro-client-test-set-default',
     client: {name: 'default-settings'},
     verbose: false
@@ -29,8 +32,8 @@ test('setDefaultSettings', async (t) => {
       unpackers: [],
       sendBack: true,
       multiService: false,
-      host: 'spacebro.space',
-      port: 3333,
+      host: SB_TEST_ADDRESS,
+      port: SB_TEST_PORT,
       channelName: 'spacebro-client-test-set-default',
       client: {name: 'default-settings'},
       verbose: false

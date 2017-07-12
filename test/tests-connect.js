@@ -3,10 +3,13 @@ import sleep from 'sleep-promise'
 
 import { SpacebroClient } from '../src/spacebro-client'
 
+const SB_TEST_ADDRESS = process.env.SB_TEST_ADDRESS || 'spacebro.space'
+const SB_TEST_PORT = process.env.SB_TEST_PORT || 3333
+
 test('connect', async (t) => {
   const client = new SpacebroClient({
-    host: 'spacebro.space',
-    port: 3333,
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect1'},
     verbose: false
@@ -36,7 +39,7 @@ test('connect - Wrong address', async (t) => {
 
 test('connect - Wrong port', async (t) => {
   const client = new SpacebroClient({
-    host: 'spacebro.space',
+    host: SB_TEST_ADDRESS,
     port: 12345,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect3'},
@@ -59,7 +62,7 @@ test('connect - Delayed', async (t) => {
     verbose: false
   }, false)
 
-  client.connect('spacebro.space', 3333)
+  client.connect(SB_TEST_ADDRESS, SB_TEST_PORT)
   client.on('connect', () => {
     t.pass('Connected')
   })
@@ -88,7 +91,7 @@ test('connect - Without port', (t) => {
 
   /* eslint-disable no-new */
   new SpacebroClient({
-    host: 'spacebro.space',
+    host: SB_TEST_ADDRESS,
     verbose: false
   })
 
@@ -97,7 +100,9 @@ test('connect - Without port', (t) => {
 })
 
 test.serial('disconnect', async (t) => {
-  const client = new SpacebroClient('spacebro.space', 3333, {
+  const client = new SpacebroClient({
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
     channelName: 'spacebro-client-test-disconnect',
     client: {name: 'connect4'},
     verbose: false
