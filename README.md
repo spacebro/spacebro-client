@@ -99,11 +99,15 @@ const client = new SpacebroClient({
 client.connect('127.0.0.1', 8888)
 ```
 
-you don't pass those parameters, spacebro-client will try to fetch them from [standard-settings](https://github.com/soixantecircuits/standard-settings).
-
 ### `create([options])`
 
 Look for a server, and creates a handle to the connection. Takes the same options as `new SpacebroClient`. Returns a Promise like `client.connect`.
+
+### `setDefaultSettings(options, [verbose])`
+
+Overwrite the default options of `new SpacebroClient` with the given options.
+
+If [standard-settings](https://github.com/soixantecircuits/standard-settings) is installed in your module, `spacebro-client` will call this function with the contents of `services.spacebro` from your settings file.
 
 ### `client.connect(address, port)`
 
