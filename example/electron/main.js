@@ -2,7 +2,9 @@ const { app, BrowserWindow } = require('electron')
 const { SpacebroClient } = require('../../')
 
 let win = null
-const client = new SpacebroClient('spacebro.space', 3333, {
+const client = new SpacebroClient({
+  host: 'spacebro.space',
+  port: 3333,
   client: {name: 'foo'},
   channelName: 'bar'
 })
