@@ -22,11 +22,13 @@
   <script type="text/javascript">
     'use strict'
 
-    var spacebro = window.spacebroClient
+    const { SpacebroClient } = window.spacebroClient
     var startTime = null
     var nowmore = null
 
-    spacebro.connect('spacebro.space', 3333, {
+    const client = new SpacebroClient({
+      host: 'spacebro.space',
+      port: 3333,
       client: {name: 'pinger'},
       channelName: 'browserExample',
       unpackers: [{ handler: function handler(args) {
@@ -37,7 +39,7 @@
       verbose: true
     })
 
-    spacebro.on('pingy', function (data) {
+    client.on('pingy', function (data) {
       log(`got pingied: ${data.count}`)
     })
 
@@ -50,7 +52,7 @@
     setInterval(function () {
       startTime = Date.now()
       if (count < 3) {
-        spacebro.emit('pingy', {count})
+        client.emit('pingy', {count})
         count++
       }
     }, 500)

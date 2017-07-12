@@ -1,21 +1,23 @@
 'use strict'
 
-const spacebroClient = require('../../')
+const { SpacebroClient } = require('../../')
 
-spacebroClient.connect('spacebro.space', 3333, {
+const client = new SpacebroClient({
+  host: 'spacebro.space',
+  port: 3333,
   client: {name: 'foo'},
   channelName: 'bar',
   verbose: true
 })
 
-spacebroClient.on('hello', (data) => {
+client.on('hello', (data) => {
   console.log('received hello', data)
 })
-setTimeout(() => { spacebroClient.emit('hello', 'world') }, 3000)
-setTimeout(() => { spacebroClient.emit('hello', {world: 'hello'}) }, 5000)
-setTimeout(() => { spacebroClient.off('hello') }, 6000)
-setTimeout(() => { spacebroClient.emit('hello') }, 7000)
+setTimeout(() => { client.emit('hello', 'world') }, 3000)
+setTimeout(() => { client.emit('hello', {world: 'hello'}) }, 5000)
+setTimeout(() => { client.off('hello') }, 6000)
+setTimeout(() => { client.emit('hello') }, 7000)
 
-spacebroClient.on('new-member', (data) => {
+client.on('new-member', (data) => {
   console.log(`${data.member} has joined.`)
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const spacebroClient = require('spacebro-client')
+const { SpacebroClient } = require('spacebro-client')
 
 function addTextNode (text) {
   let logDiv = document.getElementById('log')
@@ -8,20 +8,22 @@ function addTextNode (text) {
   console.log(text)
 }
 
-spacebroClient.connect('spacebro.space', 3333, {
+const client = new SpacebroClient({
+  host: 'spacebro.space',
+  port: 3333,
   client: {name: 'foo'},
   channelName: 'bar'
 })
 
-spacebroClient.on('connect', () => {
+client.on('connect', () => {
   addTextNode('connected')
 })
 
 const events = ['hello', 'world']
 events.forEach((event) => {
-  spacebroClient.on(event, (data) => {
+  client.on(event, (data) => {
     addTextNode(JSON.stringify(data))
   })
 })
 
-setInterval(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
+setInterval(() => { client.emit('hello', { hello: 'world' }) }, 3000)

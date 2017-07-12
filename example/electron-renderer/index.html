@@ -13,18 +13,20 @@
       div.insertAdjacentHTML( 'beforeend', `<p>${text}</p>` )
     }
 
-    const spacebroClient = new SpacebroClient('spacebro.space', 3333, {
+    const client = new SpacebroClient({
+      host: 'spacebro.space',
+      port: 3333,
       client: {name: 'foo'},
       channelName: 'bar'
     })
 
     for (const eventName of ['hello', 'world']) {
-      spacebroClient.on(eventName, (data) => {
+      client.on(eventName, (data) => {
         addTextNode(JSON.stringify(data))
       })
     }
-    setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
-    setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 5000)
+    setTimeout(() => { client.emit('hello', { hello: 'world' }) }, 3000)
+    setTimeout(() => { client.emit('world', { world: 'hello' }) }, 5000)
   </script>
 </body>
 </html>
