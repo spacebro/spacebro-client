@@ -234,7 +234,7 @@ class SpacebroClient {
   }
 }
 
-function setDefaultSettings (options = null, verbose = false) {
+function setDefaultSettings (options = null, verbose = false, _noErr = false) {
   const inspect = (obj) => util.inspect(obj, {showHidden: false, depth: null})
 
   if (options == null) {
@@ -247,7 +247,9 @@ function setDefaultSettings (options = null, verbose = false) {
     } catch (err) {}
 
     if (!settings) {
-      console.warn('Cannot load standard-settings; did you add it to node_modules?')
+      if (!_noErr) {
+        console.warn('Cannot load standard-settings; did you add it to node_modules?')
+      }
       return
     }
 
@@ -376,6 +378,8 @@ function off (eventName) {
     socket.off(eventName)
   }
 }
+
+setDefaultSettings(null, false, true)
 
 export default {
   SpacebroClient,

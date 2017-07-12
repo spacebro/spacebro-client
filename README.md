@@ -56,7 +56,7 @@ client.emit('outBar', { do: stuff})
 
 ## 🚀 API
 
-### `class SpacebroClient(options = {}, connect = true)`
+### `class SpacebroClient([options], [connect])`
 
 Look for a server, and return a handle to the connection.
 
@@ -85,9 +85,10 @@ const client = new SpacebroClient({
 
 If the `connect` parameter is false, then the options are saved and a disconnected handle is returned; you have to call its `connect` method later before you can emit or receive events.
 
+Default value: `true`
+
 
 ```js
-// For more details about possible options, see below.
 const client = new SpacebroClient({
   client: {name: 'myClient'},
   channelName: 'someChannel'
@@ -98,11 +99,15 @@ const client = new SpacebroClient({
 client.connect('127.0.0.1', 8888)
 ```
 
-you don't pass those parameters, spacebro-client will try to fetch them from [standard-settings](https://github.com/soixantecircuits/standard-settings).
-
 ### `create([options])`
 
 Look for a server, and creates a handle to the connection. Takes the same options as `new SpacebroClient`. Returns a Promise like `client.connect`.
+
+### `setDefaultSettings(options, [verbose])`
+
+Overwrite the default options of `new SpacebroClient` with the given options.
+
+If [standard-settings](https://github.com/soixantecircuits/standard-settings) is installed in your module, `spacebro-client` will call this function with the contents of `services.spacebro` from your settings file.
 
 ### `client.connect(address, port)`
 
