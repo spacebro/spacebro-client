@@ -107,15 +107,19 @@ test.serial('disconnect', async (t) => {
 
   client.on('connect', async () => {
     const consoleError = console.error
+    const errors = []
 
     console.error = (err) => {
-      t.is(err, 'Error: "connect4" is disconnected and cannot emit "what"')
+      errors.push(err)
     }
 
     client.on('disconnect', () => t.pass('Disconnected'))
     client.disconnect()
     client.emit('what', () => 'ever')
 
+    t.deepEqual(errors, [
+      'Error: "connect4" is disconnected and cannot emit "what"'
+    ])
     console.error = consoleError
   })
   await sleep(5000)

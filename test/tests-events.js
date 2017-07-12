@@ -73,34 +73,40 @@ test('once', async (t) => {
 test('on - Wildcard', async (t) => {
   const client = connect('emit-on-wildcard')
 
-  t.plan(5)
-
-  client.on('connect', () => {
-    client.emit('hello')
-    client.emit('again')
+  client.on('connect', async () => {
+    client.emit('hello', 1)
+    await sleep(1000)
+    client.emit('again', 2)
     client.emit('and', 'welcome to the Aperture Science enrichment center')
   })
+
+  const eventData = []
   client.on('*', (data) => {
-    t.pass('Message received')
+    eventData.push(data)
   })
+  const eventOnceData = []
   client.once('*', (data) => {
-    t.pass('Message received once')
+    eventOnceData.push(data)
   })
   await sleep(5000)
+
+  t.not(eventData.indexOf(1), -1)
+  t.not(eventData.indexOf(2), -1)
+  t.not(eventData.indexOf('welcome to the Aperture Science enrichment center'), -1)
+
+  t.is(eventOnceData.length, 1)
 })
 
 test('off', async (t) => {
   const client = connect('off')
 
-  t.plan(1)
+  t.plan(0)
 
   client.on('connect', async () => {
-    client.emit('hello')
-    await sleep(5000)
     client.off('hello')
     client.emit('hello')
   })
-  client.on('hello', () => t.pass('Message received'))
+  client.on('hello', () => t.fail('Received message after off'))
   await sleep(5000)
 })
 
