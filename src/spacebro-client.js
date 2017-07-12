@@ -63,18 +63,32 @@ class SpacebroClient {
     }
   }
 
-  connect (address, port) {
-    if (typeof address !== 'string') {
-      throw new Error('address must be a valid string')
+  connect (host, port) {
+    if (this.connected) {
+      console.warn(`This client is already connected to ${this.config.host}:${this.config.port}`)
+      return
+    }
+
+    if (typeof host !== 'string') {
+      throw new Error('host must be a valid string')
     }
     if (!(port > 0)) {
       throw new Error('port must be a positive integer')
     }
 
     this.logger.log(
-      `Trying to connect to ${address}:${port} with config:\n`, this.config
+      `Trying to connect to ${host}:${port} with config:\n`, this.config
     )
-    this._initSocketIO(address, port)
+    this.config.host = host
+    this.config.port = port
+    this._initSocketIO(host, port)
+
+    return new Promise((resolve, reject) => {
+      this.on('connect', () => resolve(this))
+      this.on('connect_error', (err) => reject(err))
+      this.on('connect_timeout', () => reject(new Error('Connection timeout')))
+      this.on('error', (err) => reject(err))
+    })
   }
 
   _initSocketIO (address, port) {
@@ -257,15 +271,9 @@ function setDefaultSettings (options = null, verbose = false) {
   }
 }
 
-function create (options = {}, connect = true) {
-  const sc = new SpacebroClient(options, connect)
-
-  return new Promise((resolve, reject) => {
-    sc.on('connect', () => resolve(sc))
-    sc.on('connect_error', (err) => reject(err))
-    sc.on('connect_timeout', () => reject(new Error('Connection timeout')))
-    sc.on('error', (err) => reject(err))
-  })
+function create (options = {}) {
+  const client = new SpacebroClient(options, false)
+  return client.connect(client.config.host, client.config.port)
 }
 
 /*
