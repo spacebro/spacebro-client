@@ -281,25 +281,9 @@ let spacebroClientSingleton = null
 let beforeConnectEvents = {
   events: [],
 
-  on (eventName, handler, handlerContext, priority) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = new Signal()
-    }
-    this.events[eventName].add(handler, handlerContext, priority)
-  },
-
-  once (eventName, handler, handlerContext, priority) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = new Signal()
-    }
-    this.events[eventName] = new Signal()
-    this.events[eventName].addOnce(handler, handlerContext, priority)
-  },
-
-  off (eventName) {
-    this.events[eventName].dispose()
-    delete this.events[eventName]
-  }
+  on: SpacebroClient.prototype.on,
+  once: SpacebroClient.prototype.once,
+  off: SpacebroClient.prototype.off
 }
 
 function connect (host, port, options) {
