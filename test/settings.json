@@ -1,0 +1,13 @@
+{
+  "service": {
+    "spacebro": {
+      "host": "spacebro.space",
+      "port": 3333,
+      "channelName": "spacebro-client-test-with-standard",
+      "client": {
+        "name": "with-standard"
+      },
+      "verbose": false
+    }
+  }
+}

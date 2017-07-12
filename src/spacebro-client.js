@@ -5,6 +5,7 @@ import io from 'socket.io-client'
 import Signal from 'signals'
 import Logger from './logger'
 import assignment from 'assignment'
+import util from 'util'
 
 const patch = wildcard(io.Manager)
 
@@ -19,21 +20,22 @@ function _filterHooks (eventName, hooks) {
     .map(hook => hook.handler)
 }
 
+const defaultConfig = {
+  channelName: null,
+  client: {name: null},
+  packers: [],
+  unpackers: [],
+  sendBack: true,
+  verbose: true,
+  multiService: false
+}
+
 class SpacebroClient {
-  constructor (address, port, options = {}) {
-    const defaultConfig = {
-      channelName: null,
-      client: {name: null},
-      packers: [],
-      unpackers: [],
-      sendBack: true,
-      verbose: true,
-      multiService: false
-    }
-    this.config = assignment(defaultConfig, options)
-    // legacy
+  constructor (options = {}, connect = true) {
+    this.config = assignment({}, defaultConfig, options)
+
     if (this.config.clientName) {
-      console.warn(`DEPRECATED: clientName is deprecated, please use \`client: {name: ${this.config.clientName}}\` instead`)
+      console.warn(`DEPRECATED: clientName is deprecated, please use \`client: {name: '${this.config.clientName}'}\` instead`)
       this.config.client.name = this.config.clientName
     }
 
@@ -52,25 +54,41 @@ class SpacebroClient {
     this.connected = false
     this.socket = null
 
-    if (address == null && port == null) {
+    if (connect) {
+      if (this.config.host == null || this.config.port == null) {
+        console.warn('Cannot connect without host address and port')
+        return
+      }
+      this.connect(this.config.host, this.config.port)
+    }
+  }
+
+  connect (host, port) {
+    if (this.connected) {
+      console.warn(`This client is already connected to ${this.config.host}:${this.config.port}`)
       return
     }
 
-    this.connect(address, port)
-  }
-
-  connect (address, port) {
-    if (typeof address !== 'string') {
-      throw new Error('address must be a valid string')
+    if (typeof host !== 'string') {
+      throw new Error('host must be a valid string')
     }
     if (!(port > 0)) {
       throw new Error('port must be a positive integer')
     }
 
     this.logger.log(
-      `Trying to connect to ${address}:${port} with config:\n`, this.config
+      `Trying to connect to ${host}:${port} with config:\n`, this.config
     )
-    this._initSocketIO(address, port)
+    this.config.host = host
+    this.config.port = port
+    this._initSocketIO(host, port)
+
+    return new Promise((resolve, reject) => {
+      this.on('connect', () => resolve(this))
+      this.on('connect_error', (err) => reject(err))
+      this.on('connect_timeout', () => reject(new Error('Connection timeout')))
+      this.on('error', (err) => reject(err))
+    })
   }
 
   _initSocketIO (address, port) {
@@ -219,15 +237,48 @@ class SpacebroClient {
   }
 }
 
-function create (address, port, options) {
-  const sc = new SpacebroClient(address, port, options)
+function setDefaultSettings (options = null, verbose = false, _noErr = false) {
+  const inspect = (obj) => util.inspect(obj, {showHidden: false, depth: null})
 
-  return new Promise((resolve, reject) => {
-    sc.on('connect', () => resolve(sc))
-    sc.on('connect_error', (err) => reject(err))
-    sc.on('connect_timeout', () => reject(new Error('Connection timeout')))
-    sc.on('error', (err) => reject(err))
-  })
+  if (options == null) {
+    let settings = null
+
+    try {
+      if (!process.env.NO_STANDARD_SETTINGS) {
+        settings = require('standard-settings').getSettings()
+      }
+    } catch (err) {}
+
+    if (!settings) {
+      if (!_noErr) {
+        console.warn('Cannot load standard-settings; did you add it to node_modules?')
+      }
+      return
+    }
+
+    const spacebroSettings = settings.service && settings.service.spacebro
+    if (!spacebroSettings) {
+      console.warn('Settings file does not include service.spacebro')
+      if (verbose) {
+        console.warn('Settings object:', inspect(spacebroSettings))
+      }
+      return
+    }
+
+    options = spacebroSettings
+  }
+  if (verbose) {
+    console.log('Former settings:', inspect(defaultConfig))
+  }
+  assignment(defaultConfig, options)
+  if (verbose) {
+    console.log('New settings:', inspect(defaultConfig))
+  }
+}
+
+function create (options = {}) {
+  const client = new SpacebroClient(options, false)
+  return client.connect(client.config.host, client.config.port)
 }
 
 /*
@@ -240,17 +291,24 @@ let spacebroClientSingleton = null
 /*
 ** This variable is used to allow calling `on` before `connect`
 */
-let beforeConnectSpacebroClient = new SpacebroClient()
+let beforeConnectEvents = {
+  events: [],
 
-function connect (address, port, options) {
+  on: SpacebroClient.prototype.on,
+  once: SpacebroClient.prototype.once,
+  off: SpacebroClient.prototype.off
+}
+
+function connect (host, port, options) {
   if (spacebroClientSingleton) {
     console.warn('A SpacebroClient socket is already open')
   }
-  spacebroClientSingleton = new SpacebroClient(null, null, options)
-  spacebroClientSingleton.connect(address, port)
-  if (beforeConnectSpacebroClient) {
-    spacebroClientSingleton.events = beforeConnectSpacebroClient.events
-    beforeConnectSpacebroClient = null
+  spacebroClientSingleton = new SpacebroClient(
+    assignment({}, options, {host, port})
+  )
+  if (beforeConnectEvents) {
+    spacebroClientSingleton.events = beforeConnectEvents.events
+    beforeConnectEvents = null
   }
   return spacebroClientSingleton
 }
@@ -294,10 +352,10 @@ function sendTo (eventName, to = null, data = {}) {
 }
 
 function _eventSocket () {
-  if (!spacebroClientSingleton && !beforeConnectSpacebroClient) {
+  if (!spacebroClientSingleton && !beforeConnectEvents) {
     console.warn('No SpacebroClient socket is open')
   }
-  return spacebroClientSingleton || beforeConnectSpacebroClient
+  return spacebroClientSingleton || beforeConnectEvents
 }
 
 function on (eventName, handler, handlerContext, priority) {
@@ -324,10 +382,13 @@ function off (eventName) {
   }
 }
 
+setDefaultSettings(null, false, true)
+
 export default {
   SpacebroClient,
-  connect,
+  setDefaultSettings,
   create,
+  connect,
   disconnect,
   addPacker,
   addUnpacker,

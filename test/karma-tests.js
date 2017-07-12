@@ -4,7 +4,9 @@ const assert = require('assert')
 const { SpacebroClient } = require('../src/spacebro-client')
 
 function connect (name) {
-  return new SpacebroClient('spacebro.space', 3333, {
+  return new SpacebroClient({
+    host: 'spacebro.space',
+    port: 3333,
     channelName: `spacebro-client-test-${name}`,
     client: {name: name},
     verbose: false

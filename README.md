@@ -26,7 +26,9 @@ Then, write the following client code:
 ```js
 const { SpacebroClient } = require('spacebro-client')
 
-const client = new SpacebroClient('127.0.0.1', 8888, {
+const client = new SpacebroClient({
+  host: '127.0.0.1',
+  port: 8888,
   channelName: 'bar',
   client: {
     name: 'foo',
@@ -54,34 +56,62 @@ client.emit('outBar', { do: stuff})
 
 ## 🚀 API
 
-### `class SpacebroClient([[address, port, ]options])`
+### `class SpacebroClient([options], [connect])`
 
 Look for a server, and return a handle to the connection.
 
 ```js
 // For more details about possible options, see below.
-const option = {
+const client = new SpacebroClient({
+  host: '127.0.0.1',
+  port: 8888,
   client: {name: 'foo'},
   channelName: 'bar'
-}
-
-// this call does not use any auto-discovery (mdns/avahi/bonjour) feature
-// and just perfoms a basic connection request on `ws://${address}:${port}`.
-const client = new SpacebroClient('127.0.0.1', 8888, options)
+})
 ```
 
 #### options:
 
 | name | default | required | description |
 |:---|:---|:---|:---|
+| **host** | - | *required* | The spacebro server's address. Ignored if `connect` is false. |
+| **port** | - | *required* | The spacebro server's address. Ignored if `connect` is false. |
 | **client.name** | `null` | *recommended* | Your client's name. Can be useful to perform targeted events and for monitoring. |
 | **channelName** | `null` | *recommended* | The channel your app will communicate in. This is especially usefull if you have multiple apps using the same server. |
 | **verbose** | `true` | *optional* | Should spacebro-client display logs (connection / emission / reception)? |
 | **sendBack** | `true` | *optional* | Should this client receive the events it sent? |
 
-### `create([[address, port, ]options])`
+#### connect
 
-Look for a server, and creates handle to the connection. Unlike `new SpacebroClient`, returns a promise to the handle that resolves when the connection is established.
+If the `connect` parameter is false, then the options are saved and a disconnected handle is returned; you have to call its `connect` method later before you can emit or receive events.
+
+Default value: `true`
+
+
+```js
+const client = new SpacebroClient({
+  client: {name: 'myClient'},
+  channelName: 'someChannel'
+}, false)
+
+// ...
+
+client.connect('127.0.0.1', 8888)
+```
+
+### `create([options])`
+
+Look for a server, and creates a handle to the connection. Takes the same options as `new SpacebroClient`. Returns a Promise like `client.connect`.
+
+### `setDefaultSettings(options, [verbose])`
+
+Overwrite the default options of `new SpacebroClient` with the given options.
+
+If [standard-settings](https://github.com/soixantecircuits/standard-settings) is installed in your module, `spacebro-client` will call this function with the contents of `services.spacebro` from your settings file.
+
+### `client.connect(address, port)`
+
+Look for a server, and connect `client` to this server. Returns a Promise that resolves to `client` when the connection is established, or throws an error if the connection fails.
 
 ### `client.emit(eventName[, data])`
 
@@ -134,11 +164,13 @@ From the `example/electron/` folder of this repository:
 ```js
 // In the main process.
 const { app, BrowserWindow } = require('electron')
-const spacebroClient = require('../../dist/spacebro-client')
+const { SpacebroClient } = require('../../dist/spacebro-client')
 
 let win = null
 
-spacebroClient.connect('127.0.0.1', 8888, {
+const client = new SpacebroClient({
+  host: '127.0.0.1',
+  port: 8888,
   client: {name: 'foo'},
   channelName: 'bar'
 })
@@ -148,14 +180,14 @@ app.on('ready', () => {
   win.loadURL(`file://${__dirname}/index.html`)
 
   for (const eventName of ['hello', 'world']) {
-    spacebroClient.on(eventName, (data) => {
+    client.on(eventName, (data) => {
       win.webContents.send(eventName, data)
     })
   }
 
   win.webContents.on('did-finish-load', () => {
-    setTimeout(() => { spacebroClient.emit('hello', { hello: 'world' }) }, 3000)
-    setTimeout(() => { spacebroClient.emit('world', { world: 'hello' }) }, 5000)
+    setTimeout(() => { client.emit('hello', { hello: 'world' }) }, 3000)
+    setTimeout(() => { client.emit('world', { world: 'hello' }) }, 5000)
   })
 })
 ```

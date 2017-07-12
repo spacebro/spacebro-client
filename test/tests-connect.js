@@ -4,26 +4,14 @@ import sleep from 'sleep-promise'
 import { SpacebroClient } from '../src/spacebro-client'
 
 test('connect', async (t) => {
-  const client = new SpacebroClient('spacebro.space', 3333, {
+  const client = new SpacebroClient({
+    host: 'spacebro.space',
+    port: 3333,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect1'},
     verbose: false
   })
 
-  client.on('connect', () => {
-    t.pass('Connected')
-  })
-  await sleep(5000)
-})
-
-test('connect - Delayed', async (t) => {
-  const client = new SpacebroClient(null, null, {
-    channelName: 'spacebro-client-test-connect',
-    client: {name: 'connect1'},
-    verbose: false
-  })
-
-  client.connect('spacebro.space', 3333)
   client.on('connect', () => {
     t.pass('Connected')
   })
@@ -31,7 +19,9 @@ test('connect - Delayed', async (t) => {
 })
 
 test('connect - Wrong address', async (t) => {
-  const client = new SpacebroClient('a.wrong.address', 12345, {
+  const client = new SpacebroClient({
+    host: 'a.wrong.address',
+    port: 12345,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect2'},
     verbose: false
@@ -45,7 +35,9 @@ test('connect - Wrong address', async (t) => {
 })
 
 test('connect - Wrong port', async (t) => {
-  const client = new SpacebroClient('spacebro.space', 12345, {
+  const client = new SpacebroClient({
+    host: 'spacebro.space',
+    port: 12345,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect3'},
     verbose: false
@@ -58,9 +50,57 @@ test('connect - Wrong port', async (t) => {
   await sleep(5000)
 })
 
+test('connect - Delayed', async (t) => {
+  const client = new SpacebroClient({
+    host: 'whatever',
+    port: 12345,
+    channelName: 'spacebro-client-test-connect-delayed',
+    client: {name: 'connect'},
+    verbose: false
+  }, false)
+
+  client.connect('spacebro.space', 3333)
+  client.on('connect', () => {
+    t.pass('Connected')
+  })
+  await sleep(5000)
+})
+
+test('connect - Without host', (t) => {
+  const consoleWarn = console.warn
+  const warnings = []
+  console.warn = (message) => warnings.push(message)
+
+  /* eslint-disable no-new */
+  new SpacebroClient({
+    port: 12345,
+    verbose: false
+  })
+
+  console.warn = consoleWarn
+  t.deepEqual(warnings, ['Cannot connect without host address and port'])
+})
+
+test('connect - Without port', (t) => {
+  const consoleWarn = console.warn
+  const warnings = []
+  console.warn = (message) => warnings.push(message)
+
+  /* eslint-disable no-new */
+  new SpacebroClient({
+    host: 'spacebro.space',
+    verbose: false
+  })
+
+  console.warn = consoleWarn
+  t.deepEqual(warnings, ['Cannot connect without host address and port'])
+})
+
 test.failing('disconnect', async (t) => {
-  const client = new SpacebroClient('spacebro.space', 3333, {
-    channelName: 'spacebro-client-test-connect',
+  const client = new SpacebroClient({
+    host: 'spacebro.space',
+    port: 3333,
+    channelName: 'spacebro-client-test-disconnect',
     client: {name: 'connect4'},
     verbose: false
   })
