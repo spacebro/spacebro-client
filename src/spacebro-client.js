@@ -163,11 +163,13 @@ class SpacebroClient {
         if (!this.config.sendBack && args._from === this.config.client.name) {
           return
         }
+        if (args._altered) {
+          args = args._data
+        }
         if (this.events[eventName] || this.events['*']) {
           this.logger.log(`socket received ${eventName} with data:`, args)
           for (let unpack of _filterHooks(eventName, this.unpackers)) {
-            const unpacked = unpack({ eventName, data: args })
-            args = unpacked || args
+            args = unpack({ eventName, data: args }) || args
           }
           this.events[eventName] && this.events[eventName].dispatch(args)
           this.events['*'] && this.events['*'].dispatch(args)
@@ -192,11 +194,6 @@ class SpacebroClient {
   }
 
   emit (eventName, data = {}) {
-    // null is a type of Object. so we have to check null and undefined with loosy compare
-    if (typeof data !== 'object' || data === null) {
-      data = {data: data}
-      data.altered = true
-    }
     this.sendTo(eventName, null, data)
   }
 
@@ -205,14 +202,24 @@ class SpacebroClient {
       console.error(`Error: "${this.config.client.name}" is disconnected and cannot emit "${eventName}"`)
       return
     }
+
     if (typeof data === 'object' && typeof data.toJSON === 'function') {
       data = data.toJSON()
     }
-    data._to = to
-    data._from = this.config.client.name
     for (let pack of _filterHooks(eventName, this.packers)) {
       data = pack({eventName, data}) || data
     }
+
+    // True when data isn't a straightforward object
+    // Note that (typeof [] === 'object') and (typeof null === 'object')
+    if (typeof data !== 'object' || Array.isArray(data) || data === null) {
+      data = {
+        _data: data,
+        _altered: true
+      }
+    }
+    data._from = this.config.client.name
+    data._to = to
     this.socket.emit(eventName, data)
   }
 
