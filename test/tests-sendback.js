@@ -46,7 +46,7 @@ test('connect - Sendback with no data', async (t) => {
   await sleep(5000)
 })
 
-test.failing('connect - Sendback with string', async (t) => {
+test('connect - Sendback with string', async (t) => {
   const client = connectSendback('sendBack-string')
 
   t.plan(0)
@@ -58,7 +58,7 @@ test.failing('connect - Sendback with string', async (t) => {
   await sleep(5000)
 })
 
-test.failing('connect - Sendback with Number', async (t) => {
+test('connect - Sendback with Number', async (t) => {
   const client = connectSendback('sendBack-number')
 
   t.plan(0)
@@ -70,7 +70,7 @@ test.failing('connect - Sendback with Number', async (t) => {
   await sleep(5000)
 })
 
-test.failing('connect - Sendback with Array', async (t) => {
+test('connect - Sendback with Array', async (t) => {
   const client = connectSendback('sendBack-array')
 
   t.plan(0)
