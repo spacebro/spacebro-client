@@ -172,7 +172,7 @@ class SpacebroClient {
             const unpacked = unpack({ eventName, data: args })
             args = unpacked || args
           }
-          this.events[eventName] && this.events[eventName].dispatch(args)
+          this.events[eventName] && this.events[eventName].dispatch.apply(this.events[eventName], data.slice(1))
           this.events['*'] && this.events['*'].dispatch(args)
         }
       })
@@ -200,7 +200,10 @@ class SpacebroClient {
       data = {data: data}
       data.altered = true
     }
-    this.sendTo(eventName, null, data)
+    // do the same thing as this.sendTo(eventName, null, data) but with multiple args after data
+    var args = Array.prototype.slice.call(arguments, 2)
+    args.unshift(eventName, null, data)
+    this.sendTo.apply(this, args)
   }
 
   sendTo (eventName, to = null, data = {}) {
@@ -216,7 +219,10 @@ class SpacebroClient {
     for (let pack of _filterHooks(eventName, this.packers)) {
       data = pack({eventName, data}) || data
     }
-    this.socket.emit(eventName, data)
+    // do the same thing as this.socket.emit(eventName, data) but with multiple args after data
+    var args = Array.prototype.slice.call(arguments, 3)
+    args.unshift(eventName, data)
+    this.socket.emit.apply(this.socket, args)
   }
 
   // Reception
@@ -344,13 +350,17 @@ function addUnpacker (handler, priority, eventName) {
 
 function emit (eventName, data = {}) {
   if (_checkSocket()) {
-    spacebroClientSingleton.emit(eventName, data)
+    var args = Array.prototype.slice.call(arguments, 0)
+    spacebroClientSingleton.emit.apply(spacebroClientSingleton, args)
+    // this.sendTo.apply(this, args)
   }
 }
 
 function sendTo (eventName, to = null, data = {}) {
   if (_checkSocket()) {
-    spacebroClientSingleton.sendTo(eventName, to, data)
+    var args = Array.prototype.slice.call(arguments, 0)
+    spacebroClientSingleton.sendTo.apply(spacebroClientSingleton, args)
+    // spacebroClientSingleton.sendTo(eventName, to, data)
   }
 }
 

@@ -155,6 +155,88 @@ test('connect with connection', async (t) => {
   await sleep(5000)
 })
 
+test('receive data with connection', async (t) => {
+  const client = new SpacebroClient({
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
+    channelName: 'spacebro-client-test-receive-data-connection',
+    client: {name: 'connect-connections'},
+    verbose: false,
+    connection: 'connect-connections/outMedia => connect-connections/inMedia'
+  })
+
+  client.on('connect', () => {
+    client.emit('outMedia', {
+      that: 'message'
+    })
+  })
+
+  client.on('inMedia', (data) => {
+    t.deepEqual(data, {
+      that: 'message',
+      _to: null,
+      _from: 'connect-connections'
+    })
+  })
+  await sleep(5000)
+})
+
+test('receive two data with connection', async (t) => {
+  const client = new SpacebroClient({
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
+    channelName: 'spacebro-client-test-receive-two-data-connection',
+    client: {name: 'connect-connections'},
+    verbose: false,
+    connection: 'connect-connections/outMedia => connect-connections/inMedia'
+  })
+
+  client.on('connect', () => {
+    client.emit('outMedia', {
+      that: 'message'
+    }, {
+      this: 'message'
+    })
+  })
+
+  client.on('inMedia', (data1, data2) => {
+    t.deepEqual(data1, {
+      that: 'message',
+      _to: null,
+      _from: 'connect-connections'
+    })
+    t.deepEqual(data2, {
+      this: 'message'
+    })
+  })
+  await sleep(5000)
+})
+
+test('receive one string and one data with connection', async (t) => {
+  const client = new SpacebroClient({
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
+    channelName: 'spacebro-client-test-receive-string-data-connection',
+    client: {name: 'connect-connections'},
+    verbose: false,
+    connection: 'connect-connections/outMedia => connect-connections/inMedia'
+  })
+
+  client.on('connect', () => {
+    client.emit('outMedia', 'create', {
+      this: 'message'
+    })
+  })
+
+  client.on('inMedia', (data1, data2) => {
+    t.is(data1, 'create')
+    t.deepEqual(data2, {
+      this: 'message'
+    })
+  })
+  await sleep(5000)
+})
+
 test('connect with connections', async (t) => {
   const client = new SpacebroClient({
     host: SB_TEST_ADDRESS,

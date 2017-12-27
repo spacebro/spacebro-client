@@ -42,6 +42,20 @@ test('emit / on - With string', async (t) => {
   await sleep(5000)
 })
 
+test('emit / on - With two objects', async (t) => {
+  const client = connect('emit-on-with-two-objects')
+
+  client.on('connect', () => {
+    client.emit('hello', { this: 'abcd' }, { that: 'abcd' })
+  })
+  client.on('hello', (data1, data2) => {
+    t.pass('Message received')
+    t.deepEqual(data1.this, 'abcd')
+    t.deepEqual(data2, {that: 'abcd'})
+  })
+  await sleep(5000)
+})
+
 test('on - Twice with same event name', async (t) => {
   const client = connect('double-on')
 
