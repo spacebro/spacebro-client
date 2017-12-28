@@ -11,7 +11,8 @@
     "test-standard-settings": "SETTINGS=test/settings.json ava --verbose --timeout=16s test/standard-settings-tests.js",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "build": "gulp build",
-    "coverage": "gulp coverage"
+    "coverage": "gulp coverage",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
