@@ -3706,7 +3706,7 @@ var SpacebroClient = function () {
             }
           }
 
-          _this2.events[eventName] && _this2.events[eventName].dispatch(args);
+          _this2.events[eventName] && _this2.events[eventName].dispatch.apply(_this2.events[eventName], data.slice(1));
           _this2.events['*'] && _this2.events['*'].dispatch(args);
         }
       });
@@ -3741,7 +3741,10 @@ var SpacebroClient = function () {
         data = { data: data };
         data.altered = true;
       }
-      this.sendTo(eventName, null, data);
+      // do the same thing as this.sendTo(eventName, null, data) but with multiple args after data
+      var args = Array.prototype.slice.call(arguments, 2);
+      args.unshift(eventName, null, data);
+      this.sendTo.apply(this, args);
     }
   }, {
     key: 'sendTo',
@@ -3768,6 +3771,7 @@ var SpacebroClient = function () {
 
           data = pack({ eventName: eventName, data: data }) || data;
         }
+        // do the same thing as this.socket.emit(eventName, data) but with multiple args after data
       } catch (err) {
         _didIteratorError4 = true;
         _iteratorError4 = err;
@@ -3783,7 +3787,9 @@ var SpacebroClient = function () {
         }
       }
 
-      this.socket.emit(eventName, data);
+      var args = Array.prototype.slice.call(arguments, 3);
+      args.unshift(eventName, data);
+      this.socket.emit.apply(this.socket, args);
     }
 
     // Reception
@@ -3927,7 +3933,9 @@ function emit(eventName) {
   var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   if (_checkSocket()) {
-    spacebroClientSingleton.emit(eventName, data);
+    var args = Array.prototype.slice.call(arguments, 0);
+    spacebroClientSingleton.emit.apply(spacebroClientSingleton, args);
+    // this.sendTo.apply(this, args)
   }
 }
 
@@ -3936,7 +3944,9 @@ function sendTo(eventName) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   if (_checkSocket()) {
-    spacebroClientSingleton.sendTo(eventName, to, data);
+    var args = Array.prototype.slice.call(arguments, 0);
+    spacebroClientSingleton.sendTo.apply(spacebroClientSingleton, args);
+    // spacebroClientSingleton.sendTo(eventName, to, data)
   }
 }
 
