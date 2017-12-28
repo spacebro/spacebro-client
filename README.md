@@ -28,7 +28,7 @@ const { SpacebroClient } = require('spacebro-client')
 
 const client = new SpacebroClient({
   host: '127.0.0.1',
-  port: 8888,
+  port: 36000,
   channelName: 'bar',
   client: {
     name: 'foo',
@@ -47,12 +47,17 @@ const client = new SpacebroClient({
         type: "all"
       }
     }
-  }
+  },
+  connection: "bar/outBar => bar/inFoo"
 })
 
-client.on('inFoo', data() => console.log('inFoo', data))
+client.on('inFoo', (data) => console.log('inFoo', data))
 client.emit('outBar', { do: stuff})
 ```
+
+The connection string was sent to the spacebro server, that will then
+connects every event named `outBar` from client `bar` to a new event
+named `inFoo` sent to client `bar`
 
 ## 🚀 API
 
@@ -136,6 +141,50 @@ Remove a specific event listener.
 ### `client.disconnect()`
 
 Close the connection.
+
+## Socket.io callbacks (acknowledgments)
+
+Spacebro now works with [acknowlegdments
+too](https://socket.io/docs/server-api/#socket-send-args-ack) ! 
+
+```js
+const { SpacebroClient } = require('spacebro-client')
+
+const client = new SpacebroClient({
+  host: '127.0.0.1',
+  port: 36000,
+  channelName: 'bar',
+  client: {
+    name: 'foo',
+    description: "a foo tool",
+    in: {
+      inFoo: {
+        eventName: "inFoo",
+        description: "Input foo",
+        type: "all"
+      }
+    },
+    out: {
+      outBar: {
+        eventName: "outBar",
+        description: "Output bar",
+        type: "all"
+      }
+    }
+  },
+  connection: "bar/outBar => bar/inFoo"
+})
+
+client.on('inFoo', (data, fn) => {
+  console.log('inFoo', data)
+  fn('thank you')
+})
+
+client.emit('outBar', { do: stuff}, function (data) {
+  console.log('Received from callback: ' + data)
+})
+```
+
 
 ## 🖥 Browser
 
