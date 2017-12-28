@@ -237,6 +237,30 @@ test('receive one string and one data with connection', async (t) => {
   await sleep(5000)
 })
 
+test('receive ack with connection', async (t) => {
+  const client = new SpacebroClient({
+    host: SB_TEST_ADDRESS,
+    port: SB_TEST_PORT,
+    channelName: 'spacebro-client-test-receive-ack-connection',
+    client: {name: 'connect-connections'},
+    verbose: false,
+    connection: 'connect-connections/outMedia => connect-connections/inMedia'
+  })
+
+  client.on('connect', () => {
+    client.emit('outMedia', {
+      that: 'message'
+    }, function (data) {
+      t.is(data, '_pong')
+    })
+  })
+
+  client.on('inMedia', (data, fn) => {
+    fn('_pong')
+  })
+  await sleep(5000)
+})
+
 test('connect with connections', async (t) => {
   const client = new SpacebroClient({
     host: SB_TEST_ADDRESS,
