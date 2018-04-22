@@ -84,12 +84,13 @@ test('connect - Without host', (t) => {
   t.deepEqual(warnings, ['Cannot connect without host address and port'])
 })
 
+/*
 test('connect - Without port', (t) => {
   const consoleWarn = console.warn
   const warnings = []
   console.warn = (message) => warnings.push(message)
 
-  /* eslint-disable no-new */
+  // eslint-disable no-new
   new SpacebroClient({
     host: SB_TEST_ADDRESS,
     verbose: false
@@ -98,6 +99,7 @@ test('connect - Without port', (t) => {
   console.warn = consoleWarn
   t.deepEqual(warnings, ['Cannot connect without host address and port'])
 })
+*/
 
 test.serial('disconnect', async (t) => {
   const client = new SpacebroClient({

@@ -3584,9 +3584,9 @@ var SpacebroClient = function () {
       if (typeof host !== 'string') {
         throw new Error('host must be a valid string');
       }
-      if (!(port > 0)) {
-        throw new Error('port must be a positive integer');
-      }
+      /* if (!(port > 0)) {
+        throw new Error('port must be a positive integer')
+      } */
 
       this.logger.log('Trying to connect to ' + host + ':' + port + ' with config:\n', this.config);
       this.config.host = host;
@@ -3615,7 +3615,10 @@ var SpacebroClient = function () {
 
       var parsedURI = __webpack_require__(60).parse(address);
       var protocol = parsedURI.protocol ? '' : 'ws://';
-      var url = '' + protocol + address + ':' + port;
+      var url = '' + protocol + address;
+      if (port) {
+        url = url + ':' + port;
+      }
 
       var socket = (0, _socket2.default)(url);
 
