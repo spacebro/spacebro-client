@@ -29,13 +29,26 @@
     const client = new SpacebroClient({
       host: 'spacebro.space',
       port: 3333,
-      client: {name: 'pinger'},
       channelName: 'browserExample',
-      unpackers: [{ handler: function handler(args) {
-          var latency = Date.now() - startTime
-          log(`Delay: ${latency}`)
+      client: {
+        name: 'pinger',
+        description: 'a demo to send a pongy message and receive on pingy input',
+        in: {
+          pingy: {
+            eventName: 'pingy',
+            description: 'It is a ping',
+            type: 'all'
+          }
+        },
+        out: {
+          pongy: {
+            eventName: 'pongy',
+            description: 'It is a pong',
+            type: 'all'
+          }
         }
-      }],
+      },
+      connection: 'pinger/pongy => pinger/pingy',
       verbose: true
     })
 
@@ -52,7 +65,7 @@
     setInterval(function () {
       startTime = Date.now()
       if (count < 3) {
-        client.emit('pingy', {count})
+        client.emit('pongy', {count})
         count++
       }
     }, 500)
