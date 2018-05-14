@@ -191,7 +191,7 @@ client.emit('outBar', { do: stuff}, function (data) {
 You can use spacebro-client in the browser. You will need the following dependencies:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
 <script src="https://wzrd.in/standalone/socketio-wildcard@latest"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 ```

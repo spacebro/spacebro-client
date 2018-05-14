@@ -1902,10 +1902,10 @@ var prefix = {
   info: _isNode2.default ? _chalk2.default.blue(base) : base,
   warn: _isNode2.default ? _chalk2.default.yellow(base) : base,
   error: _isNode2.default ? _chalk2.default.red(base) : base
-};
-// chalk does not seem to work here.
-// This is not important but one should take a look at some point
+  // chalk does not seem to work here.
+  // This is not important but one should take a look at some point
 
+};
 var Logger = function () {
   function Logger(verbose) {
     (0, _classCallCheck3.default)(this, Logger);
@@ -3837,7 +3837,7 @@ function setDefaultSettings() {
     var settings = null;
 
     try {
-      if (!process.env.NO_STANDARD_SETTINGS) {
+      if (typeof process !== 'undefined' && {}.toString.call(process) !== '[object process]' && !process.env.NO_STANDARD_SETTINGS) {
         settings = __webpack_require__(64).getSettings();
       }
     } catch (err) {}
@@ -3846,19 +3846,17 @@ function setDefaultSettings() {
       if (!_noErr) {
         console.warn('Cannot load standard-settings; did you add it to node_modules?');
       }
-      return;
-    }
-
-    var spacebroSettings = settings.service && settings.service.spacebro;
-    if (!spacebroSettings) {
-      console.warn('Settings file does not include service.spacebro');
-      if (verbose) {
-        console.warn('Settings object:', inspect(spacebroSettings));
+    } else {
+      var spacebroSettings = settings.service && settings.service.spacebro;
+      if (!spacebroSettings) {
+        console.warn('Settings file does not include service.spacebro');
+        if (verbose) {
+          console.warn('Settings object:', inspect(spacebroSettings));
+        }
+      } else {
+        options = spacebroSettings;
       }
-      return;
     }
-
-    options = spacebroSettings;
   }
   if (verbose) {
     console.log('Former settings:', inspect(defaultConfig));

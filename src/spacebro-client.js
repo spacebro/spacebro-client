@@ -256,7 +256,7 @@ function setDefaultSettings (options = null, verbose = false, _noErr = false) {
     let settings = null
 
     try {
-      if (!process.env.NO_STANDARD_SETTINGS) {
+      if (typeof process !== 'undefined' && !process.env.NO_STANDARD_SETTINGS) {
         settings = require('standard-settings').getSettings()
       }
     } catch (err) {}
@@ -265,19 +265,17 @@ function setDefaultSettings (options = null, verbose = false, _noErr = false) {
       if (!_noErr) {
         console.warn('Cannot load standard-settings; did you add it to node_modules?')
       }
-      return
-    }
-
-    const spacebroSettings = settings.service && settings.service.spacebro
-    if (!spacebroSettings) {
-      console.warn('Settings file does not include service.spacebro')
-      if (verbose) {
-        console.warn('Settings object:', inspect(spacebroSettings))
+    } else {
+      const spacebroSettings = settings.service && settings.service.spacebro
+      if (!spacebroSettings) {
+        console.warn('Settings file does not include service.spacebro')
+        if (verbose) {
+          console.warn('Settings object:', inspect(spacebroSettings))
+        }
+      } else {
+        options = spacebroSettings
       }
-      return
     }
-
-    options = spacebroSettings
   }
   if (verbose) {
     console.log('Former settings:', inspect(defaultConfig))

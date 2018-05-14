@@ -63,7 +63,7 @@ function build () {
           commonjs: 'standard-settings',
           commonjs2: 'standard-settings'
         },
-        signals: {
+        'signals': {
           amd: 'signals',
           root: 'signals',
           commonjs: 'signals',
@@ -198,19 +198,21 @@ gulp.task('lint-test', lintTest)
 gulp.task('lint-gulpfile', lintGulpfile)
 
 // Lint everything
-gulp.task('lint', ['lint-src', 'lint-test', 'lint-gulpfile'])
+gulp.task('lint', gulp.parallel('lint-src', 'lint-test', 'lint-gulpfile'))
 
 // Build two versions of the library
-gulp.task('build', ['lint', 'clean'], build)
+// gulp.task('build', ['lint', 'clean'], build)
+gulp.task('build',
+  gulp.series('lint', 'clean', build))
 
 // Lint and run our tests
-gulp.task('test', ['lint'], test)
+gulp.task('test', gulp.parallel('lint'), test)
 
 // Set up a livereload environment for our spec runner `test/runner.html`
-gulp.task('test-browser', ['lint', 'clean-tmp'], testBrowser)
+gulp.task('test-browser', gulp.series('lint', 'clean-tmp', testBrowser))
 
 // Run the headless unit tests as you make changes.
 gulp.task('watch', watch)
 
 // An alias of test
-gulp.task('default', ['test'])
+gulp.task('default', gulp.series('test'))
