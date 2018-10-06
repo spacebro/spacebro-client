@@ -6,6 +6,7 @@ import Signal from 'signals'
 import Logger from './logger'
 import assignment from 'assignment'
 import util from 'util'
+import url from 'url'
 
 const patch = wildcard(io.Manager)
 
@@ -93,14 +94,22 @@ class SpacebroClient {
   }
 
   _initSocketIO (address, port) {
-    let parsedURI = require('url').parse(address)
+    let parsedURI = url.parse(address)
+    let path = parsedURI.host && parsedURI.pathname
+    if (path === '/') {
+      path = null
+    }
+    if (path) {
+      parsedURI.pathname = ''
+      address = url.format(parsedURI)
+    }
     let protocol = parsedURI.protocol ? '' : 'ws://'
-    let url = `${protocol}${address}`
+    let serverUrl = `${protocol}${address}`
     if (port) {
-      url = `${url}:${port}`
+      serverUrl = `${serverUrl}:${port}`
     }
 
-    let socket = io(url)
+    let socket = io(serverUrl, {path})
 
     patch(socket)
 

@@ -288,6 +288,30 @@ You need to use at least yarn version `0.17.8`. You might have similar problems 
 
 *[source](https://github.com/yarnpkg/yarn/issues/1979)*
 
+
+### https
+
+If the spacebro server is on https, use following settings:
+
+```
+  'service': {
+    'spacebro': {
+      'host': 'https://example.com'
+      'port': 0
+    }
+  }
+```
+
+### subdir on server
+
+If the server url is something like `https://example.com/subdir`. You
+can use this url as host. Spacebro will process `subdir` as a path,
+contrary to socket.io that would process `subdir` as a
+[namespace](https://socket.io/docs/client-api/#io-url-options).
+
+That means the requested urls will look like
+`https://example.com/subdir/?EIO=3&transport=polling&sid=<id>`
+
 ### ping pong 🏓
 
 Do not try to test with `'ping'` and `'pong'` events, those are reserved.
