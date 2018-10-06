@@ -37,10 +37,10 @@ test('connect - Wrong address', async (t) => {
   await sleep(5000)
 })
 
-test('connect - Wrong port', async (t) => {
+test.failing('connect - Wrong port', async (t) => {
   const client = new SpacebroClient({
     host: SB_TEST_ADDRESS,
-    port: 12345,
+    port: -12345,
     channelName: 'spacebro-client-test-connect',
     client: {name: 'connect3'},
     verbose: false

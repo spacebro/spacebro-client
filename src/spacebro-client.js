@@ -74,9 +74,9 @@ class SpacebroClient {
     if (typeof host !== 'string') {
       throw new Error('host must be a valid string')
     }
-    /* if (!(port > 0)) {
+    if (port < 0) {
       throw new Error('port must be a positive integer')
-    } */
+    }
 
     this.logger.log(
       `Trying to connect to ${host}:${port} with config:\n`, this.config
